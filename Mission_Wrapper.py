@@ -9,41 +9,41 @@ class Wrapper:
     def __init__(object):
         pass
 
-    def SetName(a):
-        mapname = a
+    def SetName(self,a):
+        self.mapname = a
 
-    def GetName():
-        return mapname
+    def GetName(self):
+        return self.mapname
 
-    def SetIntro(a):
-        Intro = a
+    def SetIntro(self,a):
+        self.Intro = a
 
-    def GetIntro():
-        return Intro
+    def GetIntro(self):
+        return self.Intro
 
-    def SetObjective(a):
-        Objective = a
+    def SetObjective(self,a):
+        self.Objective = a
 
-    def GetObjective():
-        return Objective
+    def GetObjective(self):
+        return self.Objective
 
-    def SetMap(a):
-        Map = a
+    def SetMap(self,a):
+        self.Map = a
 
-    def GetMap():
-        return Map
+    def GetMap(self):
+        return self.Map
 
-    def SetPlayer(a):
-        Player = a
+    def SetPlayer(self,a):
+        self.Player = a
 
-    def GetPlayer():
-        return Player
+    def GetPlayer(self):
+        return self.Player
 
-    def SetUnits(a):
-        Units = a
+    def SetUnits(self,a):
+        self.Units = a
 
-    def GetUnits():
-        return Units
+    def GetUnits(self):
+        return self.Units
 
     def save(self):
         filestream = open(self.mapname)
@@ -90,7 +90,7 @@ class Wrapper:
 
         filestream.close()
 
-    def load_mission(myclass , mission_name):
+    def load_mission(self , mission_name):
         filestream = open(mission_name)
 
         intro_flag = False
@@ -158,12 +158,12 @@ class Wrapper:
     ######### END FOR LINE IN FILESTREAM ########
 
         filestream.close()
-        myclass.mapname = mission_name
-        myclass.Intro = Introa
-        myclass.Objective = Objectivea
-        myclass.Map = Mapa
-        myclass.Player = Playera
-        myclass.Units = Unitsa
+        self.mapname = mission_name
+        self.Intro = Introa
+        self.Objective = Objectivea
+        self.Map = Mapa
+        self.Player = Playera
+        self.Units = Unitsa
     ###END MISSION LOAD###
 
     
