@@ -45,8 +45,8 @@ class Wrapper:
     def GetUnits():
         return Units
 
-    def save():
-        filestream = open(mapname)
+    def save(self):
+        filestream = open(self.mapname)
 
         filestream.write('[INTRO]')
         filestream.write('\n')
