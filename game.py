@@ -1,4 +1,4 @@
-import pygame, sys, string, random, math, operator, enemy
+import pygame, sys, string, random, math, operator, soldier
         
 class Game(object):
     screen_width=600
@@ -14,7 +14,7 @@ class Game(object):
         self.screen = pygame.display.set_mode((self.screen_width, self.screen_height))
         self.enemies = []
         for i in range(10):
-            self.enemies.append(enemy.Enemy(random.randint(0,self.screen_width),random.randint(0,self.screen_height)))
+            self.enemies.append(soldier.Soldier(random.randint(0,self.screen_width),random.randint(0,self.screen_height)))
         
     def update(self):
         self.clock.tick(50)
@@ -25,7 +25,7 @@ class Game(object):
         
         for e in self.enemies:
             e.update(delta_seconds)
-            e.is_on_screen(self.screen_width,self.screen_height)
+            e.keep_on_screen(self.screen_width,self.screen_height)
         
     def handle_event(self, event):
         if event.type == pygame.QUIT:
