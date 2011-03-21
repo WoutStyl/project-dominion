@@ -1,8 +1,8 @@
-import pygame, sys, string, random, math, operator, soldier
+import pygame, sys, string, random, math, operator, soldier, menu
         
 class Game(object):
     screen_width=600
-    screen_height=600
+    screen_height=600  
     
     def __init__(self):
         pygame.init()
@@ -42,6 +42,26 @@ class Game(object):
         
         
 g = Game()
+
+bInMenu = True
+m = menu.Menu()
+oc = menu.StartOnClick()
+buttonlocx = g.screen_width/2
+buttonlocx -= 128
+buttonlocy = g.screen_height/2
+buttonlocy -= 32
+#print buttonlocx
+#print buttonlocy
+m.addButton(buttonlocx, (buttonlocy -128), menu.OnClick(), "StartCampaign")
+m.addButton(buttonlocx,buttonlocy,menu.StartOnClick(),"StartMission")
+m.addButton(buttonlocx,(buttonlocy+128), menu.OnClick(), "LoadCampaign")
+m.addButton(buttonlocx,(buttonlocy+256), menu.OnClick(), "LoadMission")
+print m.index
+while m.bInMenu:
+    m.update()
+    g.screen.fill((0,0,0))
+    m.draw(g.screen)
+    pygame.display.flip()
 
 while 1:
     g.update()
