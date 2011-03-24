@@ -95,7 +95,7 @@ each unit is in stored format
         """
         return self.Units
 
-    def FormatUnit(Unit unit):
+    def FormatUnit(unit):
         """
 Give a single Unit
 return in a single string
@@ -243,4 +243,5 @@ call mission.save() to add header/footers to the file
         self.Units = Unitsa
     ###END MISSION LOAD###
 
-    
+class Unit:
+    placeholder = []
