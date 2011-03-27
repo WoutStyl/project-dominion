@@ -44,16 +44,16 @@ class Game(object):
 g = Game()
 
 bInMenu = True
-m = menu.Menu()
+m = menu.Menu(g.screen)
 oc = menu.StartOnClick()
 buttonlocx = g.screen_width/2
 buttonlocx -= 128
 buttonlocy = g.screen_height/2
-buttonlocy -= 32
+buttonlocy -= 96
 #print buttonlocx
 #print buttonlocy
-m.addButton(buttonlocx, (buttonlocy -128), menu.OnClick(), "StartCampaign")
-m.addButton(buttonlocx,buttonlocy,menu.StartOnClick(),"StartMission")
+m.addButton(buttonlocx, (buttonlocy -128), menu.StartOnClick(), "StartCampaign")
+m.addButton(buttonlocx,buttonlocy,menu.MissionSelectOnClick(),"StartMission")
 m.addButton(buttonlocx,(buttonlocy+128), menu.OnClick(), "LoadCampaign")
 m.addButton(buttonlocx,(buttonlocy+256), menu.OnClick(), "LoadMission")
 print m.index
@@ -62,6 +62,7 @@ while m.bInMenu:
     g.screen.fill((0,0,0))
     m.draw(g.screen)
     pygame.display.flip()
+    
 
 while 1:
     g.update()

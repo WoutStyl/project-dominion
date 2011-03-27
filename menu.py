@@ -46,17 +46,44 @@ class OnClick(object):
 class StartOnClick(OnClick) :
         def isClicked(self, m):
                 self.clicked = True
+                self.menu = m
                 m.bInMenu = False
+
+class MissionSelectOnClick(OnClick):
+        def isClicked(self,m):
+                self.menu = m
+                m.bInMissionSelect = True
+                while m.bInMissionSelect:
+                        self.update()
+        def draw(self):
+                self.menu.screen.fill((0,0,0))
+                fullname = os.path.join('images', 'MissionSelect.png')
+                image = pygame.transform.scale(pygame.image.load(fullname),(256, 64))
+                self.menu.screen.blit(image, (172, 20 ))
+                pygame.display.flip()
+        def update(self):
+                self.draw()
+                for event in pygame.event.get():
+                        self.handle_event(event)                
+        def handle_event(self,event):
+                if event.type == pygame.KEYDOWN:
+                        if event.key == pygame.K_RETURN:
+                                self.menu.bInMissionSelect = False
+                
                 
                 
 	
 		
 class Menu(object):
-        def __init__(self):
+        def __init__(self, screen):
                 self.buttons = []
                 self.bOpen = True
+                self.screen = screen
                 self.index = 0
+                self.bInMissionSelect = False
                 self.bInMenu = True
+                
+                
         def addButton(self, x,y,clicktype=OnClick(),targetImage = "Blank"):
                # print len(self.buttons)
                 if len(self.buttons) == 0:
@@ -86,8 +113,8 @@ class Menu(object):
                                 self.buttons[self.index].nowFocused = True
                         if event.key == pygame.K_RETURN:
                                 print "Return!"
-                                print self.buttons[self.index].__class__.__name__
-                                print self.buttons[self.index].clickObj.__class__.__name__
+                                # print self.buttons[self.index].__class__.__name__
+                                # print self.buttons[self.index].clickObj.__class__.__name__
                                 self.buttons[self.index].clickObj.isClicked(self)
                         if event.key == pygame.K_ESCAPE:
                                 sys.exit(0)
