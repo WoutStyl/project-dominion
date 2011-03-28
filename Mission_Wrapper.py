@@ -242,6 +242,3 @@ call mission.save() to add header/footers to the file
         self.Player = Playera
         self.Units = Unitsa
     ###END MISSION LOAD###
-
-class Unit:
-    placeholder = []

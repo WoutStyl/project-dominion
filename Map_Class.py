@@ -81,7 +81,7 @@ Mission_Wrapper ("Map" and "Units" respectively)
             player_id_map[index] = Player()
             player_id_map[index].ai = ai_a
             player_id_map[index].type = str_type
-            player_id_map[index].resource = Resource().__init__(res1,res2)
+            player_id_map[index].resource = Resource(res1,res2)
             index = index + 1
 
         for unit in unit_list:
@@ -91,10 +91,9 @@ Mission_Wrapper ("Map" and "Units" respectively)
             unit_id = 1
             player_id = 1
             x_a,y_a,unit_id,player_id = unit.split()
-            unitobj = Unit()
-            unitobj.__init__(x_a,y_a,unit_id,player_id)
+            unitobj = Unit(x_a,y_a,unit_id,player_id)
             unit_table[player_id_map[player_id]].append(unitobj)
-            unit_placement[unitobj] = Location().__init__(x_a,y_a)
+            unit_placement[unitobj] = Location(x_a,y_a)
 
     def collision(self,unit,movement):
         too = ((self.terrain_grid[unit.location.x+movement.x])[unit.location.y+movement.y])
