@@ -7,6 +7,12 @@ class Soldier(unit.Unit):
         
         self.speed = 45.0
         self.velocity = Vector(0.0,0.0)
+        self.facing = Vector(0.0,1.0)
+        self.health = 40
+        
+        self.refire_t = 2
+        self.last_fire = 0
+        self.fire_target = None
         
         self.anim = random.randint(0,200)
         self.anim_len = 100;
@@ -32,6 +38,7 @@ class Soldier(unit.Unit):
     def move_towards(self, other_unit):
         self.velocity = other_unit.pos - self.pos
         self.velocity.normalize()
+        self.facing = Vector(self.velocity[0],self.velocity[1])
         
     def move_direction(self, direction):
         if direction == "Left":
@@ -54,6 +61,13 @@ class Soldier(unit.Unit):
         elif direction == "DownRight":
             self.velocity = Vector(1,1)
             self.velocity.normalize()
+        self.facing = Vector(self.velocity[0],self.velocity[1])
+        
+    def stop(self):
+        self.velocity = Vector(0.0,0.0)
+        
+    def fire_at(self, target):
+        self.fire_target = target
             
     def is_within_distance(self, other_unit, distance):
         if self.rect.left > other_unit.rect.right:
