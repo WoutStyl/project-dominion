@@ -52,10 +52,12 @@ buttonlocy = g.screen_height/2
 buttonlocy -= 96
 #print buttonlocx
 #print buttonlocy
-m.addButton(buttonlocx, (buttonlocy -128), menu.StartOnClick(), "StartCampaign")
-m.addButton(buttonlocx,buttonlocy,menu.MissionSelectOnClick(),"StartMission")
-m.addButton(buttonlocx,(buttonlocy+128), menu.OnClick(), "LoadCampaign")
-m.addButton(buttonlocx,(buttonlocy+256), menu.OnClick(), "LoadMission")
+font = pygame.font.Font(None, 36)
+text = font.render("", 1, (0,0,0))
+m.addButton(buttonlocx, (buttonlocy -128), text,menu.StartOnClick(), "StartCampaign")
+m.addButton(buttonlocx,buttonlocy,text,menu.MissionSelectOnClick(),"StartMission")
+m.addButton(buttonlocx,(buttonlocy+128),text, menu.SavedCampaignSelectOnClick(), "LoadCampaign")
+m.addButton(buttonlocx,(buttonlocy+256),text, menu.SavedMissionSelectOnClick(), "LoadMission")
 print m.index
 while m.bInMenu:
     m.update()
