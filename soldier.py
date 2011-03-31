@@ -1,4 +1,4 @@
-import pygame, math, random, operator, unit
+import pygame, math, random, operator, unit, bullet
 from vector import *
 
 class Soldier(unit.Unit):
@@ -10,14 +10,20 @@ class Soldier(unit.Unit):
         self.facing = Vector(0.0,1.0)
         self.health = 40
         
-        self.refire_t = 2
-        self.last_fire = 0
+        self.refire_t = 5.0
+        self.last_fire = 5.0
         self.fire_target = None
+        self.p_dir = None
+        self.fire = False
         
         self.anim = random.randint(0,200)
         self.anim_len = 100;
         
     def update(self, delta_seconds):
+        if self.last_fire >= self.refire_t:
+            self.last_fire = 0
+        if self.last_fire >0:
+            self.last_fire +=delta_seconds
         self.anim += 1
         if self.anim > self.anim_len:
             self.anim = 0
@@ -34,6 +40,11 @@ class Soldier(unit.Unit):
             self.move_direction("Left")
         else:
             self.move_direction("Up")
+        if self.fire == True:
+            self.fire = False
+            return bullet.Bullet(self.p_dir, self.pos[0], self.pos[1])
+            
+        
             
     def move_towards(self, other_unit):
         self.velocity = other_unit.pos - self.pos
@@ -66,9 +77,18 @@ class Soldier(unit.Unit):
     def stop(self):
         self.velocity = Vector(0.0,0.0)
         
-    def fire_at(self, target):
-        self.fire_target = target
-            
+    def fire_at(self, target, delta_seconds):
+        if(self.last_fire ==0):
+            self.last_fire += delta_seconds
+            self.fire_target = target
+            t_pos = self.fire_target.pos
+            t_vel = self.fire_target.velocity * self.fire_target.speed
+            p_pos = t_pos + t_vel   #projected position of the target
+            self.p_dir = p_pos - self.pos
+            self.p_dir.normalize()       #direction to the projected position of the target
+            self.fire = True
+            #self.last_fire = 1
+                 
     def is_within_distance(self, other_unit, distance):
         if self.rect.left > other_unit.rect.right:
             x1 = self.rect.left
