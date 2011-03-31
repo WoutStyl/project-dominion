@@ -1,8 +1,8 @@
-import pygame, sys, random, Command
+import pygame, sys, random
 
-class protocol(object):
+class Protocol(object):
     def __init__(self, robot):
-        self.nextCommand = None
+        self.next = None
         self.top = 0
         self.robot = robot
         self.name = ""

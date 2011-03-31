@@ -2,6 +2,25 @@ import pygame, math, random, operator, unit, bullet
 from vector import *
 
 class Soldier(unit.Unit):
+    # commands = {"Move Towards":         [Soldier.move_towards,
+                                         # {"target": "unit"},
+                                         # ""],
+                # "Move Direction":       [Soldier.move_direction,
+                                         # {"direction": "string"},
+                                         # ""],
+                # "Stop":                 [Soldier.stop,
+                                         # {},
+                                         # ""],
+                # "Fire At":              [Soldier.fire_at,
+                                         # {"target": "unit"},
+                                         # ""],
+                # "Wait":                 [Soldier.wait,
+                                         # {"seconds": "integer"},
+                                         # ""],
+                # "Is Within Distance":   [Soldier.is_within_distance,
+                                         # {"target": "unit", "distance": "integer"},
+                                         # "bool"]}
+                
     def __init__(self, x = 0.0, y = 0.0):
         unit.Unit.__init__(self, x, y)
         
@@ -16,8 +35,11 @@ class Soldier(unit.Unit):
         self.p_dir = None
         self.fire = False
         
+        self.waitTime = 0
+        
+        #to be removed
         self.anim = random.randint(0,200)
-        self.anim_len = 100;
+        self.anim_len = 200
         
     def update(self, delta_seconds):
         if self.last_fire >= self.refire_t:
@@ -31,21 +53,34 @@ class Soldier(unit.Unit):
         self.pos += self.velocity * self.speed * delta_seconds
         self.rect.center = self.pos.get()
         
-        frame = self.anim * 4 / self.anim_len
-        if frame == 0:
-            self.move_direction("Right")
-        elif frame == 1:
-            self.move_direction("Down")
-        elif frame == 2:
-            self.move_direction("Left")
-        else:
-            self.move_direction("Up")
-        if self.fire == True:
-            self.fire = False
-            return bullet.Bullet(self.p_dir, self.pos[0], self.pos[1])
-            
+        if wait > 0:
+            wait -= 1
+        if wait == 0:
+            frame = self.anim * 4 / self.anim_len
+            if frame == 0:
+                self.move_direction("Right")
+            elif frame == 1:
+                self.move_direction("Down")
+            elif frame == 2:
+                self.move_direction("Left")
+            else:
+                self.move_direction("Up")
+            if self.fire == True:
+                self.fire = False
+                return bullet.Bullet(self.p_dir, self.pos[0], self.pos[1])
+
         
+    def keep_on_screen(self, max_x, max_y):
+        if self.rect.top <= 0 and self.velocity[1] < 0:
+            self.velocity[1] = 0
+        if self.rect.left <= 0 and self.velocity[0] < 0:
+            self.velocity[0] = 0
+        if self.rect.bottom >= max_y and self.velocity[1] > 0:
+            self.velocity[1] = 0
+        if self.rect.right >= max_x and self.velocity[0] > 0:
+            self.velocity[0] = 0
             
+#Protocol Commands
     def move_towards(self, other_unit):
         self.velocity = other_unit.pos - self.pos
         self.velocity.normalize()
@@ -89,6 +124,9 @@ class Soldier(unit.Unit):
             self.fire = True
             #self.last_fire = 1
                  
+    def wait(self, seconds):
+        self.waitTime = seconds
+            
     def is_within_distance(self, other_unit, distance):
         if self.rect.left > other_unit.rect.right:
             x1 = self.rect.left
@@ -115,13 +153,3 @@ class Soldier(unit.Unit):
         vec = vec1 - vec2
         
         return vec.length() <= distance
-        
-    def keep_on_screen(self, max_x, max_y):
-        if self.rect.top <= 0 and self.velocity[1] < 0:
-            self.velocity[1] = 0
-        if self.rect.left <= 0 and self.velocity[0] < 0:
-            self.velocity[0] = 0
-        if self.rect.bottom >= max_y and self.velocity[1] > 0:
-            self.velocity[1] = 0
-        if self.rect.right >= max_x and self.velocity[0] > 0:
-            self.velocity[0] = 0
