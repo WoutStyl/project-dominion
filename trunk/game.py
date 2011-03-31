@@ -1,3 +1,4 @@
+
 import pygame, sys, string, random, math, operator, soldier, menu
         
 class Game(object):
@@ -9,10 +10,14 @@ class Game(object):
         pygame.display.set_caption("Project Dominion")
         cursor=pygame.cursors.compile(("   XX   ","   XX   ","   XX   ","XXXXXXXX","XXXXXXXX","   XX   ","   XX   ","   XX   "))
         pygame.mouse.set_cursor((8,8),(4,4),*cursor)
+
+        
         
         self.clock = pygame.time.Clock()
         self.screen = pygame.display.set_mode((self.screen_width, self.screen_height))
+        self.target = soldier.Soldier(0,0)
         self.enemies = []
+        self.bullets = []
         for i in range(10):
             self.enemies.append(soldier.Soldier(random.randint(0,self.screen_width),random.randint(0,self.screen_height)))
         
@@ -22,11 +27,15 @@ class Game(object):
         
         for event in pygame.event.get():
             self.handle_event(event)
-        
+        self.target.update(delta_seconds)
         for e in self.enemies:
-            e.update(delta_seconds)
+            newbull = e.update(delta_seconds)
+            if newbull is not None:
+                self.bullets.append(newbull)
             e.keep_on_screen(self.screen_width,self.screen_height)
-        
+            e.fire_at(self.target, delta_seconds)
+        for b in self.bullets:
+            b.update(delta_seconds)
     def handle_event(self, event):
         if event.type == pygame.QUIT:
             sys.exit(0)
@@ -36,10 +45,11 @@ class Game(object):
         
     def draw(self):
         self.screen.fill((0,0,0))
-        
+        self.target.draw(self.screen)
         for e in self.enemies:
             e.draw(self.screen)
-        
+        for b in self.bullets:
+            b.draw(self.screen)
         
 g = Game()
 
