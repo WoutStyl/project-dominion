@@ -53,9 +53,9 @@ class Soldier(unit.Unit):
         self.pos += self.velocity * self.speed * delta_seconds
         self.rect.center = self.pos.get()
         
-        if wait > 0:
-            wait -= 1
-        if wait == 0:
+        if self.waitTime > 0:
+            self.waitTime -= 1
+        if self.waitTime == 0:
             frame = self.anim * 4 / self.anim_len
             if frame == 0:
                 self.move_direction("Right")
