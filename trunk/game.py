@@ -1,5 +1,4 @@
-
-import pygame, sys, string, random, math, operator, soldier, menu
+import pygame, sys, string, random, math, operator, soldier, menu, button
         
 class Game(object):
     screen_width=600
@@ -15,7 +14,11 @@ class Game(object):
         
         self.clock = pygame.time.Clock()
         self.screen = pygame.display.set_mode((self.screen_width, self.screen_height))
+        
         self.target = soldier.Soldier(0,0)
+        self.target.image.fill((0,0,255))
+        self.target.anim_len = 500
+        
         self.enemies = []
         self.bullets = []
         for i in range(10):
@@ -28,6 +31,7 @@ class Game(object):
         for event in pygame.event.get():
             self.handle_event(event)
         self.target.update(delta_seconds)
+        self.target.keep_on_screen(self.screen_width,self.screen_height)
         for e in self.enemies:
             newbull = e.update(delta_seconds)
             if newbull is not None:
@@ -55,7 +59,7 @@ g = Game()
 
 bInMenu = True
 m = menu.Menu(g.screen)
-oc = menu.StartOnClick()
+oc = button.StartOnClick()
 buttonlocx = g.screen_width/2
 buttonlocx -= 128
 buttonlocy = g.screen_height/2
@@ -64,10 +68,10 @@ buttonlocy -= 96
 #print buttonlocy
 font = pygame.font.Font(None, 36)
 text = font.render("", 1, (0,0,0))
-m.addButton(buttonlocx, (buttonlocy -128), text,menu.StartOnClick(), "StartCampaign")
-m.addButton(buttonlocx,buttonlocy,text,menu.MissionSelectOnClick(),"StartMission")
-m.addButton(buttonlocx,(buttonlocy+128),text, menu.SavedCampaignSelectOnClick(), "LoadCampaign")
-m.addButton(buttonlocx,(buttonlocy+256),text, menu.SavedMissionSelectOnClick(), "LoadMission")
+m.addButton(buttonlocx, (buttonlocy -128), text, button.StartOnClick(), "StartCampaign")
+m.addButton(buttonlocx,buttonlocy,text, button.MissionSelectOnClick(), "StartMission")
+m.addButton(buttonlocx,(buttonlocy+128),text, button.SavedCampaignSelectOnClick(), "LoadCampaign")
+m.addButton(buttonlocx,(buttonlocy+256),text, button.SavedMissionSelectOnClick(), "LoadMission")
 print m.index
 while m.bInMenu:
     m.update()
