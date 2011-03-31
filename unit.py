@@ -11,7 +11,8 @@ class Unit:
         self.rect = pygame.Rect(0,0,self.width,self.height)
         
         pygame.draw.circle(self.image, (255,0,0), (self.width / 2, self.height / 2), self.width /2)
-        self.rect.center = self.pos.get()
+        #self.rect.move_ip(float(x),float(y))
+        self.rect.center = (float(self.pos.get()[0]),float(self.pos.get()[1]))
         
     def update(self, delta_seconds):
         pass
