@@ -8,9 +8,11 @@ class Unit:
         self.pos = Vector(x,y)
         
         self.image = pygame.Surface((self.width, self.height), pygame.SRCALPHA, 32).convert_alpha()
+        self.focus = pygame.Surface((self.width, self.height), pygame.SRCALPHA, 32).convert_alpha()
         self.rect = pygame.Rect(0,0,self.width,self.height)
         
         pygame.draw.circle(self.image, (255,0,0), (self.width / 2, self.height / 2), self.width /2)
+        pygame.draw.circle(self.focus, (0,255,0), (self.width / 2, self.height / 2), self.width /2 + 5, 3)
         #self.rect.move_ip(float(x),float(y))
         self.rect.center = (float(self.pos.get()[0]),float(self.pos.get()[1]))
         
@@ -19,3 +21,6 @@ class Unit:
                 
     def draw(self, screen):
         screen.blit(self.image, self.rect)
+
+    def drawfocus(self, screen):
+        screen.blit(self.focus,self.rect)

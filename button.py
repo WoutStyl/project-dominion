@@ -1,4 +1,4 @@
-import pygame, math, sys, string, os, Mission_Wrapper
+import pygame, math, sys, string, os, menu, Map_Class
 
 class Button(object):
         def __init__(self, x,y, text, clickType,targetImage, focused = False):
@@ -56,8 +56,10 @@ class LoadOnClick(OnClick) :
         def isClicked(self, m):
                 self.clicked = True
                 self.menu = m
-                missionfile = Mission_Wrapper.Wrapper()
-                missionfile.load(self.mission)
+                map = Map_Class.Map.get()
+                map.load(self.mission)
+                m.bInMenu = False
+                print map
                 print "Mission Loaded"
         def setMission(self, mission):
                 print "Mission Set:"
@@ -67,7 +69,7 @@ class LoadOnClick(OnClick) :
 class MissionSelectOnClick(OnClick):
         def isClicked(self,m):
                 self.menu = m
-                SelectMenu = Menu(m.screen)
+                SelectMenu = menu.Menu(m.screen)
                 SelectMenu.bInMenu = True
                 i = 0
                 filename = "mission%d.txt" % (i,)
@@ -90,6 +92,7 @@ class MissionSelectOnClick(OnClick):
                         SelectMenu.update()
                         SelectMenu.draw(m.screen)
                         pygame.display.flip()
+                m.bInMenu = False
         def draw(self):
                 self.menu.screen.fill((0,0,0))
                 fullname = os.path.join('images', 'MissionSelect.png')
@@ -102,7 +105,7 @@ class MissionSelectOnClick(OnClick):
 class SavedMissionSelectOnClick(OnClick):
         def isClicked(self,m):
                 self.menu = m
-                SelectMenu = Menu(m.screen)
+                SelectMenu = menu.Menu(m.screen)
                 i = 0
                 filename = "savedMission%d.txt" % (i,)
                 initx = 300 - 128
@@ -124,6 +127,8 @@ class SavedMissionSelectOnClick(OnClick):
                         SelectMenu.update()
                         SelectMenu.draw(m.screen)
                         pygame.display.flip()
+                m.bInMenu = False
+
         def draw(self):
                 self.menu.screen.fill((0,0,0))
                 fullname = os.path.join('images', 'SavedMissionSelect.png')
@@ -137,7 +142,7 @@ class SavedCampaignSelectOnClick(OnClick):
         def isClicked(self,m):
                 self.menu = m
                 m.bInMissionSelect = True
-                SelectMenu = Menu(m.screen)
+                SelectMenu = menu.Menu(m.screen)
                 SelectMenu.bInMenu = True
                 i = 0
                 filename = "savedCampaign%d.txt" % (i,)
@@ -160,6 +165,8 @@ class SavedCampaignSelectOnClick(OnClick):
                         SelectMenu.update()
                         SelectMenu.draw(m.screen)
                         pygame.display.flip()
+                m.bInMenu = False
+
         def draw(self):
                 self.menu.screen.fill((0,0,0))
                 fullname = os.path.join('images', 'savedCampaignSelect.png')
