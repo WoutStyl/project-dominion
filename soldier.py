@@ -4,8 +4,8 @@ from vector import *
 class Soldier(unit.Unit):
     commands = {}
     
-    def __init__(self, x = 0.0, y = 0.0):
-        unit.Unit.__init__(self, x, y)
+    def __init__(self, x , y ):
+        unit.Unit.__init__(self, float(x), float(y))
         
         self.speed = 45.0
         self.velocity = Vector(0.0,0.0)
@@ -128,7 +128,7 @@ class Soldier(unit.Unit):
         
         
     def update(self, delta_seconds):
-        print "update!"
+        #print "update!"
         if self.last_fire >= self.refire_t:
             self.last_fire = 0
         if self.last_fire >0:
@@ -200,7 +200,7 @@ class Soldier(unit.Unit):
         self.facing = Vector(self.velocity[0],self.velocity[1])
         
     def stop(self, args):
-        print "stopping"
+        #print "stopping"
         self.velocity = Vector(0.0,0.0)
         
     def fire_at(self, target):
@@ -209,7 +209,7 @@ class Soldier(unit.Unit):
         
 
     def wait(self, args):
-        print "wait for me"
+        #print "wait for me"
         self.waitTime = args["seconds"]
     def is_within_distance(self, args):
         target = args["target"]
