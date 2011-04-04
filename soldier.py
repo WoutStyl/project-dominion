@@ -11,6 +11,7 @@ class Soldier(unit.Unit):
         self.velocity = Vector(0.0,0.0)
         self.facing = Vector(0.0,1.0)
         self.health = 40
+        self.waitTime = 0
         
         self.refire_t = 5.0
         self.last_fire = 5.0
@@ -18,6 +19,8 @@ class Soldier(unit.Unit):
         self.p_dir = None
         self.fire = False
         
+        self.anim = random.randint(0,200)
+        self.anim_len = 100;
         self.waitTime = 0
         
         self.protocol = None
@@ -138,15 +141,20 @@ class Soldier(unit.Unit):
             self.waitTime -= delta_seconds
         else:
             self.waitTime = 0
-            
-            print self.protocol
-            print self.protocol.get_next()
-            if self.protocol != None:
-                self.protocol = self.protocol.execute(self)
+
+            if self.protocol !=None:
+                    self.protocol = self.protocol.execute(self)
                 
-        if self.fire == True:
-            self.fire = False
-            return bullet.Bullet(self.p_dir, self.pos[0], self.pos[1])
+        if(self.last_fire ==0  and self.fire == True):
+            self.last_fire += delta_seconds
+            t_pos = self.fire_target.pos
+            t_vel = self.fire_target.velocity * self.fire_target.speed
+            p_pos = t_pos + t_vel   #projected position of the target
+            self.p_dir = p_pos - self.pos
+            self.p_dir.normalize()       #direction to the projected position of the target
+            self.fire = True
+            #self.last_fire = 1
+            return bullet.Bullet(self.p_dir, self.pos[0], self.pos[1])    
 
         
     def keep_on_screen(self, max_x, max_y):
@@ -195,22 +203,14 @@ class Soldier(unit.Unit):
         print "stopping"
         self.velocity = Vector(0.0,0.0)
         
-    def fire_at(self, target, delta_seconds):
-        if(self.last_fire ==0):
-            self.last_fire += delta_seconds
-            self.fire_target = target
-            t_pos = self.fire_target.pos
-            t_vel = self.fire_target.velocity * self.fire_target.speed
-            p_pos = t_pos + t_vel   #projected position of the target
-            self.p_dir = p_pos - self.pos
-            self.p_dir.normalize()       #direction to the projected position of the target
-            self.fire = True
-            #self.last_fire = 1
-                 
+    def fire_at(self, target):
+        self.fire = True
+        self.fire_target = target
+        
+
     def wait(self, args):
         print "wait for me"
         self.waitTime = args["seconds"]
-            
     def is_within_distance(self, args):
         target = args["target"]
         distance = args["distance"]
@@ -237,7 +237,6 @@ class Soldier(unit.Unit):
         vec1 = Vector(x1,y1)
         vec2 = Vector(x2,y2)
         vec = vec1 - vec2
-        
         return vec.length() <= distance
         
 Soldier.commands = {"Move Towards":         ["",
