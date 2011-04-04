@@ -4,23 +4,20 @@ This class wraps a mission file
 each heading has getters/setters
 can be used to modify the file
     """
-    Intro = []
-    Objective = []
-    Map = []
-    Player = []
-    Units = []
-    mapname = ""
     
-    def __init__(object):
+    def __init__(self,filename=None):
         """
-empty initialization
+This class is better now
         """
-        Intro = []
-        Objective = []
-        Map = []
-        Player = []
-        Units = []
-        mapname = ""    
+        if(filename == None):
+            self.Intro = []
+            self.Player = []
+            self.Map = []
+            self.Units = []
+            self.Objective = []
+            self.mapname = ""
+        else:
+            self.load(filename)
 
     def SetName(self,a):
         """
@@ -166,8 +163,8 @@ if that mission file doesnt exist
 creates a file with that name (completely empty)
 call mission.save() to add header/footers to the file
         """
-	filestream = open(mission_name,'a')
-	filestream.close()
+        filestream = open(mission_name,'a')
+        filestream.close()
         filestream = open(mission_name,'r')
 
         intro_flag = False

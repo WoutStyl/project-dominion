@@ -1,19 +1,10 @@
 import re,Mission_Wrapper,unit,pygame,random,soldier
-class Location:
-    """
-Simple (x,y) format
-    """
-    x = 0
-    y = 0
-    def __init__(self,a,b):
-        self.x = a
-        self.y = b
 
 class Movement_Table:
     """
 This class associates a terrain type with its properties
     """
-    table = dict()
+    #table = dict()
     def __init__(self):
         self.table = dict()
     def load(self,filename):
@@ -44,30 +35,81 @@ this is statically created at mission load
 unit_placements is a dictionary
 which maps a Unit object to its Location object
     """
-    unit_table = dict()
-    terrain_grid = []
-    unit_placements = dict()
-    tileimage = 'tileset.PNG'
-    width = 800
-    height = 800
-
-    def __init__(self, filename):
+    instance = None
+    
+    @staticmethod
+    def get():
+        if(Map.instance == None):
+            Map.instance = Map()
+        return Map.instance
+    
+    def __init__(self, filename=None):
         """
 So when you want to create a new Map object you want to
-pass it the terrain_list and unit_list gotten from
-Mission_Wrapper ("Map" and "Units" respectively)
+pass it the filename of the mission you want to load under
+the covers it creates a Mission_Wrapper on top of that file
         """
-        self.screen = pygame.display.set_mode((self.width,self.height))
-        self.clock = pygame.time.Clock()
-        self.bg = pygame.image.load(self.tileimage).convert()
-        self.wrapper = Mission_Wrapper.Wrapper()
-        self.wrapper.load(filename)
+
+        self.unit_table = dict()
+        self.terrain_grid = []
+        self.unit_placements = dict()
         self.player_id_map = dict()
-        terrain_list = self.wrapper.Map
-        player_list = self.wrapper.Player
-        unit_list = self.wrapper.Units
+        self.loaded = False
+        ###Constant Stuff###
+        self.tileimage = 'images/tileset.PNG'
+        self.width = 800
+        self.height = 800
+        self.bg = pygame.image.load(self.tileimage).convert()
         self.movement_table = Movement_Table()
         self.movement_table.load('static.txt')
+        ###Constant Stuff###
+
+    def draw(self):
+        for i in range(25):
+            for j in range(25):
+                self.screen.blit(self.bg,pygame.Rect(j*32,i*32,self.width,self.height),pygame.Rect(self.lookup((self.terrain_grid[i])[j])*32,0,32,32))
+        for player in self.unit_table:
+            for unit in self.unit_table[player]:
+                unit.draw(self.screen)
+        if(self.selection != []):
+            for unit in self.selection:
+                unit.drawfocus(self.screen)
+        if((self.mouserect.width != 0) or (self.mouserect.height != 0)):
+            pygame.draw.rect(self.screen,(175,175,175),self.mouserect,2)
+                
+    def lookup(self,char):
+        return int((self.movement_table.table[char])[0])
+
+    def close(self):
+        unit_table = dict()
+        terrain_grid = []
+        unit_placements = dict()
+        self.player_id_map = dict()
+
+    def is_loaded(self):
+        return self.loaded
+
+    def load(self,filename):
+        if(self.is_loaded() == True):
+            self.close()           
+                
+        self.loaded = True
+        ####This is for running the Map####
+        self.screen = pygame.display.set_mode((self.width,self.height))
+        self.clock = pygame.time.Clock()
+        self.mouseisdown = False
+        self.mouserect = pygame.Rect(0,0,0,0)
+        self.selection = []
+        ####This is for running the Map####
+        
+        ###Stuff from Wrapper###
+        self.wrapper = Mission_Wrapper.Wrapper()
+        self.wrapper.load(filename)
+        terrain_list = self.wrapper.GetMap()
+        player_list = self.wrapper.GetPlayer()
+        unit_list = self.wrapper.GetUnits()
+        ###Stuff from Wrapper###
+        
         holder = []
         for line in terrain_list:
             for char in line:
@@ -80,6 +122,7 @@ Mission_Wrapper ("Map" and "Units" respectively)
             self.terrain_grid.append(holder)
             #set holder to empty
             holder = []
+        ###END terrain_grid initialization####
 
         index = 0
         for player in player_list:
@@ -94,7 +137,8 @@ Mission_Wrapper ("Map" and "Units" respectively)
             self.player_id_map[index].type = str_type
             self.player_id_map[index].resource = (res1,res2)
             index = index + 1
-
+        ###END player_id_map initialization####
+        
         for units in unit_list:
             units.replace('\n','')
             playerobj = self.player_id_map[0]
@@ -108,54 +152,109 @@ Mission_Wrapper ("Map" and "Units" respectively)
             x_a,y_a,unit_id,player_id = units.split()
             player_id = int(player_id)
             #unitobj = Unit(x_a,y_a,unit_id,player_id)
-	    unitobj = soldier.Soldier(random.randint(0,self.width),random.randint(0,self.height))
-            #unitobj = unit.Unit(x_a,y_a)
+            unitobj = soldier.Soldier(random.randint(0,self.width),random.randint(0,self.height))
             playerobj = self.player_id_map[player_id]
-            #print player_id
-            #print self.player_id_map
-            """if(player_id == '0'):
-                playerobj = self.player_id_map[0]
-            elif(player_id == '1'):
-                playerobj = self.player_id_map[1]
-            elif(player_id == '2'):
-                playerobj = self.player_id_map[2]
-            else:
-                playerobj = self.player_id_map.get(3)"""
-            #print playerobj
             if(self.unit_table.get(playerobj) == None):
                 self.unit_table[playerobj] = []
                 self.unit_table[playerobj].append(unitobj)
             else:
                 self.unit_table[playerobj].append(unitobj)
             self.unit_placements[unitobj] = (x_a,y_a)
-            #print self.unit_table
-
-    def draw(self):
-        for i in range(25):
-            for j in range(25):
-                self.screen.blit(self.bg,pygame.Rect(i*32,j*32,self.width,self.height),pygame.Rect(self.lookup((self.terrain_grid[i])[j])*32,0,32,32))
-        for player in self.unit_table:
-            for unit in self.unit_table[player]:
-                unit.draw(self.screen)
-                
-                
-    def lookup(self,char):
-        return int((self.movement_table.table[char])[0])
-
-    def collision(self,unit,movement):
-        too = ((self.terrain_grid[unit.location.x+movement.x])[unit.location.y+movement.y])
+            
+    def terraincollision(self,unit):
+        """
+Tests a Unit's rect against the terrain
+        """
+        too = ((self.terrain_grid[unit.rect.x])[unit.rect.y])
         if((self.movement_table.table[too])[1]):
             return False
         return True
+
+    def unitcollision(self,unit):
+        """
+Tests a Unit's rect against all other units' rects
+        """
+        for player in self.unit_table:
+            for unita in self.unit_table[player]:
+                if(unita.rect.colliderect(unit.rect)):
+                    return True
+        return False
+
+    def collision(self,unit):
+        """
+Composite of unitcollision and terraincollision
+        """
+        if(self.terraincollision(unit)):
+            return True
+        if(self.unitcollision(unit)):
+            return True
+        return False
+
+    def getgroup(self,rect):
+        """
+returns a list of units that are inside a mouse selection
+        """
+        holder = []
+        for player in self.unit_table:
+            for unita in self.unit_table[player]:
+                if(unita.rect.colliderect(rect)):
+                    holder.append(unita)
+        return holder
+
+    def mouseselect(self,tuple1,tuple2):
+        """
+returns a properly formated rectangle from mouse positions
+        """
+        #posx = 0
+        #posy = 0
+        #width = 0
+        #height = 0
+        #x dimension
+        if(tuple1[0] < tuple2[0]):
+            #closer to the left
+            posx = tuple1[0]
+            width = tuple2[0] - tuple1[0]
+        else:
+            posx = tuple2[0]
+            width = tuple1[0] - tuple2[0]
+        #y dimension
+        if(tuple1[1] < tuple2[1]):
+            #closer to the top
+            posy = tuple1[1]
+            height = tuple2[1] - tuple1[1]
+        else:
+            posy = tuple2[1]
+            height = tuple1[1] - tuple2[1]
+            
+        return pygame.Rect(posx,posy,width,height)
 
     def update(self):
         self.clock.tick(50)
         delta_seconds = self.clock.get_time()/1000.0
         events = pygame.event.get()
         for evnt in events:
+            if(evnt.type == pygame.QUIT):
+                pygame.quit()
             if(evnt.type == pygame.KEYDOWN):
                 if(evnt.key == pygame.K_ESCAPE):
                     pygame.quit()
+            if(evnt.type == pygame.MOUSEBUTTONDOWN):
+                if(evnt.button == 1):
+                    self.position1 = evnt.pos
+                    self.position2 = pygame.mouse.get_pos()
+                    self.mouseisdown = True
+                    self.mouserect = self.mouseselect(self.position1,self.position2)
+            if(evnt.type == pygame.MOUSEBUTTONUP):
+                if(evnt.button == 1):
+                    self.position2 = evnt.pos
+                    self.mouserect = self.mouseselect(self.position1,self.position2)
+                    self.selection = self.getgroup(self.mouserect)
+                    self.mouserect = pygame.Rect(0,0,0,0)
+                    self.mouseisdown = False
+            if(self.mouseisdown):
+                self.position2 = pygame.mouse.get_pos()
+                self.mouserect = self.mouseselect(self.position1,self.position2)
+                    
                     
         for player in self.unit_table:
             for e in self.unit_table[player]:
