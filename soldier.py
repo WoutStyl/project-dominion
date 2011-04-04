@@ -1,26 +1,9 @@
-import pygame, math, random, operator, unit, bullet
+import pygame, math, random, operator, unit, bullet, function, variable
 from vector import *
 
 class Soldier(unit.Unit):
-    # commands = {"Move Towards":         [Soldier.move_towards,
-                                         # {"target": "unit"},
-                                         # ""],
-                # "Move Direction":       [Soldier.move_direction,
-                                         # {"direction": "string"},
-                                         # ""],
-                # "Stop":                 [Soldier.stop,
-                                         # {},
-                                         # ""],
-                # "Fire At":              [Soldier.fire_at,
-                                         # {"target": "unit"},
-                                         # ""],
-                # "Wait":                 [Soldier.wait,
-                                         # {"seconds": "integer"},
-                                         # ""],
-                # "Is Within Distance":   [Soldier.is_within_distance,
-                                         # {"target": "unit", "distance": "integer"},
-                                         # "bool"]}
-                
+    commands = {}
+    
     def __init__(self, x = 0.0, y = 0.0):
         unit.Unit.__init__(self, x, y)
         
@@ -37,37 +20,133 @@ class Soldier(unit.Unit):
         
         self.waitTime = 0
         
-        #to be removed
-        self.anim = random.randint(0,200)
-        self.anim_len = 200
+        self.protocol = None
+        
+        #Temporary hardcoded protocol
+        self.protocol = function.WhileLoop()
+        self.protocol.arguments["a"] = variable.Variable("integer", 1)
+        self.protocol.arguments["b"] = variable.Variable("integer", 1)
+        
+        last = self.protocol
+        cmd = Soldier.commands["Move Direction"]
+        tmp = function.Function(cmd[0],cmd[1],cmd[2])
+        tmp.arguments["direction"] = variable.Variable("string", "Right")
+        last.then = tmp
+        
+        last = tmp
+        cmd = Soldier.commands["Wait"]
+        tmp = function.Function(cmd[0],cmd[1],cmd[2])
+        tmp.arguments["seconds"] = variable.Variable("integer", random.randint(100,200)/100.0)
+        last.next = tmp
+        
+        last = tmp
+        cmd = Soldier.commands["Stop"]
+        tmp = function.Function(cmd[0],cmd[1],cmd[2])
+        last.next = tmp
+        
+        last = tmp
+        cmd = Soldier.commands["Wait"]
+        tmp = function.Function(cmd[0],cmd[1],cmd[2])
+        tmp.arguments["seconds"] = variable.Variable("integer", random.randint(100,200)/100.0)
+        last.next = tmp
+        
+        last = tmp
+        cmd = Soldier.commands["Move Direction"]
+        tmp = function.Function(cmd[0],cmd[1],cmd[2])
+        tmp.arguments["direction"] = variable.Variable("string", "Down")
+        last.next = tmp
+        
+        last = tmp
+        cmd = Soldier.commands["Wait"]
+        tmp = function.Function(cmd[0],cmd[1],cmd[2])
+        tmp.arguments["seconds"] = variable.Variable("integer", random.randint(100,200)/100.0)
+        last.next = tmp
+        
+        last = tmp
+        cmd = Soldier.commands["Stop"]
+        tmp = function.Function(cmd[0],cmd[1],cmd[2])
+        last.next = tmp
+        
+        last = tmp
+        cmd = Soldier.commands["Wait"]
+        tmp = function.Function(cmd[0],cmd[1],cmd[2])
+        tmp.arguments["seconds"] = variable.Variable("integer", random.randint(100,200)/100.0)
+        last.next = tmp
+        
+        last = tmp
+        cmd = Soldier.commands["Move Direction"]
+        tmp = function.Function(cmd[0],cmd[1],cmd[2])
+        tmp.arguments["direction"] = variable.Variable("string", "Left")
+        last.next = tmp
+        
+        last = tmp
+        cmd = Soldier.commands["Wait"]
+        tmp = function.Function(cmd[0],cmd[1],cmd[2])
+        tmp.arguments["seconds"] = variable.Variable("integer", random.randint(100,200)/100.0)
+        last.next = tmp
+        
+        last = tmp
+        cmd = Soldier.commands["Stop"]
+        tmp = function.Function(cmd[0],cmd[1],cmd[2])
+        last.next = tmp
+        
+        last = tmp
+        cmd = Soldier.commands["Wait"]
+        tmp = function.Function(cmd[0],cmd[1],cmd[2])
+        tmp.arguments["seconds"] = variable.Variable("integer", random.randint(100,200)/100.0)
+        last.next = tmp
+        
+        last = tmp
+        cmd = Soldier.commands["Move Direction"]
+        tmp = function.Function(cmd[0],cmd[1],cmd[2])
+        tmp.arguments["direction"] = variable.Variable("string", "Up")
+        last.next = tmp
+        
+        last = tmp
+        cmd = Soldier.commands["Wait"]
+        tmp = function.Function(cmd[0],cmd[1],cmd[2])
+        tmp.arguments["seconds"] = variable.Variable("integer", random.randint(100,200)/100.0)
+        last.next = tmp
+        
+        last = tmp
+        cmd = Soldier.commands["Stop"]
+        tmp = function.Function(cmd[0],cmd[1],cmd[2])
+        last.next = tmp
+        
+        last = tmp
+        cmd = Soldier.commands["Wait"]
+        tmp = function.Function(cmd[0],cmd[1],cmd[2])
+        tmp.arguments["seconds"] = variable.Variable("integer", random.randint(100,200)/100.0)
+        last.next = tmp
+        
+        tmp.next = self.protocol
+        
+        
+        
         
     def update(self, delta_seconds):
+        print "update!"
         if self.last_fire >= self.refire_t:
             self.last_fire = 0
         if self.last_fire >0:
             self.last_fire +=delta_seconds
-        self.anim += 1
-        if self.anim > self.anim_len:
-            self.anim = 0
         
         self.pos += self.velocity * self.speed * delta_seconds
         self.rect.center = self.pos.get()
         
         if self.waitTime > 0:
-            self.waitTime -= 1
-        if self.waitTime == 0:
-            frame = self.anim * 4 / self.anim_len
-            if frame == 0:
-                self.move_direction("Right")
-            elif frame == 1:
-                self.move_direction("Down")
-            elif frame == 2:
-                self.move_direction("Left")
-            else:
-                self.move_direction("Up")
-            if self.fire == True:
-                self.fire = False
-                return bullet.Bullet(self.p_dir, self.pos[0], self.pos[1])
+            self.waitTime -= delta_seconds
+        else:
+            self.waitTime = 0
+            
+            print self.protocol
+            print self.protocol.get_next()
+            if self.protocol != None:
+                self.protocol = self.protocol.execute(self)
+                
+        if self.fire == True:
+            self.fire = False
+            return bullet.Bullet(self.p_dir, self.pos[0], self.pos[1])
 
         
     def keep_on_screen(self, max_x, max_y):
@@ -80,13 +159,16 @@ class Soldier(unit.Unit):
         if self.rect.right >= max_x and self.velocity[0] > 0:
             self.velocity[0] = 0
             
+            
 #Protocol Commands
-    def move_towards(self, other_unit):
-        self.velocity = other_unit.pos - self.pos
+    def move_towards(self, args):
+        self.velocity = args["target"].pos - self.pos
         self.velocity.normalize()
         self.facing = Vector(self.velocity[0],self.velocity[1])
         
-    def move_direction(self, direction):
+    def move_direction(self, args):
+        direction = args["direction"]
+        print "Moving in direction ", direction
         if direction == "Left":
             self.velocity = Vector(-1,0)
         elif direction == "Right":
@@ -109,7 +191,8 @@ class Soldier(unit.Unit):
             self.velocity.normalize()
         self.facing = Vector(self.velocity[0],self.velocity[1])
         
-    def stop(self):
+    def stop(self, args):
+        print "stopping"
         self.velocity = Vector(0.0,0.0)
         
     def fire_at(self, target, delta_seconds):
@@ -124,26 +207,29 @@ class Soldier(unit.Unit):
             self.fire = True
             #self.last_fire = 1
                  
-    def wait(self, seconds):
-        self.waitTime = seconds
+    def wait(self, args):
+        print "wait for me"
+        self.waitTime = args["seconds"]
             
-    def is_within_distance(self, other_unit, distance):
-        if self.rect.left > other_unit.rect.right:
+    def is_within_distance(self, args):
+        target = args["target"]
+        distance = args["distance"]
+        if self.rect.left > target.rect.right:
             x1 = self.rect.left
-            x2 = other_unit.rect.right
-        elif self.rect.right < other_unit.rect.left:
+            x2 = target.rect.right
+        elif self.rect.right < target.rect.left:
             x1 = self.rect.right
-            x2 = other_unit.rect.left
+            x2 = target.rect.left
         else:
             x1 = self.pos[0]
             x2 = self.pos[0]
             
-        if self.rect.top > other_unit.rect.bottom:
+        if self.rect.top > target.rect.bottom:
             y1 = self.rect.top
-            y2 = other_unit.rect.bottom
-        elif self.rect.bottom < other_unit.rect.top:
+            y2 = target.rect.bottom
+        elif self.rect.bottom < target.rect.top:
             y1 = self.rect.bottom
-            y2 = other_unit.rect.top
+            y2 = target.rect.top
         else:
             y1 = self.pos[1]
             y2 = self.pos[1]
@@ -153,3 +239,23 @@ class Soldier(unit.Unit):
         vec = vec1 - vec2
         
         return vec.length() <= distance
+        
+Soldier.commands = {"Move Towards":         ["",
+                                             Soldier.move_towards,
+                                             {"target": "unit"}],
+                    "Move Direction":       ["",
+                                             Soldier.move_direction,
+                                             {"direction": "string"}],
+                    "Stop":                 ["",
+                                             Soldier.stop,
+                                             {}],
+                    "Fire At":              ["",
+                                             Soldier.fire_at,
+                                             {"target": "unit"}],
+                    "Wait":                 ["",
+                                             Soldier.wait,
+                                             {"seconds": "integer"}],
+                    "Is Within Distance":   ["bool",
+                                             Soldier.is_within_distance,
+                                             {"target": "unit", "distance": "integer"}]
+                    }

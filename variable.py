@@ -5,5 +5,5 @@ class Variable:
         self.value = value
         self.type = type
         
-    def get(self):
+    def get_value(self):
         return self.value
