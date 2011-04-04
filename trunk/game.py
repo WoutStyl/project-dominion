@@ -45,7 +45,7 @@ class Game(object):
                 if newbull is not None:
                     self.bullets.append(newbull)
                 e.keep_on_screen(self.screen_width,self.screen_height)
-                e.fire_at(self.target, delta_seconds)
+                e.fire_at(self.target)
         for b in self.bullets:
             b.update(delta_seconds)
     def handle_event(self, event):
