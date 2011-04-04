@@ -18,7 +18,7 @@ class Game(object):
         #self.clock = pygame.time.Clock()
         #self.screen = pygame.display.set_mode((self.screen_width, self.screen_height))
         
-        self.target = soldier.Soldier(0,0)
+        self.target = soldier.Soldier(float(6.0*32),float(7.0*32))
         self.target.image.fill((0,0,255))
         self.target.anim_len = 500
 
