@@ -22,7 +22,7 @@ class Function(variable.Variable):
         return self.next
     
     def execute(self, unit):
-        print "hewo"
+        #print "hewo"
         if self.type != "":
             return None
         tempDict = dict(self.arguments)
