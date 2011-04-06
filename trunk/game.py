@@ -1,4 +1,4 @@
-import pygame, sys, string, random, math, operator, soldier, menus, button, Map_Class
+import pygame, sys, string, random, math, operator, soldier, menus, button, map
         
 class Game(object):
     screen_width=600
@@ -16,7 +16,7 @@ class Game(object):
         self.target.image.fill((10,0,0))
         self.target.anim_len = 500
 
-        self.map = Map_Class.Map.get()
+        self.map = map.Map.get()
         
     def update(self):
         self.clock.tick(50)
