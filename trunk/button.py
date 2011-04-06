@@ -1,4 +1,4 @@
-import pygame, math, sys, string, os, menu, Map_Class, queueitem, menus
+import pygame, math, sys, string, os, menu, Map_Class, queueitem
 
 class Button(object):
     def __init__(self, x,y, text, clickType,targetImage, focused = False):
@@ -68,7 +68,7 @@ class LoadOnClick(OnClick) :
 
 class MissionSelectOnClick(OnClick):
     def isClicked(self,m):
-        m.nextMenu = menus.MissionSelectMenu(m.screen)
+        m.nextMenu = menu.MissionSelectMenu(m.screen)
     def draw(self):
         self.menu.screen.fill((0,0,0))
         fullname = os.path.join('images', 'MissionSelect.png')
@@ -80,7 +80,7 @@ class MissionSelectOnClick(OnClick):
 
 class SavedMissionSelectOnClick(OnClick):
     def isClicked(self,m):
-        m.nextMenu = menus.SavedMissionSelectMenu(m.screen)
+        m.nextMenu = menu.SavedMissionSelectMenu(m.screen)
 
     def draw(self):
         self.menu.screen.fill((0,0,0))
@@ -93,7 +93,7 @@ class SavedMissionSelectOnClick(OnClick):
                 
 class SavedCampaignSelectOnClick(OnClick):
     def isClicked(self,m):
-        m.nextMenu = menus.SavedCampaignSelectMenu(m.screen)
+        m.nextMenu = menu.SavedCampaignSelectMenu(m.screen)
 
     def draw(self):
         self.menu.screen.fill((0,0,0))
