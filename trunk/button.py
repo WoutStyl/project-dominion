@@ -56,8 +56,8 @@ class LoadOnClick(OnClick) :
     def isClicked(self, m):
         self.clicked = True
         self.menu = m
-        map = map.Map.get()
-        map.load(self.mission)
+        tempMap = map.Map.get()
+        tempMap.load(self.mission)
         m.bInMenu = False
         print map
         print "Mission Loaded"

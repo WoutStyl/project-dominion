@@ -100,9 +100,8 @@ class Map:
 
     # Closes the mission
     def close(self):
-        unitTable = dict()
-        terrainGrid = []
-        unitPlacements = dict()
+        self.unitTable = dict()
+        self.terrainGrid = []
         self.playerIdMap = dict()
 
     # Returns whether the mission is loaded or not
@@ -173,14 +172,13 @@ class Map:
             unitId = int(unitId)
             playerId = int(playerId)
             if(int(unitId) == 3):
-                unitObject = building.Building(xA*32,yA*32)
+                unitObject = building.Building(xA*32,yA*32, self.colorMap[playerId])
             else:
                 unitObject = soldier.Soldier(xA*32, yA*32, self.colorMap[playerId])
             playerObject = self.playerIdMap[playerId]
             if(self.unitTable.get(playerObject) == None):
                 self.unitTable[playerObject] = []
             self.unitTable[playerObject].append(unitObject)
-            self.unitPlacements[unitObject] = (xA,yA)
             
     # Checks for unit collision against terrain
     def terrain_collision(self,unit):
