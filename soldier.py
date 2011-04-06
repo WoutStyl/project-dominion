@@ -169,13 +169,13 @@ class Soldier(unit.Unit):
             
             
 #Protocol Commands
-    def move_towards(self, args):
-        self.velocity = args["target"].pos - self.pos
+    def move_towards(self, arguments):
+        self.velocity = arguments["target"].pos - self.pos
         self.velocity.normalize()
         self.facing = Vector(self.velocity[0],self.velocity[1])
         
-    def move_direction(self, args):
-        direction = args["direction"]
+    def move_direction(self, arguments):
+        direction = arguments["direction"]
         print "Moving in direction ", direction
         if direction == "Left":
             self.velocity = Vector(-1,0)
@@ -199,7 +199,7 @@ class Soldier(unit.Unit):
             self.velocity.normalize()
         self.facing = Vector(self.velocity[0],self.velocity[1])
         
-    def stop(self, args):
+    def stop(self, arguments):
         #print "stopping"
         self.velocity = Vector(0.0,0.0)
         
@@ -208,12 +208,12 @@ class Soldier(unit.Unit):
         self.fire_target = target
         
 
-    def wait(self, args):
+    def wait(self, arguments):
         #print "wait for me"
-        self.waitTime = args["seconds"]
-    def is_within_distance(self, args):
-        target = args["target"]
-        distance = args["distance"]
+        self.waitTime = arguments["seconds"]
+    def is_within_distance(self, arguments):
+        target = arguments["target"]
+        distance = arguments["distance"]
         if self.rect.left > target.rect.right:
             x1 = self.rect.left
             x2 = target.rect.right

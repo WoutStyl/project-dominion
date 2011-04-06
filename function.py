@@ -2,11 +2,11 @@ import variable
 
 class Function(variable.Variable):
 
-    def __init__(self, type = "", funcRef = None, types = {}):
+    def __init__(self, type = "", functionReference = None, types = {}):
         variable.Variable.__init__(self, type)
         
         self.next = None
-        self.funcRef = funcRef
+        self.functionReference = functionReference
         self.types = types
         self.arguments = dict.fromkeys(self.types.keys())
         
@@ -16,7 +16,7 @@ class Function(variable.Variable):
         temp = dict(self.arguments)
         for key in temp.keys():
             temp[key] = temp[key].get_value()
-        return self.funcRef(temp)
+        return self.functionReference(temp)
         
     def get_next(self):
         return self.next
@@ -28,7 +28,7 @@ class Function(variable.Variable):
         tempDict = dict(self.arguments)
         for key in tempDict.keys():
             tempDict[key] = tempDict[key].get_value()
-        self.funcRef(unit, tempDict)
+        self.functionReference(unit, tempDict)
         return self.get_next()
             
 class IfStatement(Function):
@@ -65,14 +65,14 @@ class WhileLoop(IfStatement):
     def __init__(self, type = "=="):
         IfStatement.__init__(self, type)
         
-class ForLoop(Function):
+class ForeachLoop(Function):
     def __init__(self, type = ""):
-        ForLoop.__init__(self, type)
+        ForeachLoop.__init__(self, type)
         
         self.arguments = {"list": None}
         self.index = 0
         self.then = None
-        self.lastItem = None
+        self.previousItem = None
         
     def get_value(self):
         tempList = self.arguments["list"].get_value()
@@ -86,7 +86,7 @@ class ForLoop(Function):
         
     def execute(self, unit):
         tempList = self.arguments["list"].get_value()
-        if self.lastItem == None or self.lastItem == tempList[index]:
+        if self.previousItem == None or self.previousItem == tempList[index]:
             self.index += 1
         return self.get_next()
         
