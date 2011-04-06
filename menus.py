@@ -32,7 +32,7 @@ class MissionSelectMenu(menu.Menu):
             filename = "mission%d.txt" % (i,)
             pathstring = os.path.join("missions", filename)
     def leaveMenu(self):
-        self.nextMenu = MainMenu(self.Screen)
+        self.nextMenu = MainMenu(self.screen)
 
 class SavedMissionSelectMenu(menu.Menu):
     def __init__(self,screen):
@@ -52,7 +52,7 @@ class SavedMissionSelectMenu(menu.Menu):
             filename = "savedMission%d.txt" % (i,)
             pathstring = os.path.join("savedMissions", filename)
     def leaveMenu(self):
-        self.nextMenu = MainMenu(self.Screen)
+        self.nextMenu = MainMenu(self.screen)
 
 class SavedCampaignSelectMenu(menu.Menu):
     def __init__(self,screen):
@@ -73,5 +73,5 @@ class SavedCampaignSelectMenu(menu.Menu):
             pathstring = os.path.join("savedCampaigns", filename)
 
     def leaveMenu(self):
-        self.nextMenu = MainMenu(self.Screen)
+        self.nextMenu = MainMenu(self.screen)
         
