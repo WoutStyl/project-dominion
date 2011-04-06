@@ -4,8 +4,8 @@ from vector import *
 class Soldier(unit.Unit):
     commands = {}
     
-    def __init__(self, x , y ):
-        unit.Unit.__init__(self, float(x), float(y))
+    def __init__(self, x = 0, y = 0, color = (255,0,0)):
+        unit.Unit.__init__(self, float(x), float(y), color)
         
         self.speed = 45.0
         self.velocity = Vector(0.0,0.0)

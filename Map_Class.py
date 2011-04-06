@@ -54,7 +54,12 @@ the covers it creates a Mission_Wrapper on top of that file
         self.terrain_grid = []
         self.unit_placements = dict()
         self.player_id_map = dict()
+        self.projectiles = dict()
         self.loaded = False
+        
+        self.target = soldier.Soldier(float(6.0*32),float(7.0*32))
+        self.target.image.fill((10,0,0))
+
         ###Constant Stuff###
         self.tileimage = 'images/tileset.PNG'
         self.width = 800
@@ -62,20 +67,44 @@ the covers it creates a Mission_Wrapper on top of that file
         self.bg = pygame.image.load(self.tileimage).convert()
         self.movement_table = Movement_Table()
         self.movement_table.load('static.txt')
+        
+        self.colorMap = {0:(0,0,255), 1:(255,0,0), 2:(250,10,0)}
         ###Constant Stuff###
 
-    def draw(self):
+    def update(self, deltaSeconds):
+        for player in self.unit_table:
+            for e in self.unit_table[player]:
+                newbull = e.update(deltaSeconds)
+                if newbull is not None:
+                    if(self.projectiles.get(player) == None):
+                        self.projectiles[player] = []
+                    self.projectiles[player].append(newbull)
+                e.keep_on_screen(self.width,self.height)
+                e.fire_at(self.target)
+            
+            if(self.projectiles.get(player) == None):
+                self.projectiles[player] = []
+            for bullet in self.projectiles[player]:
+                bullet.update(deltaSeconds)
+                
+        self.target.update(deltaSeconds)
+
+    def draw(self, screen):
         for i in range(25):
             for j in range(25):
-                self.screen.blit(self.bg,pygame.Rect(j*32,i*32,self.width,self.height),pygame.Rect(self.lookup((self.terrain_grid[i])[j])*32,0,32,32))
+                screen.blit(self.bg,pygame.Rect(j*32,i*32,self.width,self.height),pygame.Rect(self.lookup((self.terrain_grid[i])[j])*32,0,32,32))
+                
         for player in self.unit_table:
             for unit in self.unit_table[player]:
-                unit.draw(self.screen)
+                unit.draw(screen)
+            for bullet in self.projectiles[player]:
+                bullet.draw(screen)
+                
         if(self.selection != []):
             for unit in self.selection:
-                unit.drawfocus(self.screen)
-        if((self.mouserect.width != 0) or (self.mouserect.height != 0)):
-            pygame.draw.rect(self.screen,(175,175,175),self.mouserect,2)
+                unit.drawfocus(screen)
+                
+        self.target.draw(screen)
                 
     def lookup(self,char):
         return int((self.movement_table.table[char])[0])
@@ -95,8 +124,6 @@ the covers it creates a Mission_Wrapper on top of that file
                 
         self.loaded = True
         ####This is for running the Map####
-        self.screen = pygame.display.set_mode((self.width,self.height))
-        self.clock = pygame.time.Clock()
         self.mouseisdown = False
         self.mouserect = pygame.Rect(0,0,0,0)
         self.selection = []
@@ -169,23 +196,22 @@ the covers it creates a Mission_Wrapper on top of that file
                 #pygame.draw.circle(unitobj.focus, (0,255,0), (unitobj.width / 2, unitobj.height / 2), unitobj.width /2 + 5, 3)
                 #unitobj.rect.center = (unitobj.pos.get()[0],unitobj.pos.get()[1])
             else:
-                unitobj = soldier.Soldier(random.randint(0,self.width),random.randint(0,self.height))
+                unitobj = soldier.Soldier(x_a*32, y_a*32, self.colorMap[player_id])
             playerobj = self.player_id_map[player_id]
             if(self.unit_table.get(playerobj) == None):
                 self.unit_table[playerobj] = []
-                self.unit_table[playerobj].append(unitobj)
-            else:
-                self.unit_table[playerobj].append(unitobj)
+            self.unit_table[playerobj].append(unitobj)
             self.unit_placements[unitobj] = (x_a,y_a)
             
     def terraincollision(self,unit):
         """
 Tests a Unit's rect against the terrain
         """
-        too = ((self.terrain_grid[unit.rect.x])[unit.rect.y])
+        Map_Class.Map.get().collision(self)
+        too = ((self.terrain_grid[unit.rect.x/32])[unit.rect.y/32])
         if((self.movement_table.table[too])[1]):
-            return False
-        return True
+            return True
+        return False
 
     def unitcollision(self,unit):
         """
@@ -207,83 +233,15 @@ Composite of unitcollision and terraincollision
             return True
         return False
 
-    def getgroup(self,rect):
-        """
-returns a list of units that are inside a mouse selection
-        """
-        holder = []
-        for player in self.unit_table:
-            for unita in self.unit_table[player]:
-                if(unita.rect.colliderect(rect)):
-                    holder.append(unita)
-        return holder
-
-    def mouseselect(self,tuple1,tuple2):
-        """
-returns a properly formated rectangle from mouse positions
-        """
-        #posx = 0
-        #posy = 0
-        #width = 0
-        #height = 0
-        #x dimension
-        if(tuple1[0] < tuple2[0]):
-            #closer to the left
-            posx = tuple1[0]
-            width = tuple2[0] - tuple1[0]
-        else:
-            posx = tuple2[0]
-            width = tuple1[0] - tuple2[0]
-        #y dimension
-        if(tuple1[1] < tuple2[1]):
-            #closer to the top
-            posy = tuple1[1]
-            height = tuple2[1] - tuple1[1]
-        else:
-            posy = tuple2[1]
-            height = tuple1[1] - tuple2[1]
-            
-        return pygame.Rect(posx,posy,width,height)
-
-    def update(self):
-        self.clock.tick(50)
-        delta_seconds = self.clock.get_time()/1000.0
-        events = pygame.event.get()
-        for evnt in events:
-            if(evnt.type == pygame.QUIT):
-                pygame.quit()
-            if(evnt.type == pygame.KEYDOWN):
-                if(evnt.key == pygame.K_ESCAPE):
-                    pygame.quit()
-            if(evnt.type == pygame.MOUSEBUTTONDOWN):
-                if(evnt.button == 1):
-                    self.position1 = evnt.pos
-                    self.position2 = pygame.mouse.get_pos()
-                    self.mouseisdown = True
-                    self.mouserect = self.mouseselect(self.position1,self.position2)
-            if(evnt.type == pygame.MOUSEBUTTONUP):
-                if(evnt.button == 1):
-                    self.position2 = evnt.pos
-                    self.mouserect = self.mouseselect(self.position1,self.position2)
-                    self.selection = self.getgroup(self.mouserect)
-                    self.mouserect = pygame.Rect(0,0,0,0)
-                    self.mouseisdown = False
-            if(self.mouseisdown):
-                self.position2 = pygame.mouse.get_pos()
-                self.mouserect = self.mouseselect(self.position1,self.position2)
-                    
-                    
-        for player in self.unit_table:
-            for e in self.unit_table[player]:
-                e.update(delta_seconds)
-                e.keep_on_screen(self.width,self.height)
-
+    # Populates the selection, based on what collides with the given
+    # rect
+    def select_group(self,rect):
+        self.selection = []
         
-    def run(self):
-        while(True):
-            self.update()
-            self.draw()
-            pygame.display.flip()
+        player = self.player_id_map[0]
+        for unita in self.unit_table[player]:
+            if(unita.rect.colliderect(rect)):
+                self.selection.append(unita)
     
 class Player:
     ai = ""
