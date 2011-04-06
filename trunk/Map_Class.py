@@ -1,4 +1,4 @@
-import re,Mission_Wrapper,unit,pygame,random,soldier
+import re,Mission_Wrapper,unit,pygame,random,soldier, building
 
 class Movement_Table:
     """
@@ -159,15 +159,15 @@ the covers it creates a Mission_Wrapper on top of that file
                 #print x_a
                 #print y_a
                 #raw_input('')
-                unitobj = unit.Unit(x_a*32,y_a*32)
-                unitobj.height = 64.0
-                unitobj.width = 64.0
-                unitobj.image = pygame.Surface((unitobj.width, unitobj.height), pygame.SRCALPHA, 32).convert_alpha()
-                unitobj.focus = pygame.Surface((unitobj.width, unitobj.height), pygame.SRCALPHA, 32).convert_alpha()
-                unitobj.rect = pygame.Rect(float(x_a),float(y_a),unitobj.width,unitobj.height)
-                pygame.draw.circle(unitobj.image, (255,0,0), (unitobj.width / 2, unitobj.height / 2), unitobj.width /2)
-                pygame.draw.circle(unitobj.focus, (0,255,0), (unitobj.width / 2, unitobj.height / 2), unitobj.width /2 + 5, 3)
-                unitobj.rect.center = (unitobj.pos.get()[0],unitobj.pos.get()[1])
+                unitobj = building.Building(x_a*32,y_a*32)
+                #unitobj.height = 64.0
+                #unitobj.width = 64.0
+                #unitobj.image = pygame.Surface((unitobj.width, unitobj.height), pygame.SRCALPHA, 32).convert_alpha()
+                #unitobj.focus = pygame.Surface((unitobj.width, unitobj.height), pygame.SRCALPHA, 32).convert_alpha()
+                #unitobj.rect = pygame.Rect(float(x_a),float(y_a),unitobj.width,unitobj.height)
+                #pygame.draw.circle(unitobj.image, (255,0,0), (unitobj.width / 2, unitobj.height / 2), unitobj.width /2)
+                #pygame.draw.circle(unitobj.focus, (0,255,0), (unitobj.width / 2, unitobj.height / 2), unitobj.width /2 + 5, 3)
+                #unitobj.rect.center = (unitobj.pos.get()[0],unitobj.pos.get()[1])
             else:
                 unitobj = soldier.Soldier(random.randint(0,self.width),random.randint(0,self.height))
             playerobj = self.player_id_map[player_id]
