@@ -10,7 +10,7 @@ class Menu(object):
         self.nextMenu = self
             
             
-    def addButton(self, x,y,text,clicktype, targetImage = "Blank"):
+    def add_button(self, x,y,text,clicktype, targetImage = "Blank"):
         # print len(self.buttons)
         if len(self.buttons) == 0:
             theButton = button.Button(x,y,text,clicktype,targetImage,True)
@@ -43,7 +43,7 @@ class Menu(object):
                 print "Return!"
                 self.buttons[self.index].clickObj.isClicked(self)
             if event.key == pygame.K_ESCAPE:
-                self.leaveMenu()
+                self.leave_menu()
         if event.type == pygame.USEREVENT+1:
             print "YAY!"
             self.bInMenu = False
@@ -54,7 +54,7 @@ class Menu(object):
             for event in pygame.event.get():
                 self.handle_event(event)
         return self.nextMenu
-    def leaveMenu(self):
+    def leave_menu(self):
         self.bInMenu = False
             
 
