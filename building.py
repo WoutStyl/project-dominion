@@ -5,14 +5,19 @@ from vector import *
 
 class Building(unit.Unit):
     def __init__(self, x = 0.0, y = 0.0, color = (225,0,0)):
+        super(Building, self).__init__(x,y,color)
         self.height = 75
         self.width = 75
-        super(Building, self).__init__(x,y,color)
+        
+        self.image = pygame.Surface((self.width, self.height), pygame.SRCALPHA, 32).convert_alpha()
+        self.rect = pygame.Rect(0,0,self.width,self.height)
+        pygame.draw.rect(self.image,color, self.rect)
+        self.rect.center = self.pos.get()
+        
         self.unitQueue = []
         self.buildMenu = None
         self.seconds = 0
-        pygame.draw.rect(self.image, (225,225,0), self.rect)
-        self.rect.center = self.pos.get()
+        
     def update(self, delta_seconds):
         self.seconds += delta_seconds
         i = 0
@@ -36,10 +41,6 @@ class Building(unit.Unit):
         self.buildMenu.update()
         
         #print delta_seconds
-        self.image = pygame.Surface((self.width, self.height), pygame.SRCALPHA, 32).convert_alpha()
-        self.rect = pygame.Rect(0,0,self.width,self.height)
-        pygame.draw.rect(self.image,(225,225,0), self.rect)
-        self.rect.center = self.pos.get()
         screen.blit(self.image, self.rect)
 
     def drawfocus(self, screen):

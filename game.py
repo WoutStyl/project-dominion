@@ -1,4 +1,4 @@
-import pygame, sys, string, random, math, operator, soldier, menus, button, map
+import pygame, sys, string, random, math, operator, soldier, menu, button, map
         
 class Game(object):
     screen_width=600
@@ -80,7 +80,7 @@ class Game(object):
 g = Game()
 
 bInMenu = True
-m = menus.MainMenu(g.screen)
+m = menu.MainMenu(g.screen)
 
 #print buttonlocx
 #print buttonlocy
