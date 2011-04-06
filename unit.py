@@ -1,7 +1,7 @@
 import pygame, math, random, operator
 from vector import *
 
-class Unit:
+class Unit(object):
     def __init__(self, x = 0, y = 0, color = (255,0,0)):
         self.height = 32
         self.width = 32
