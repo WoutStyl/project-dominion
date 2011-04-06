@@ -1,4 +1,4 @@
-import pygame, math, sys, string, os, menu, Map_Class, queueitem
+import pygame, math, sys, string, os, menu, map, queueitem
 
 class Button(object):
     def __init__(self, x,y, text, clickType,targetImage, focused = False):
@@ -56,7 +56,7 @@ class LoadOnClick(OnClick) :
     def isClicked(self, m):
         self.clicked = True
         self.menu = m
-        map = Map_Class.Map.get()
+        map = map.Map.get()
         map.load(self.mission)
         m.bInMenu = False
         print map
