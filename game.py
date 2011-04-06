@@ -1,4 +1,4 @@
-import pygame, sys, string, random, math, operator, soldier, menu, button, Map_Class
+import pygame, sys, string, random, math, operator, soldier, menus, button, Map_Class
         
 class Game(object):
     screen_width=600
@@ -7,8 +7,6 @@ class Game(object):
     def __init__(self):
         pygame.init()
         pygame.display.set_caption("Project Dominion")
-        cursor=pygame.cursors.compile(("   XX   ","   XX   ","   XX   ","XXXXXXXX","XXXXXXXX","   XX   ","   XX   ","   XX   "))
-        pygame.mouse.set_cursor((8,8),(4,4),*cursor)
         self.screen = pygame.display.set_mode((self.screen_width,self.screen_height))
         self.clock = pygame.time.Clock()
         self.mouseisdown = False
@@ -93,24 +91,13 @@ class Game(object):
 g = Game()
 
 bInMenu = True
-m = menu.Menu(g.screen)
-oc = button.StartOnClick()
-buttonlocx = g.screen_width/2
-buttonlocx -= 128
-buttonlocy = g.screen_height/2
-buttonlocy -= 96
+m = menus.MainMenu(g.screen)
+
 #print buttonlocx
 #print buttonlocy
-font = pygame.font.Font(None, 36)
-text = font.render("", 1, (0,0,0))
-m.addButton(buttonlocx, (buttonlocy -128), text, button.StartOnClick(), "StartCampaign")
-m.addButton(buttonlocx,buttonlocy,text, button.MissionSelectOnClick(), "StartMission")
-m.addButton(buttonlocx,(buttonlocy+128),text, button.SavedCampaignSelectOnClick(), "LoadCampaign")
-m.addButton(buttonlocx,(buttonlocy+256),text, button.SavedMissionSelectOnClick(), "LoadMission")
-print m.index
-print "Entering Menu Loop"
+
 while m.bInMenu:
-    m.update()
+    m = m.update()
     g.screen.fill((0,0,0))
     m.draw(g.screen)
     pygame.display.flip()
