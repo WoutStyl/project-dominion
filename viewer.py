@@ -2,8 +2,8 @@ import pygame
 
 class Game(object):
     tileimage = 'tileset.PNG'
-    screen_width = 8192
-    screen_height = 8192
+    screenWidth = 8192
+    screenHeight = 8192
     width = 800
     height = 800
 
