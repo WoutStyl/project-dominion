@@ -13,14 +13,14 @@ class Soldier(unit.Unit):
         self.health = 40
         self.waitTime = 0
         
-        self.refire_t = 5.0
-        self.last_fire = 5.0
-        self.fire_target = None
-        self.p_dir = None
+        self.refireT = 5.0
+        self.lastFire = 5.0
+        self.fireTarget = None
+        self.pDir = None
         self.fire = False
         
         self.anim = random.randint(0,200)
-        self.anim_len = 100;
+        self.animLen = 100;
         self.waitTime = 0
         
         self.protocol = None
@@ -127,34 +127,34 @@ class Soldier(unit.Unit):
         
         
         
-    def update(self, delta_seconds):
+    def update(self, deltaSeconds):
         #print "update!"
-        if self.last_fire >= self.refire_t:
-            self.last_fire = 0
-        if self.last_fire >0:
-            self.last_fire +=delta_seconds
+        if self.lastFire >= self.refireT:
+            self.lastFire = 0
+        if self.lastFire >0:
+            self.lastFire +=deltaSeconds
         
-        self.pos += self.velocity * self.speed * delta_seconds
+        self.pos += self.velocity * self.speed * deltaSeconds
         self.rect.center = self.pos.get()
         
         if self.waitTime > 0:
-            self.waitTime -= delta_seconds
+            self.waitTime -= deltaSeconds
         else:
             self.waitTime = 0
 
             if self.protocol !=None:
                     self.protocol = self.protocol.execute(self)
                 
-        if(self.last_fire ==0  and self.fire == True):
-            self.last_fire += delta_seconds
-            t_pos = self.fire_target.pos
-            t_vel = self.fire_target.velocity * self.fire_target.speed
-            p_pos = t_pos + t_vel   #projected position of the target
-            self.p_dir = p_pos - self.pos
-            self.p_dir.normalize()       #direction to the projected position of the target
+        if(self.lastFire ==0  and self.fire == True):
+            self.lastFire += deltaSeconds
+            tPos = self.fireTarget.pos
+            tVel = self.fireTarget.velocity * self.fireTarget.speed
+            pPos = tPos + tVel   #projected position of the target
+            self.pDir = pPos - self.pos
+            self.pDir.normalize()       #direction to the projected position of the target
             self.fire = True
             #self.last_fire = 1
-            return bullet.Bullet(self.p_dir, self.pos[0], self.pos[1])    
+            return bullet.Bullet(self.pDir, self.pos[0], self.pos[1])    
 
         
     def keep_on_screen(self, max_x, max_y):
@@ -205,7 +205,7 @@ class Soldier(unit.Unit):
         
     def fire_at(self, target):
         self.fire = True
-        self.fire_target = target
+        self.fireTarget = target
         
 
     def wait(self, arguments):
