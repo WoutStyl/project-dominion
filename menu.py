@@ -1,5 +1,6 @@
 import pygame, math, sys, string, os, missionwrapper, button
 
+# This class manages menus and their proeprties
 class Menu(object):
     def __init__(self, screen):
         self.buttons = []
@@ -9,8 +10,11 @@ class Menu(object):
         self.mission = ""
         self.nextMenu = self
             
-            
+    # add_button
+    # This function adds a button to the menu given x and y coordinates,
+    # text, desired click functionality and image
     def add_button(self, x,y,text,clicktype, targetImage = "Blank"):
+        # If this is the first button, set it to be focused by default
         if len(self.buttons) == 0:
             theButton = button.Button(x,y,text,clicktype,targetImage,True)
                 
@@ -20,6 +24,8 @@ class Menu(object):
     def draw(self,screen):
         for b in self.buttons:
             b.draw(screen)
+    # handle_event
+    # Handles user input in the menu system
     def handle_event(self,event):
         if event.type == pygame.KEYDOWN:
             if event.key == pygame.K_UP:
@@ -43,18 +49,22 @@ class Menu(object):
                 self.buttons[self.index].clickObj.isClicked(self)
             if event.key == pygame.K_ESCAPE:
                 self.leave_menu()
-        if event.type == pygame.USEREVENT+1:
-            print "YAY!"
-            self.bInMenu = False
         if event.type == pygame.QUIT:
             sys.exit(0)
+    # update
+    # Calls the event handler
     def update(self):
         if(self.bInMenu):
             for event in pygame.event.get():
                 self.handle_event(event)
         return self.nextMenu
+    # leave_menu
+    # Causes the game loop to exit the main menu when the escape key is hit
     def leave_menu(self):
         self.bInMenu = False
+
+        
+#These classes initialize the menu differently based on its intended purpose
 
 class MainMenu(Menu):
     def __init__(self,screen):
@@ -65,11 +75,16 @@ class MainMenu(Menu):
         buttonlocy -= 96
         font = pygame.font.Font(None, 36)
         text = font.render("", 1, (0,0,0))
+        #Buttons for sub menus
         self.add_button(buttonlocx, (buttonlocy -128), text, button.StartOnClick(), "StartCampaign")
         self.add_button(buttonlocx,buttonlocy,text, button.MissionSelectOnClick(), "StartMission")
         self.add_button(buttonlocx,(buttonlocy+128),text, button.SavedCampaignSelectOnClick(), "LoadCampaign")
         self.add_button(buttonlocx,(buttonlocy+256),text, button.SavedMissionSelectOnClick(), "LoadMission")
-    
+
+# Sub-Menus
+# These menus also modify the leave_menu function, which is used in sub-menus to 
+# return the user to the Main Menu when the escape key is pressed
+        
 class MissionSelectMenu(Menu):
     def __init__(self,screen):
         i = 0
@@ -78,6 +93,8 @@ class MissionSelectMenu(Menu):
         initx = 300 - 128
         inity = 300-128
         pathstring = os.path.join("missions", filename)
+        # Look in the "missions" folder for files of the form "mission#.txt"
+        # and add a new button to the menu for each mission file.
         while(os.path.isfile(pathstring)):
             LC = button.LoadOnClick()
             LC.setMission(pathstring)
@@ -88,7 +105,7 @@ class MissionSelectMenu(Menu):
             filename = "mission%d.txt" % (i,)
             pathstring = os.path.join("missions", filename)
     def leave_menu(self):
-        self.nextMenu = MainMenu(self.screen)
+        self.nextMenu = MainMenu(self.screen) # The next menu loaded will be the Main Menu
 
 class SavedMissionSelectMenu(Menu):
     def __init__(self,screen):
@@ -98,6 +115,8 @@ class SavedMissionSelectMenu(Menu):
         initx = 300 - 128
         inity = 300-128
         pathstring = os.path.join("savedMissions", filename)
+        # Look in the "savedMissions" folder for files of the form "savedMission#.txt"
+        # and add a new button to the menu for each savedMission file.
         while(os.path.isfile(pathstring)):
             LC = button.LoadOnClick()
             LC.setMission(pathstring)
@@ -108,7 +127,7 @@ class SavedMissionSelectMenu(Menu):
             filename = "savedMission%d.txt" % (i,)
             pathstring = os.path.join("savedMissions", filename)
     def leave_menu(self):
-        self.nextMenu = MainMenu(self.screen)
+        self.nextMenu = MainMenu(self.screen) # The next menu loaded will be the Main Menu
 
 class SavedCampaignSelectMenu(Menu):
     def __init__(self,screen):
@@ -118,6 +137,8 @@ class SavedCampaignSelectMenu(Menu):
         initx = 300 - 128
         inity = 300-128
         pathstring = os.path.join("savedCampaigns", filename)
+        # Look in the "savedCampaigns" folder for files of the form "savedCampaign#.txt"
+        # and add a new button to the menu for each savedCampaign file.
         while(os.path.isfile(pathstring)):
             LC = button.LoadOnClick()
             LC.setMission(pathstring)
@@ -129,7 +150,7 @@ class SavedCampaignSelectMenu(Menu):
             pathstring = os.path.join("savedCampaigns", filename)
 
     def leave_menu(self):
-        self.nextMenu = MainMenu(self.screen)
+        self.nextMenu = MainMenu(self.screen) # The next menu loaded will be the Main Menu
         
 
             
