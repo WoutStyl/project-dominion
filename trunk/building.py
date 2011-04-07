@@ -36,7 +36,7 @@ class Building(unit.Unit):
             font = pygame.font.Font(None, 36)
             text = font.render("Add", 1, (0,0,0))
             Click = button.AddToQueueOnClick()
-            Click.queue = self.unitQueue
+            Click.set_queue(self.unitQueue)
             self.buildMenu.add_button(536, 536, text, Click)
         self.buildMenu.update()
         
@@ -57,5 +57,6 @@ class Building(unit.Unit):
             self.selected = False
         else:
             self.selected = True
+    
 
     
