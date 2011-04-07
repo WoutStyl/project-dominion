@@ -32,7 +32,6 @@ class Building(unit.Unit):
     def draw(self, screen):
         if self.buildMenu is None:
             self.buildMenu = menu.Menu(screen)
-            self.buildMenu.bTakeInput = True
             font = pygame.font.Font(None, 36)
             text = font.render("Add", 1, (0,0,0))
             Click = button.AddToQueueOnClick()
