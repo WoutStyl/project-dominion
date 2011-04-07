@@ -7,36 +7,35 @@ class Button(object):
         self.pos = [x,y]
         self.nowFocused = focused
         self.name = targetImage
-        self.image, self.rect = self.load_image()
         self.clickObj = clickType
         self.buttonText = text
+        if focused:
+            self.focus()
+        else:
+            self.unfocus()
                 
     def draw(self,screen):
-        self.image, self.rect = self.load_image()
         screen.blit(self.image, (self.pos[0], self.pos[1]))
         textpos = self.buttonText.get_rect(centerx = screen.get_width()/2)
         screen.blit(self.buttonText,(self.pos[0], self.pos[1]))
     def changeImage(self, targetImage):
         #self.image, self.rect = self.load_image(targetImage)
-        self.name = targetImage
-    def load_image(self, colorkey = None):
-        if self.nowFocused is True:
-            dispName = self.name + "Focused.png"
-        else:
-            dispName = self.name +".png"
+        self.name = targetImage        
+    def unfocus(self):
+        dispName = self.name + ".png"
+        self.load_image(dispName)
+    def focus(self):
+        dispName = self.name + "Focused.png"
+        self.load_image(dispName)
+    def load_image(self, dispName):
         fullname = os.path.join('images', dispName)
         try:
-            image = pygame.transform.scale(pygame.image.load(fullname),(self.width, self.height))
+            image = pygame.transform.scale(pygame.image.load(fullname), (self.width, self.height))
         except pygame.error, message:
             print 'Cannot load image:', name
             raise SystemExit, message
-        image = image.convert()
-        if colorkey is not None:
-            if colorkey is -1:
-                colorkey = image.get_at((0,0))
-            image.set_colorkey(colorkey, RLEACCEL)
-        return image, image.get_rect()
-		
+        self.image = image.convert()
+        self.rect = image.get_rect()
 class OnClick(object):
     def __init__(self):
         self.clicked = False
@@ -111,7 +110,8 @@ class AddToQueueOnClick(OnClick):
     def isClicked(self,m):
         self.queue.append(queueitem.QueueItem(self.queue))
         print "Yay!"
-                
+    def set_queue(self, unitQueue):
+        self.queue = unitQueue
                 
                 
 	

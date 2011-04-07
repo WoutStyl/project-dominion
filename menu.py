@@ -11,7 +11,6 @@ class Menu(object):
             
             
     def add_button(self, x,y,text,clicktype, targetImage = "Blank"):
-        # print len(self.buttons)
         if len(self.buttons) == 0:
             theButton = button.Button(x,y,text,clicktype,targetImage,True)
                 
@@ -25,20 +24,20 @@ class Menu(object):
         if event.type == pygame.KEYDOWN:
             if event.key == pygame.K_UP:
                 print "Keypress Down: "
-                self.buttons[self.index].nowFocused = False
+                self.buttons[self.index].unfocus()
                 self.index -= 1
                 if self.index < 0:
                         self.index = len(self.buttons)-1
                 print self.index
-                self.buttons[self.index].nowFocused = True
+                self.buttons[self.index].focus()
             if event.key == pygame.K_DOWN:
                 print "Keypress Up: "
-                self.buttons[self.index].nowFocused = False
+                self.buttons[self.index].unfocus()
                 self.index += 1
                 if self.index >= len(self.buttons):
                         self.index = 0
                 print self.index
-                self.buttons[self.index].nowFocused = True
+                self.buttons[self.index].focus()
             if event.key == pygame.K_RETURN:
                 print "Return!"
                 self.buttons[self.index].clickObj.isClicked(self)
