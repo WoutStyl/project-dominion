@@ -92,14 +92,14 @@ each unit is in stored format
         """
         return self.Units
 
-    def FormatUnit(unit):
+    def FormatUnit(unit,player=None):
         """
 Give a single Unit
 return in a single string
 all necessary info in that string so that it can be saved
         """
 
-        line = unit.loc.x + ' ' + unit.loc.y + ' ' + unit_type(unit) + ' ' + player_id(unit.owner)
+        line = unit.pos[0] + ' ' + unit.pos[1] + ' ' + '0' + ' ' + player
 
         return line
 

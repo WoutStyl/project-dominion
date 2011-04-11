@@ -171,7 +171,7 @@ class Map:
             yA = float(yA)
             unitId = int(unitId)
             playerId = int(playerId)
-            if(int(unitId) == 3):
+            if(unitId == 3):
                 unitObject = building.Building(xA*32,yA*32, self.colorMap[playerId])
             else:
                 unitObject = soldier.Soldier(xA*32, yA*32, self.colorMap[playerId])
@@ -182,7 +182,7 @@ class Map:
             
     # Checks for unit collision against terrain
     def terrain_collision(self,unit):
-        map.Map.get().collision(self)
+        Map.get().collision(self)
         too = ((self.terrainGrid[unit.rect.x/32])[unit.rect.y/32])
         if((self.movementTable.table[too])[1]):
             return True
@@ -213,7 +213,22 @@ class Map:
         for unitA in self.unitTable[player]:
             if(unitA.rect.colliderect(rect)):
                 self.selection.append(unitA)
-    
+                
+    def save(self,filename=None):
+        if(filename != None):
+            self.wrapper.set_name(filename)
+        unitOutput = []
+        playerOutput = []
+        for i in range(len(self.unitTable)):
+            playerObj = self.playerIdMap[i]
+            for unit in self.unitTable[playerObj]:
+                unitOutput.append(self.wrapper.format_unit(unit,i))
+            line = playerObj.ai + ' ' + playerObj.type + ' ' + playerObj.resource[0] + ' ' + playerObj.resource[1]
+            playerOutput.append(playerObj)
+        self.wrapper.set_map(self.terrainGrid)
+        self.wrapper.set_player(playerOutput)
+        self.wrapper.set_units(unitOutput)
+ 
 class Player:
     ai = ""
     type = ""
