@@ -17,14 +17,16 @@ class Game(object):
         self.target.anim_len = 500
 
         self.map = map.Map.get()
-        
+        self.pauseMenu = menu.MainMenu(self.screen)
+        self.paused = False
     def update(self):
         self.clock.tick(50)
         deltaSeconds = self.clock.get_time()/1000.0
         
         for event in pygame.event.get():
             self.handle_event(event)
-            
+        if self.paused == True:
+            self.pauseMenu.update()
         self.map.update(deltaSeconds)
             
         if self.mouseIsDown:
@@ -37,6 +39,13 @@ class Game(object):
         if event.type == pygame.KEYDOWN:
             if event.key == pygame.K_ESCAPE:
                 pygame.quit()
+            if event.key == pygame.K_p:
+                if self.paused == True:
+                    self.paused = False
+                    print("UNPAUSE")
+                elif self.paused == False:
+                    self.paused = True
+                    print("PAUSE")
         if event.type == pygame.MOUSEBUTTONDOWN:
             if event.button == 1:
                 self.position1 = event.pos
@@ -72,8 +81,16 @@ class Game(object):
         return pygame.Rect(posx,posy,width,height)
             
     def draw(self):
-        self.screen.fill((0,0,0))
-        self.map.draw(self.screen)
+        
+        
+        if self.paused == True:
+            self.screen.fill((0,0,0))
+            self.map.draw(self.screen)
+            self.pauseMenu.draw(self.screen)
+        else:
+            self.screen.fill((0,0,0))
+            self.map.draw(self.screen)
+            
         if self.mouseRect.width != 0 or self.mouseRect.height != 0:
             pygame.draw.rect(self.screen,(175,175,175),self.mouseRect,2)
         

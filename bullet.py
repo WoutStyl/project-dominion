@@ -1,5 +1,11 @@
 import pygame, math, random, operator, unit
 from vector import *
+#Responsibilities
+#Updates World Position
+#Draws the bullet
+
+#Collaborators
+#Surface
 
 class Bullet:
     def __init__(self, direction, x = 0.0, y = 0.0):
