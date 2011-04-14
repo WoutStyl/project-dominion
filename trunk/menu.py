@@ -51,6 +51,9 @@ class Menu(object):
                 self.leave_menu()
         if event.type == pygame.QUIT:
             sys.exit(0)
+        if event.type == pygame.MOUSEBUTTONUP:
+            if event.button == 1:
+                self.clickFocus()
     # update
     # Calls the event handler
     def update(self):
@@ -62,6 +65,20 @@ class Menu(object):
     # Causes the game loop to exit the main menu when the escape key is hit
     def leave_menu(self):
         self.bInMenu = False
+    def check_focus(self):
+        newIndex = 0
+        for bttn in self.buttons:
+            if bttn.is_mouse_focus() is True:
+                self.buttons[newIndex].focus()
+                if self.index is not newIndex:
+                    self.buttons[self.index].unfocus()
+                self.index = newIndex
+                return
+            else:
+                newIndex += 1
+    def clickFocus(self):
+        self.buttons[self.index].clickObj.isClicked(self)
+        self.buttons[self.index].focus()
 
         
 #These classes initialize the menu differently based on its intended purpose
@@ -104,6 +121,8 @@ class MissionSelectMenu(Menu):
             i += 1
             filename = "mission%d.txt" % (i,)
             pathstring = os.path.join("missions", filename)
+        text = font.render("Back", 1, (10,10,10))
+        self.add_button(525, (525), text, button.BackOnClick(), "Blank")
     def leave_menu(self):
         self.nextMenu = MainMenu(self.screen) # The next menu loaded will be the Main Menu
 
@@ -126,6 +145,8 @@ class SavedMissionSelectMenu(Menu):
             i += 1
             filename = "savedMission%d.txt" % (i,)
             pathstring = os.path.join("savedMissions", filename)
+        text = font.render("Back", 1, (10,10,10))
+        self.add_button(525, (525), text, button.BackOnClick(), "Blank")
     def leave_menu(self):
         self.nextMenu = MainMenu(self.screen) # The next menu loaded will be the Main Menu
 
@@ -148,6 +169,8 @@ class SavedCampaignSelectMenu(Menu):
             i += 1
             filename = "savedCampaign%d.txt" % (i,)
             pathstring = os.path.join("savedCampaigns", filename)
+        text = font.render("Back", 1, (10,10,10))
+        self.add_button(525, (525), text, button.BackOnClick(), "Blank")
 
     def leave_menu(self):
         self.nextMenu = MainMenu(self.screen) # The next menu loaded will be the Main Menu

@@ -101,15 +101,14 @@ m = menu.MainMenu(g.screen)
 
 #print buttonlocx
 #print buttonlocy
-
-while m.bInMenu:
-    m = m.update()
-    g.screen.fill((0,0,0))
-    m.draw(g.screen)
-    pygame.display.flip()
-    
-print "Context switch"
 while 1:
-    g.update()
-    g.draw()
-    pygame.display.flip()
+    if m.bInMenu:
+        m.check_focus()
+        m = m.update()
+        g.screen.fill((0,0,0))
+        m.draw(g.screen)
+        pygame.display.flip()
+    else:
+        g.update()
+        g.draw()
+        pygame.display.flip()
