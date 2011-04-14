@@ -2,6 +2,16 @@ import pygame, math, random, operator, unit, sys, menu, soldier, queueitem, butt
 from vector import *     
         
         
+#Responsibilities
+#Keep track of building related data (mainly queue)
+#Update the queue
+#Draw the building
+#Spawn the units
+
+#Collaborators
+#Units
+#Surface
+#Map
 
 class Building(unit.Unit):
     def __init__(self, x = 0.0, y = 0.0, color = (225,0,0)):

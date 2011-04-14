@@ -1,4 +1,12 @@
 import pygame, math, sys, string, os, menu, map, queueitem
+#Responsibilities:
+#Draws itself
+#Responds to Mouse Position
+
+#Collaborators:
+#OnClick
+#Mouse
+#Surface
 
 class Button(object):
     def __init__(self, x,y, text, clickType,targetImage, focused = False):
@@ -36,6 +44,13 @@ class Button(object):
             raise SystemExit, message
         self.image = image.convert()
         self.rect = image.get_rect()
+
+#Responsibilities
+#Defines logic for click events
+
+#Collaborators
+#Menu   
+
 class OnClick(object):
     def __init__(self):
         self.clicked = False
