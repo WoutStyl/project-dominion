@@ -44,6 +44,13 @@ class Button(object):
             raise SystemExit, message
         self.image = image.convert()
         self.rect = image.get_rect()
+    def is_mouse_focus(self):
+        mousePos = pygame.mouse.get_pos()
+        if mousePos[0] >= self.pos[0] and mousePos[0] <= self.pos[0]+self.width:
+            if mousePos[1] >= self.pos[1] and mousePos[1] <= self.pos[1]+self.height:
+                self.focus()
+                return True
+        return False
 
 #Responsibilities
 #Defines logic for click events
@@ -127,6 +134,11 @@ class AddToQueueOnClick(OnClick):
         print "Yay!"
     def set_queue(self, unitQueue):
         self.queue = unitQueue
+
+class BackOnClick(OnClick):
+    def isClicked(self, m):
+        m.leave_menu()
+        
                 
                 
 	
