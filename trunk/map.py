@@ -48,12 +48,13 @@ class Map:
 
         # Constant Stuff
         self.tileImage = 'images/tileset.PNG'
-        self.width = 800
-        self.height = 800
+        self.width = 1600
+        self.height = 1600
+        #the whole 256 x 256 grid in pixels 50 x 50
         self.tileSet = pygame.image.load(self.tileImage).convert()
         self.movementTable = MovementTable()
         self.movementTable.load('static.txt')
-        
+        self.view = pygame.Surface((self.width,self.height))
         self.colorMap = {0:(0,0,255), 1:(255,0,0), 2:(250,10,0)}
         # End Constant Stuff
 
@@ -77,22 +78,31 @@ class Map:
         self.target.update(deltaSeconds)
 
     # Draws all of the terrain and units to the screen
-    def draw(self, screen):
-        for i in range(25):
-            for j in range(25):
-                screen.blit(self.tileSet,pygame.Rect(j*32,i*32,self.width,self.height),pygame.Rect(self.lookup((self.terrainGrid[i])[j])*32,0,32,32))
-                
+    def draw(self, screen, upperleft, rect):
+        #x = pygame.display.set_mode((self.width,self.height))
+        for i in range(50):
+            for j in range(50):
+                #build everything onto view
+                self.view.blit(self.tileSet,pygame.Rect(j*32,i*32,self.width,self.height),pygame.Rect(self.lookup((self.terrainGrid[i])[j])*32,0,32,32))
+                #screen.blit(self.tileSet,pygame.Rect(j*32,i*32,self.width,self.height),pygame.Rect(self.lookup((self.terrainGrid[i])[j])*32,0,32,32))
+                #x.blit(self.tileSet,pygame.Rect(j*32,i*32,self.width,self.height),pygame.Rect(self.lookup((self.terrainGrid[i])[j])*32,0,32,32))
+        #for i in range(25):
+            #for j in range(25):
+        #screen.blit(x,(0,0),pygame.Rect(upperleft[0],upperleft[1],32*25,32*25))
+        #screen.blit(self.view,(0,0),pygame.Rect(upperleft[0],upperleft[1],32*25,32*25))
         for player in self.unitTable:
             for unit in self.unitTable[player]:
-                unit.draw(screen)
+                unit.draw(self.view)
             for bullet in self.projectiles[player]:
-                bullet.draw(screen)
+                bullet.draw(self.view)
                 
         if(self.selection != []):
             for unit in self.selection:
-                unit.drawfocus(screen)
+                unit.drawfocus(self.view)
                 
-        self.target.draw(screen)
+        self.target.draw(self.view)
+        pygame.draw.rect(self.view,(175,175,175),rect,2)
+        screen.blit(self.view,(0,0),pygame.Rect(upperleft[0],upperleft[1],32*25,32*25))
                 
     # Returns the tile type for the terrain
     def lookup(self,char):
@@ -107,6 +117,10 @@ class Map:
     # Returns whether the mission is loaded or not
     def is_loaded(self):
         return self.loaded
+
+    def drawmouse(self,screen,rect,upperleft):
+        pygame.draw.rect(self.view,(175,175,175),rect,2)
+        screen.blit(self.view,(0,0),pygame.Rect(upperleft[0],upperleft[1],32*25,32*25))
 
     # Loads a mission from a mission file
     def load(self,filename):
