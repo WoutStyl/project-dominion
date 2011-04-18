@@ -176,7 +176,7 @@ class Soldier(unit.Unit):
         
     def move_direction(self, arguments):
         direction = arguments["direction"]
-        print "Moving in direction ", direction
+        #print "Moving in direction ", direction
         if direction == "Left":
             self.velocity = Vector(-1,0)
         elif direction == "Right":

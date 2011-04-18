@@ -93,8 +93,9 @@ class Map:
         for player in self.unitTable:
             for unit in self.unitTable[player]:
                 unit.draw(self.view)
-            for bullet in self.projectiles[player]:
-                bullet.draw(self.view)
+            if(len(self.projectiles[player]) > 0):
+                for bullet in self.projectiles[player]:
+                    bullet.draw(self.view)
                 
         if(self.selection != []):
             for unit in self.selection:
@@ -103,6 +104,12 @@ class Map:
         self.target.draw(self.view)
         pygame.draw.rect(self.view,(175,175,175),rect,2)
         screen.blit(self.view,(0,0),pygame.Rect(upperleft[0],upperleft[1],32*25,32*25))
+    def get_unit_menu(self):
+        if(self.selection != []):
+            for unit in self.selection:
+                if unit.buildMenu != None:
+                    return unit.buildMenu
+        return None
                 
     # Returns the tile type for the terrain
     def lookup(self,char):
