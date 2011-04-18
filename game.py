@@ -34,16 +34,14 @@ class Game(object):
         self.target.anim_len = 500
 
         self.map = map.Map.get()
-        self.pauseMenu = menu.MainMenu()
         self.paused = False
 
         self.mainMenu = menu.MainMenu()
     def update(self):
+        if self.mainMenu.bInMenu is False:
+            self.paused = False
         self.clock.tick(50)
         deltaSeconds = self.clock.get_time()/1000.0
-        if self.paused == True:
-            self.pauseMenu.check_focus()
-            self.pauseMenu.update()
         for event in pygame.event.get():
             self.handle_event(event)
         
@@ -100,10 +98,10 @@ class Game(object):
             if event.key == pygame.K_p:
                 if self.paused == True:
                     self.paused = False
-                    print("UNPAUSE")
+                    self.mainMenu.bInMenu = False 
                 elif self.paused == False:
                     self.paused = True
-                    print("PAUSE")
+                    self.mainMenu = menu.MainMenu()
         ####End key presses
                     
         if event.type == pygame.KEYUP:
@@ -158,19 +156,8 @@ class Game(object):
         return pygame.Rect(posx,posy,width,height)
             
     def draw(self):
-        #self.screen.fill((0,0,0))
-        #self.map.draw(self.screen,self.upperleft)
-        if self.paused == True:
-            self.screen.fill((0,0,0))
-            self.map.draw(self.screen,self.upperleft,self.mouseRect)
-            self.pauseMenu.draw(self.screen)
-        else:
-            self.screen.fill((0,0,0))
-            self.map.draw(self.screen,self.upperleft,self.mouseRect)
-        #if the mouse rect has size, draw it 
-        #if self.mouseRect.width != 0 or self.mouseRect.height != 0:
-            #pygame.draw.rect(self.screen,(175,175,175),self.mouseRect,2)
-            #self.map.drawmouse(self.screen,self.mouseRect,self.upperleft)
+        self.screen.fill((0,0,0))
+        self.map.draw(self.screen,self.upperleft,self.mouseRect)
     def main_loop(self):
         while 1:
             for event in pygame.event.get():
@@ -194,4 +181,5 @@ class Game(object):
         
         
 g = Game()
+
 g.main_loop()
