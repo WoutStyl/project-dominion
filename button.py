@@ -89,7 +89,7 @@ class LoadOnClick(OnClick) :
 
 class MissionSelectOnClick(OnClick):
     def isClicked(self,m):
-        m.nextMenu = menu.MissionSelectMenu(m.screen)
+        m.nextMenu = menu.MissionSelectMenu()
     def draw(self):
         self.menu.screen.fill((0,0,0))
         fullname = os.path.join('images', 'MissionSelect.png')
@@ -101,7 +101,7 @@ class MissionSelectOnClick(OnClick):
 
 class SavedMissionSelectOnClick(OnClick):
     def isClicked(self,m):
-        m.nextMenu = menu.SavedMissionSelectMenu(m.screen)
+        m.nextMenu = menu.SavedMissionSelectMenu()
 
     def draw(self):
         self.menu.screen.fill((0,0,0))
@@ -114,7 +114,7 @@ class SavedMissionSelectOnClick(OnClick):
                 
 class SavedCampaignSelectOnClick(OnClick):
     def isClicked(self,m):
-        m.nextMenu = menu.SavedCampaignSelectMenu(m.screen)
+        m.nextMenu = menu.SavedCampaignSelectMenu()
 
     def draw(self):
         self.menu.screen.fill((0,0,0))

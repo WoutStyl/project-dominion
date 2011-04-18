@@ -18,6 +18,7 @@ class Building(unit.Unit):
         super(Building, self).__init__(x,y,color)
         self.height = 75
         self.width = 75
+        self.type = "Building"
         
         self.image = pygame.Surface((self.width, self.height), pygame.SRCALPHA, 32).convert_alpha()
         self.rect = pygame.Rect(0,0,self.width,self.height)
@@ -41,7 +42,7 @@ class Building(unit.Unit):
                     
     def draw(self, screen):
         if self.buildMenu is None:
-            self.buildMenu = menu.Menu(screen)
+            self.buildMenu = menu.Menu()
             font = pygame.font.Font(None, 36)
             text = font.render("Add", 1, (0,0,0))
             Click = button.AddToQueueOnClick()

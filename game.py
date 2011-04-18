@@ -34,17 +34,22 @@ class Game(object):
         self.target.anim_len = 500
 
         self.map = map.Map.get()
-        self.pauseMenu = menu.MainMenu(self.screen)
+        self.pauseMenu = menu.MainMenu()
         self.paused = False
+
+        self.mainMenu = menu.MainMenu()
     def update(self):
         self.clock.tick(50)
         deltaSeconds = self.clock.get_time()/1000.0
-        
-        for event in pygame.event.get():
-            self.handle_event(event)
         if self.paused == True:
             self.pauseMenu.update()
         self.map.update(deltaSeconds)
+
+        buildmenu = self.map.get_unit_menu()
+
+        if buildmenu is not None:
+            self.mainMenu = buildmenu
+            self.mainMenu.bInMenu = False
 
         if(self.arrowdown):
             if self.leftdown and self.upperleft[0] != 0.0:
@@ -125,7 +130,7 @@ class Game(object):
                 self.mouseRect = self.mouse_select(self.position1,self.position2)
                 self.map.select_group(self.mouseRect)
                 self.mouseRect = pygame.Rect(0,0,0,0)
-                self.mouseIsDown = False       
+                self.mouseIsDown = False
             
     # Returns a properly formatted rectangle from mouse positions
     def mouse_select(self,tuple1,tuple2):
@@ -162,17 +167,29 @@ class Game(object):
             #pygame.draw.rect(self.screen,(175,175,175),self.mouseRect,2)
             #self.map.drawmouse(self.screen,self.mouseRect,self.upperleft)
         
+        
 g = Game()
-bInMenu = True
-m = menu.MainMenu(g.screen)
 
 while 1:
-    if m.bInMenu:
-        m.check_focus()
-        m = m.update()
-        g.screen.fill((0,0,0))
-        m.draw(g.screen)
-        pygame.display.flip()
+    for event in pygame.event.get():
+            if(not g.mainMenu.handle_event(event)):
+                g.handle_event(event)
+    if g.mainMenu.bInMenu:
+        if g.mainMenu.stealInput == True:
+            g.mainMenu.check_focus()
+            g.mainMenu = g.mainMenu.update()
+            g.screen.fill((0,0,0))
+            g.mainMenu.draw(g.screen)
+            pygame.display.flip()
+        else:
+            g.mainMenu.check_focus()
+            g.mainMenu = g.mainMenu.update()
+            g.mainMenu.draw(g.screen)
+            pygame.display.flip()
+            g.update()
+            g.draw()
+            pygame.display.flip()
+            
     else:
         g.update()
         g.draw()

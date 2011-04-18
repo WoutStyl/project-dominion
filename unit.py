@@ -4,6 +4,7 @@ from vector import *
 class Unit(object):
     def __init__(self, x = 0, y = 0, color = (255,0,0)):
         self.height = 32
+        self.type = "Unit"
         self.width = 32
         self.pos = Vector(float(x),float(y))
         
@@ -18,6 +19,7 @@ class Unit(object):
         #print "x is "
         #print x
         #raw_input('')
+        self.buildMenu = None
         
     def update(self, delta_seconds):
         pass
