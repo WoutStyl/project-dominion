@@ -97,10 +97,6 @@ class Map:
                 for bullet in self.projectiles[player]:
                     bullet.draw(self.view)
                 
-        if(self.selection != []):
-            for unit in self.selection:
-                unit.drawfocus(self.view)
-                
         self.target.draw(self.view)
         pygame.draw.rect(self.view,(175,175,175),rect,2)
         screen.blit(self.view,(0,0),pygame.Rect(upperleft[0],upperleft[1],32*25,32*25))
@@ -228,12 +224,16 @@ class Map:
     # Populates the selection, based on what collides with
     # the given rect
     def select_group(self,rect):
+        for unit in self.selection:
+            unit.set_selected(False);
+            
         self.selection = []
         
         player = self.playerIdMap[0]
         for unitA in self.unitTable[player]:
             if(unitA.rect.colliderect(rect)):
                 self.selection.append(unitA)
+                unitA.set_selected(True)
                 
     def save(self,filename=None):
         if(filename != None):

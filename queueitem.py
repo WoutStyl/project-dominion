@@ -2,9 +2,9 @@ import pygame, math, random, operator, unit, sys, soldier
 from vector import *
 
 class QueueItem():
-    def __init__(self, queue):
+    def __init__(self, i):
         self.buildComplete = False
-        self.x = 16 + (32 * (len(queue)-1))
+        self.x = 16 + (32 * (i))
         self.y = 552
         #self.unit = unit
         self.pos = Vector(self.x,self.y)
@@ -18,7 +18,7 @@ class QueueItem():
         self.rect = pygame.Rect(0,0,32,32)
         pygame.draw.rect(self.image, (225,0,0), self.rect)
         self.rect.center = self.pos.get()
-        self.listIndex = len(queue)-1
+        self.listIndex = i
 
         #Image for Load Bar
         #self.loadbarImage = pygame.Surface((self.timeDiff, 5), pygame.SRCALPHA, 32).convert_alpha()

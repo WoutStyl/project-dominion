@@ -16,6 +16,8 @@ class Unit(object):
         pygame.draw.circle(self.focus, (0,255,0), (self.width / 2, self.height / 2), self.width /2 + 5, 3)
         #self.rect.move_ip(float(x),float(y))
         self.rect.center = (self.pos.get()[0],self.pos.get()[1])
+        
+        self.isSelected = False
         #print "x is "
         #print x
         #raw_input('')
@@ -26,9 +28,12 @@ class Unit(object):
                 
     def draw(self, screen):
         screen.blit(self.image, self.rect)
-
-    def drawfocus(self, screen):
-        screen.blit(self.focus,self.rect)
+        
+        if self.isSelected:
+            screen.blit(self.focus,self.rect)
+        
+    def set_selected(self, value):
+        self.isSelected = value
 
     def keep_on_screen(self,width,height):
         pass

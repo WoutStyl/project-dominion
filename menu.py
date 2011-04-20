@@ -33,7 +33,6 @@ class Menu(object):
                 self.index -= 1
                 if self.index < 0:
                         self.index = len(self.buttons)-1
-                print self.index
                 self.buttons[self.index].focus()
                 return True
             if event.key == pygame.K_DOWN:
@@ -44,16 +43,26 @@ class Menu(object):
                 self.buttons[self.index].focus()
                 return True
             if event.key == pygame.K_RETURN:
-                self.buttons[self.index].clickObj.isClicked(self)
+                self.buttons[self.index].clickObj.unclicked(self)
                 return True
             if event.key == pygame.K_ESCAPE:
                 self.leave_menu()
                 return True
         if event.type == pygame.QUIT:
             sys.exit(0)
+        if event.type == pygame.MOUSEBUTTONDOWN:
+            if event.button == 1:
+                if self.buttons[self.index].is_mouse_focus():
+                    print "click bitch"
+                    self.buttons[self.index].clickObj.clicked(self)
+                    self.buttons[self.index].focus()
+                    return True
         if event.type == pygame.MOUSEBUTTONUP:
             if event.button == 1:
-                if self.clickFocus():
+                if self.buttons[self.index].is_mouse_focus():
+                    print "unclick bitch"
+                    self.buttons[self.index].clickObj.unclicked(self)
+                    self.buttons[self.index].focus()
                     return True
         return False
     # update
@@ -78,12 +87,6 @@ class Menu(object):
                 return
             else:
                 newIndex += 1
-    def clickFocus(self):
-        if self.buttons[self.index].is_mouse_focus() is True:
-            self.buttons[self.index].clickObj.isClicked(self)
-            self.buttons[self.index].focus()
-            return True
-        return False
 
         
 #These classes initialize the menu differently based on its intended purpose
@@ -192,7 +195,7 @@ class SavedCampaignSelectMenu(Menu):
         self.add_button(525, (525), text, button.BackOnClick(), "Blank")
 
     def leave_menu(self):
-        self.nextMenu = MainMenu(self) # The next menu loaded will be the Main Menu
+        self.nextMenu = MainMenu() # The next menu loaded will be the Main Menu
     def draw(self, screen):
         screen.fill((0,0,0))
         super(SavedCampaignSelectMenu,self).draw(screen)
