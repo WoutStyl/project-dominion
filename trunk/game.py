@@ -1,4 +1,4 @@
-import pygame, sys, string, random, math, operator, soldier, menu, button, map
+import pygame, sys, string, random, math, operator, soldier, menu, button, map, protocoleditor
 
 #class GlobalGameFlag:
 #    instance = None
@@ -37,13 +37,9 @@ class Game(object):
         self.paused = False
 
         self.mainMenu = menu.MainMenu()
-    def update(self):
+    def update(self, deltaSeconds):
         if self.mainMenu.bInMenu is False:
             self.paused = False
-        self.clock.tick(50)
-        deltaSeconds = self.clock.get_time()/1000.0
-        for event in pygame.event.get():
-            self.handle_event(event)
         
         self.map.update(deltaSeconds)
 
@@ -53,19 +49,18 @@ class Game(object):
             self.mainMenu = buildmenu
             self.mainMenu.bInMenu = False
 
-        if(self.arrowdown):
-            if self.leftdown and self.upperleft[0] != 0.0:
-                self.upperleft[0] = self.upperleft[0] - 1
-                self.mouseRect.x -= 1
-            if self.rightdown and self.upperleft[0] != (1600 - self.screen_width):
-                self.upperleft[0] = self.upperleft[0] + 1
-                self.mouseRect.x += 1
-            if self.updown and self.upperleft[1] != 0.0:
-                self.upperleft[1] = self.upperleft[1] - 1
-                self.mouseRect.y -= 1
-            if self.downdown and self.upperleft[1] != (1600 - self.screen_height):
-                self.upperleft[1] = self.upperleft[1] + 1
-                self.mouseRect.y += 1
+        if self.leftdown and self.upperleft[0] != 0.0:
+            self.upperleft[0] = self.upperleft[0] - 1
+            self.mouseRect.x -= 1
+        if self.rightdown and self.upperleft[0] != (1600 - self.screen_width):
+            self.upperleft[0] = self.upperleft[0] + 1
+            self.mouseRect.x += 1
+        if self.updown and self.upperleft[1] != 0.0:
+            self.upperleft[1] = self.upperleft[1] - 1
+            self.mouseRect.y -= 1
+        if self.downdown and self.upperleft[1] != (1600 - self.screen_height):
+            self.upperleft[1] = self.upperleft[1] + 1
+            self.mouseRect.y += 1
             
         if self.mouseIsDown:
             self.position2 = pygame.mouse.get_pos()
@@ -78,44 +73,43 @@ class Game(object):
             pygame.quit()
         if event.type == pygame.KEYDOWN:
         ####All key presses to game here
-            if event.key == pygame.K_ESCAPE:
-                pygame.quit()
-
             if event.key == pygame.K_LEFT:
-                self.arrowdown = True
                 self.leftdown = True
             if event.key == pygame.K_RIGHT:
                 self.rightdown = True
-                self.arrowdown = True
             if event.key == pygame.K_UP:
-                self.arrowdown = True
                 self.updown = True
             if event.key == pygame.K_DOWN:
-                self.arrowdown = True
                 self.downdown = True
         
+            # Escape brings up the pause menu
+            if event.key == pygame.K_ESCAPE:
+                if self.paused == True:
+                    self.paused = False
+                    self.mainMenu.bInMenu = False
+                else:
+                    self.paused = True
+                    self.mainMenu = menu.MainMenu()
 
+            # P brings up the protocol editor (may want to bring up
+            # protocol editor through pause menu
             if event.key == pygame.K_p:
                 if self.paused == True:
                     self.paused = False
                     self.mainMenu.bInMenu = False 
                 elif self.paused == False:
                     self.paused = True
-                    self.mainMenu = menu.MainMenu()
+                    self.mainMenu = protocoleditor.ProtocolEditor()
         ####End key presses
                     
         if event.type == pygame.KEYUP:
             if event.key == pygame.K_LEFT:
-                self.arrowdown = False
                 self.leftdown = False
             if event.key == pygame.K_RIGHT:
                 self.rightdown = False
-                self.arrowdown = False
             if event.key == pygame.K_UP:
-                self.arrowdown = False
                 self.updown = False
             if event.key == pygame.K_DOWN:
-                self.arrowdown = False
                 self.downdown = False
 
         if event.type == pygame.MOUSEBUTTONDOWN:
@@ -160,21 +154,25 @@ class Game(object):
         self.map.draw(self.screen,self.upperleft,self.mouseRect)
     def main_loop(self):
         while 1:
+            self.clock.tick(50)
+            deltaSeconds = self.clock.get_time()/1000.0
+            if deltaSeconds > 0.08:
+                deltaSeconds = 0.02
             for event in pygame.event.get():
-                if(not self.mainMenu.handle_event(event)):
+                if not self.mainMenu.bInMenu or (not self.mainMenu.handle_event(event) and not self.mainMenu.stealInput):
                     self.handle_event(event)
             self.screen.fill((0,0,0))
             if self.mainMenu.bInMenu:
                 self.menu_loop()
             if self.mainMenu.stealInput == False or not self.mainMenu.bInMenu:
-                self.game_loop()
+                self.game_loop(deltaSeconds)
             pygame.display.flip()
     def menu_loop(self):
         self.mainMenu.check_focus()
         self.mainMenu = self.mainMenu.update()
         self.mainMenu.draw(self.screen)
-    def game_loop(self):
-        self.update()
+    def game_loop(self, deltaSeconds):
+        self.update(deltaSeconds)
         self.draw()
         
         

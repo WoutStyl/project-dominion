@@ -145,7 +145,7 @@ class Soldier(unit.Unit):
             if self.protocol !=None:
                     self.protocol = self.protocol.execute(self)
                 
-        if(self.lastFire ==0  and self.fire == True):
+        if self.lastFire == 0 and self.fire == True:
             self.lastFire += deltaSeconds
             tPos = self.fireTarget.pos
             tVel = self.fireTarget.velocity * self.fireTarget.speed

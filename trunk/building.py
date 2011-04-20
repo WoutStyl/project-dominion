@@ -26,32 +26,30 @@ class Building(unit.Unit):
         self.rect.center = self.pos.get()
         
         self.unitQueue = []
-        self.buildMenu = None
+        
+        self.buildMenu = menu.Menu()
+        font = pygame.font.Font(None, 36)
+        text = font.render("Add", 1, (0,0,0))
+        Click = button.AddToQueueOnClick(self)
+        self.buildMenu.add_button(536, 536, text, Click)
+        
         self.seconds = 0
         
     def update(self, delta_seconds):
         self.seconds += delta_seconds
         i = 0
         for u in self.unitQueue:
-            print i
-            if u.update(self.seconds, i) :
-                pass
-            else:
+            if not u.update(self.seconds, i) :
                 self.unitQueue.pop(0)
             i += 1
+            
+        if self.isSelected:
+            self.buildMenu.update()
                     
     def draw(self, screen):
-        if self.buildMenu is None:
-            self.buildMenu = menu.Menu()
-            font = pygame.font.Font(None, 36)
-            text = font.render("Add", 1, (0,0,0))
-            Click = button.AddToQueueOnClick()
-            Click.set_queue(self.unitQueue)
-            self.buildMenu.add_button(536, 536, text, Click)
-        self.buildMenu.update()
-        
-        #print delta_seconds
-        screen.blit(self.image, self.rect)
+        super(Building, self).draw(screen)
+        if self.isSelected:
+            self.buildMenu.draw(screen)
 
     def drawfocus(self, screen):
         pygame.draw.rect(self.image,(0, 225,225), self.rect)
@@ -68,5 +66,7 @@ class Building(unit.Unit):
         else:
             self.selected = True
     
-
+    def add_to_queue(self):
+        print "AHHHHHHHHHHHHHHHHH"
+        self.unitQueue.append(queueitem.QueueItem(len(self.unitQueue)))
     
