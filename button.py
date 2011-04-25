@@ -17,6 +17,7 @@ class Button(object):
         self.name = targetImage
         self.clickObj = clickType
         self.buttonText = text
+        self.enabled = True
         if focused:
             self.focus()
         else:
@@ -53,6 +54,9 @@ class Button(object):
                 self.focus()
                 return True
         return False
+        
+    def is_enabled(self):
+        return self.enabled
 
 #Responsibilities
 #Defines logic for click events
@@ -64,10 +68,11 @@ class OnClick(object):
     def __init__(self):
         self.isClicked = False
             
-    def is_clicked():
+    def is_clicked(self):
         return self.isClicked
         
     def clicked(self, m):
+        pygame.mouse.get_rel()
         self.isClicked = True
         
     def unclicked(self, m):

@@ -32,93 +32,93 @@ class Soldier(unit.Unit):
         
         last = self.protocol
         cmd = Soldier.commands["Move Direction"]
-        tmp = function.Function(cmd[0],cmd[1],cmd[2])
+        tmp = function.Function(cmd[0],"Move Direction",cmd[1],cmd[2])
         tmp.arguments["direction"] = variable.Variable("string", "Right")
         last.then = tmp
         
         last = tmp
         cmd = Soldier.commands["Wait"]
-        tmp = function.Function(cmd[0],cmd[1],cmd[2])
+        tmp = function.Function(cmd[0],"Wait",cmd[1],cmd[2])
         tmp.arguments["seconds"] = variable.Variable("integer", random.randint(100,200)/100.0)
         last.next = tmp
         
         last = tmp
         cmd = Soldier.commands["Stop"]
-        tmp = function.Function(cmd[0],cmd[1],cmd[2])
+        tmp = function.Function(cmd[0],"Stop",cmd[1],cmd[2])
         last.next = tmp
         
         last = tmp
         cmd = Soldier.commands["Wait"]
-        tmp = function.Function(cmd[0],cmd[1],cmd[2])
+        tmp = function.Function(cmd[0],"Wait",cmd[1],cmd[2])
         tmp.arguments["seconds"] = variable.Variable("integer", random.randint(100,200)/100.0)
         last.next = tmp
         
         last = tmp
         cmd = Soldier.commands["Move Direction"]
-        tmp = function.Function(cmd[0],cmd[1],cmd[2])
+        tmp = function.Function(cmd[0],"Move Direction",cmd[1],cmd[2])
         tmp.arguments["direction"] = variable.Variable("string", "Down")
         last.next = tmp
         
         last = tmp
         cmd = Soldier.commands["Wait"]
-        tmp = function.Function(cmd[0],cmd[1],cmd[2])
+        tmp = function.Function(cmd[0],"Wait",cmd[1],cmd[2])
         tmp.arguments["seconds"] = variable.Variable("integer", random.randint(100,200)/100.0)
         last.next = tmp
         
         last = tmp
         cmd = Soldier.commands["Stop"]
-        tmp = function.Function(cmd[0],cmd[1],cmd[2])
+        tmp = function.Function(cmd[0],"Stop",cmd[1],cmd[2])
         last.next = tmp
         
         last = tmp
         cmd = Soldier.commands["Wait"]
-        tmp = function.Function(cmd[0],cmd[1],cmd[2])
+        tmp = function.Function(cmd[0],"Wait",cmd[1],cmd[2])
         tmp.arguments["seconds"] = variable.Variable("integer", random.randint(100,200)/100.0)
         last.next = tmp
         
         last = tmp
         cmd = Soldier.commands["Move Direction"]
-        tmp = function.Function(cmd[0],cmd[1],cmd[2])
+        tmp = function.Function(cmd[0],"Move Direction",cmd[1],cmd[2])
         tmp.arguments["direction"] = variable.Variable("string", "Left")
         last.next = tmp
         
         last = tmp
         cmd = Soldier.commands["Wait"]
-        tmp = function.Function(cmd[0],cmd[1],cmd[2])
+        tmp = function.Function(cmd[0],"Wait",cmd[1],cmd[2])
         tmp.arguments["seconds"] = variable.Variable("integer", random.randint(100,200)/100.0)
         last.next = tmp
         
         last = tmp
         cmd = Soldier.commands["Stop"]
-        tmp = function.Function(cmd[0],cmd[1],cmd[2])
+        tmp = function.Function(cmd[0],"Stop",cmd[1],cmd[2])
         last.next = tmp
         
         last = tmp
         cmd = Soldier.commands["Wait"]
-        tmp = function.Function(cmd[0],cmd[1],cmd[2])
+        tmp = function.Function(cmd[0],"Wait",cmd[1],cmd[2])
         tmp.arguments["seconds"] = variable.Variable("integer", random.randint(100,200)/100.0)
         last.next = tmp
         
         last = tmp
         cmd = Soldier.commands["Move Direction"]
-        tmp = function.Function(cmd[0],cmd[1],cmd[2])
+        tmp = function.Function(cmd[0],"Move Direction",cmd[1],cmd[2])
         tmp.arguments["direction"] = variable.Variable("string", "Up")
         last.next = tmp
         
         last = tmp
         cmd = Soldier.commands["Wait"]
-        tmp = function.Function(cmd[0],cmd[1],cmd[2])
+        tmp = function.Function(cmd[0],"Wait",cmd[1],cmd[2])
         tmp.arguments["seconds"] = variable.Variable("integer", random.randint(100,200)/100.0)
         last.next = tmp
         
         last = tmp
         cmd = Soldier.commands["Stop"]
-        tmp = function.Function(cmd[0],cmd[1],cmd[2])
+        tmp = function.Function(cmd[0],"Stop",cmd[1],cmd[2])
         last.next = tmp
         
         last = tmp
         cmd = Soldier.commands["Wait"]
-        tmp = function.Function(cmd[0],cmd[1],cmd[2])
+        tmp = function.Function(cmd[0],"Wait",cmd[1],cmd[2])
         tmp.arguments["seconds"] = variable.Variable("integer", random.randint(100,200)/100.0)
         last.next = tmp
         

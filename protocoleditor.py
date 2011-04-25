@@ -1,9 +1,10 @@
-import pygame, menu, button, math
+import pygame, menu, button, math, protocolitem, function, variable
 
 class ProtocolEditor(menu.Menu):
     def __init__(self):
         super(ProtocolEditor, self).__init__()
         self.stealInput = True
+        self.protocolItems = []
         
         screen = pygame.display.get_surface()
         self.createBar = pygame.Surface((screen.get_width()/8, screen.get_height()), pygame.SRCALPHA, 32).convert_alpha()
@@ -17,15 +18,16 @@ class ProtocolEditor(menu.Menu):
         self.selectBarRect.topleft = self.createBarRect.topright
         
         font = pygame.font.Font(None, 36)
+        
+        self.regularButtons = []
         text = font.render("Save", 1, (0,0,0))
-        self.buttons.append(button.Button(screen.get_width()-100, screen.get_height()-300, text, SaveProtocolOnClick(), "Blank", True))
+        self.regularButtons.append(button.Button(screen.get_width()-100, screen.get_height()-300, text, SaveProtocolOnClick(), "Blank", True))
         text = font.render("Load", 1, (0,0,0))
-        self.buttons.append(button.Button(screen.get_width()-100, screen.get_height()-200, text, LoadProtocolOnClick(), "Blank"))
+        self.regularButtons.append(button.Button(screen.get_width()-100, screen.get_height()-200, text, LoadProtocolOnClick(), "Blank"))
         text = font.render("Exit", 1, (0,0,0))
-        self.buttons.append(button.Button(screen.get_width()-100, screen.get_height()-100, text, ExitProtocolOnClick(), "Blank"))
+        self.regularButtons.append(button.Button(screen.get_width()-100, screen.get_height()-100, text, ExitProtocolOnClick(), "Blank"))
         
         self.createButtons = []
-        
         text = font.render("Variable", 1, (0,0,0))
         self.createButtons.append(button.Button(0, 25, text, SelectVariableOnClick(), "Blank", True))
         text = font.render("Function", 1, (0,0,0))
@@ -41,6 +43,15 @@ class ProtocolEditor(menu.Menu):
         
         self.selectedCreateType = ""
         
+        self.buttons = self.regularButtons + self.createButtons + self.protocolItems
+        
+    def update(self):
+        self.buttons = self.regularButtons + self.createButtons + self.protocolItems
+        
+        for b in self.buttons:
+            b.update()
+        return super(ProtocolEditor, self).update()
+        
     def draw(self, screen):
         screen.blit(self.createBar, self.createBarRect)
         screen.blit(self.selectBar, self.selectBarRect)
@@ -49,6 +60,9 @@ class ProtocolEditor(menu.Menu):
         
         for b in self.createButtons:
             b.draw(screen)
+            
+        for p in self.protocolItems:
+            p.draw(screen)
             
     def select_create_type(self, value):
         self.selectedCreateType = value
@@ -63,7 +77,21 @@ class ProtocolEditor(menu.Menu):
         pass
         
     def create_selected(self):
-        pass
+        if self.selectedCreateType == "variable":
+            self.protocolItems.append(protocolitem.ProtocolItem(variable.Variable()))
+            return
+        if self.selectedCreateType == "function":
+            self.protocolItems.append(protocolitem.ProtocolItem(function.Function()))
+            return
+        if self.selectedCreateType == "if":
+            self.protocolItems.append(protocolitem.ProtocolItem(function.IfStatement()))
+            return
+        if self.selectedCreateType == "while":
+            self.protocolItems.append(protocolitem.ProtocolItem(function.WhileLoop()))
+            return
+        if self.selectedCreateType == "foreach":
+            self.protocolItems.append(protocolitem.ProtocolItem(function.ForeachLoop()))
+            return
         
 class SaveProtocolOnClick(button.OnClick):
     def unclicked(self, m):

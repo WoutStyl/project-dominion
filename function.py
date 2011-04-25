@@ -2,7 +2,7 @@ import variable
 
 class Function(variable.Variable):
 
-    def __init__(self, type = "", functionReference = None, types = {}):
+    def __init__(self, type = "", name = "Function", functionReference = None, types = {}):
         variable.Variable.__init__(self, type)
 
         # The next function in the protocol chain
@@ -13,6 +13,7 @@ class Function(variable.Variable):
         self.types = types
         # A dictionary that contains the variables that will be passed to the functionReference when it's called
         self.arguments = dict.fromkeys(self.types.keys())
+        self.name = name
         
     # Because Functions can be used as Variables we want to be able to retrieve the value
     def get_value(self):
@@ -54,6 +55,7 @@ class IfStatement(Function):
         self.arguments = {"a": None, "b": None}
         # then defines the Function in the protocol chain that needs to happen if the IfStatement is true
         self.then = None
+        self.name = "If"
         
     # IfStatements cannot be used as variables
     def get_value(self):
@@ -87,12 +89,13 @@ class IfStatement(Function):
 class WhileLoop(IfStatement):
     def __init__(self, type = "=="):
         IfStatement.__init__(self, type)
+        self.name = "While"
         
 # Much different than the WhileLoop and IfStatement as it isn't comparative, it's meant
 # to iterate over a list
 class ForeachLoop(Function):
     def __init__(self, type = ""):
-        ForeachLoop.__init__(self, type)
+        Function.__init__(self, type)
         
         # Only takes a list as its argument
         self.arguments = {"list": None}
@@ -102,6 +105,7 @@ class ForeachLoop(Function):
         self.then = None
         # We store the item we used on the last go around
         self.previousItem = None
+        self.name = "Foreach"
         
     # ForeachLoops can be used as a Variable, so that iterating over the list actually has meaning
     def get_value(self):
