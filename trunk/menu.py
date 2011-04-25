@@ -53,14 +53,12 @@ class Menu(object):
         if event.type == pygame.MOUSEBUTTONDOWN:
             if event.button == 1:
                 if self.buttons[self.index].is_mouse_focus():
-                    print "click bitch"
                     self.buttons[self.index].clickObj.clicked(self)
                     self.buttons[self.index].focus()
                     return True
         if event.type == pygame.MOUSEBUTTONUP:
             if event.button == 1:
                 if self.buttons[self.index].is_mouse_focus():
-                    print "unclick bitch"
                     self.buttons[self.index].clickObj.unclicked(self)
                     self.buttons[self.index].focus()
                     return True

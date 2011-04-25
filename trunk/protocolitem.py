@@ -8,9 +8,7 @@ class ProtocolItem(button.Button):
         super(ProtocolItem, self).__init__(250,250,text,button.OnClick(), "Blank")
         
     def update(self):
-        print self.clickObj.is_clicked()
         if self.clickObj.is_clicked():
-            print "why you no halp"
             x, y = pygame.mouse.get_rel()
             self.pos[0] += x
             self.pos[1] += y
