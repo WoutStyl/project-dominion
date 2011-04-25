@@ -95,55 +95,46 @@ class ProtocolEditor(menu.Menu):
         
 class SaveProtocolOnClick(button.OnClick):
     def unclicked(self, m):
-        print "blah"
         self.isClicked = True
         m.save()
         
 class LoadProtocolOnClick(button.OnClick):
     def unclicked(self, m):
-        print "blah"
         self.isClicked = True
         m.save()
         
 class ExitProtocolOnClick(button.OnClick):
     def unclicked(self, m):
-        print "blah"
         self.isClicked = True
         m.leave_menu()
         
 class CreateOnClick(button.OnClick):
     def unclicked(self, m):
-        print "blah"
         self.isClicked = True
         m.create_selected()
         
 class SelectVariableOnClick(button.OnClick):
     def unclicked(self, m):
-        print "blah"
         self.isClicked = True
         m.select_create_type("variable")
         
 class SelectFunctionOnClick(button.OnClick):
     def unclicked(self, m):
-        print "blah"
         self.isClicked = True
         m.select_create_type("function")
         
 class SelectIfOnClick(button.OnClick):
     def unclicked(self, m):
-        print "blah"
         self.isClicked = True
         m.select_create_type("if")
         
 class SelectWhileOnClick(button.OnClick):
     def unclicked(self, m):
-        print "blah"
         self.isClicked = True
         m.select_create_type("while")
         
 class SelectForeachOnClick(button.OnClick):
     def unclicked(self, m):
-        print "blah"
         self.isClicked = True
         m.select_create_type("foreach")
         
