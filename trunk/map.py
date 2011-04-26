@@ -1,4 +1,4 @@
-import re,missionwrapper,unit,pygame,random,soldier, building
+import re,missionwrapper,unit,pygame,random,soldier,building,objective
 
 # This class associates a terrain type with its properties
 class MovementTable:
@@ -40,6 +40,8 @@ class Map:
         self.projectiles = dict()
         # Whether there is a map loaded or not
         self.loaded = False
+        # Objective object list
+        self.objectiveList = []
         
         # A hardcoded target for the units to shoot at, until we have units
         # retrievable in the protocols
@@ -142,6 +144,11 @@ class Map:
         terrainList = self.wrapper.GetMap()
         playerList = self.wrapper.GetPlayer()
         unitList = self.wrapper.GetUnits()
+        objectiveList = self.wrapper.GetObjective()
+
+        #Construct the list of Objectives
+        for objtive in objectiveList:
+            self.objectiveList.append(objective.Objective(objtive))
         
         # Initialize the terrain grid
         holder = []
