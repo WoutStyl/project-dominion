@@ -18,17 +18,17 @@ class Objective:
                 else:
                     booltype = False
                     boolsubtype = True
-                    typestring = substring
+                    self.typestring = substring
                     substring = ""
                     continue #don't process anymore on this char
                 
             #if you are done with the subtype arg
-            elif(subtype):
+            elif(boolsubtype):
                 if(char != ' '):
                     substring = substring + char
                 else:
                     boolsubtype = False
-                    subtypestring = substring
+                    self.subtypestring = substring
                     substring = ""
                     continue
             #if you are done with both type arg and subtype arg
@@ -36,7 +36,7 @@ class Objective:
                 if(char != ' '):
                     substring = substring + char
                 else:
-                    argstringlist.append(substring)
+                    self.argstringlist.append(substring)
                     substring = ""
                     continue
         #End of for loop
