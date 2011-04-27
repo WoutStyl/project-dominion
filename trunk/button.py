@@ -25,6 +25,7 @@ class Button(object):
                 
     def update(self):
         pass
+        
     def draw(self,screen):
         screen.blit(self.image, (self.pos[0], self.pos[1]))
         textpos = self.buttonText.get_rect(centerx = screen.get_width()/2)
@@ -76,6 +77,9 @@ class OnClick(object):
         self.isClicked = True
         
     def unclicked(self, m):
+        self.isClicked = False
+        
+    def force_unclicked(self):
         self.isClicked = False
 
 class StartOnClick(OnClick) :
