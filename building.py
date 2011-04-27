@@ -67,6 +67,5 @@ class Building(unit.Unit):
             self.selected = True
     
     def add_to_queue(self):
-        print "AHHHHHHHHHHHHHHHHH"
         self.unitQueue.append(queueitem.QueueItem(len(self.unitQueue)))
     

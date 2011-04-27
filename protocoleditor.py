@@ -5,6 +5,12 @@ class ProtocolEditor(menu.Menu):
         super(ProtocolEditor, self).__init__()
         self.stealInput = True
         self.protocolItems = []
+        self.links = {}
+        
+        self.startIndex = 0
+        self.startName = ""
+        self.endIndex = 0
+        self.endName = ""
         
         screen = pygame.display.get_surface()
         self.createBar = pygame.Surface((screen.get_width()/8, screen.get_height()), pygame.SRCALPHA, 32).convert_alpha()
@@ -29,15 +35,15 @@ class ProtocolEditor(menu.Menu):
         
         self.createButtons = []
         text = font.render("Variable", 1, (0,0,0))
-        self.createButtons.append(button.Button(0, 25, text, SelectVariableOnClick(), "Blank", True))
+        self.createButtons.append(button.Button(0, 25, text, CreateSelectOnClick("variable"), "Blank", True))
         text = font.render("Function", 1, (0,0,0))
-        self.createButtons.append(button.Button(0, 125, text, SelectFunctionOnClick(), "Blank"))
+        self.createButtons.append(button.Button(0, 125, text, CreateSelectOnClick("function"), "Blank"))
         text = font.render("If", 1, (0,0,0))
-        self.createButtons.append(button.Button(0, 225, text, SelectIfOnClick(), "Blank"))
+        self.createButtons.append(button.Button(0, 225, text, CreateSelectOnClick("if"), "Blank"))
         text = font.render("While", 1, (0,0,0))
-        self.createButtons.append(button.Button(0, 325, text, SelectWhileOnClick(), "Blank"))
+        self.createButtons.append(button.Button(0, 325, text, CreateSelectOnClick("while"), "Blank"))
         text = font.render("Foreach", 1, (0,0,0))
-        self.createButtons.append(button.Button(0, 425, text, SelectForeachOnClick(), "Blank"))
+        self.createButtons.append(button.Button(0, 425, text, CreateSelectOnClick("foreach"), "Blank"))
         text = font.render("Create", 1, (0,0,0))
         self.createButtons.append(button.Button(0, 525, text, CreateOnClick(), "Blank"))
         
@@ -63,6 +69,23 @@ class ProtocolEditor(menu.Menu):
             
         for p in self.protocolItems:
             p.draw(screen)
+            
+        for l in self.links.values():
+            if l != None:
+                pygame.draw.line(screen, (255,255,255), l[0], l[1])
+            
+        if self.startName != "":
+            position1 = self.buttons[self.startIndex].get_link_position(self.startName)
+            position2 = pygame.mouse.get_pos()
+            pygame.draw.line(screen, (255,255,255), position1, position2)
+            
+    def handle_event(self, event):
+        returnValue = super(ProtocolEditor, self).handle_event(event)
+        if event.type == pygame.MOUSEBUTTONUP:
+            if event.button == 1:
+                self.reset_link_drag()
+        return returnValue
+                
             
     def select_create_type(self, value):
         self.selectedCreateType = value
@@ -93,48 +116,71 @@ class ProtocolEditor(menu.Menu):
             self.protocolItems.append(protocolitem.ProtocolItem(function.ForeachLoop()))
             return
         
+    def set_start(self, name):
+        self.startIndex = self.index
+        self.startName = name
+        
+        if self.buttons[self.startIndex].set_link(self.startName, None):
+            self.links[str(self.startIndex) + self.startName] = None
+        
+    def set_end(self, name):
+        self.endIndex = self.index
+        self.endName = name
+        
+        if self.startName == "":
+            self.reset_link_drag()
+            return
+        
+        button1 = self.buttons[self.startIndex]
+        button2 = self.buttons[self.endIndex]
+            
+        if button1.set_link(self.startName,button2):
+            position1 = button1.get_link_position(self.startName)
+            position2 = button2.get_link_position(self.endName)
+            self.links[str(self.startIndex) + self.startName] = [position1, position2]
+            self.reset_link_drag()
+            return
+            
+        if button2.set_link(self.startName,button1):
+            position1 = button2.get_link_position(self.endName)
+            position2 = button1.get_link_position(self.startName)
+            self.links[str(self.endIndex) + self.endName] = [position1, position2]
+            self.reset_link_drag()
+            return
+        
+        self.reset_link_drag()
+        
+    def reset_link_drag(self):
+        self.startIndex = 0
+        self.startName = ""
+        self.endIndex = 0
+        self.endName = ""
+        
 class SaveProtocolOnClick(button.OnClick):
     def unclicked(self, m):
-        self.isClicked = True
+        self.isClicked = False
         m.save()
         
 class LoadProtocolOnClick(button.OnClick):
     def unclicked(self, m):
-        self.isClicked = True
+        self.isClicked = False
         m.save()
         
 class ExitProtocolOnClick(button.OnClick):
     def unclicked(self, m):
-        self.isClicked = True
+        self.isClicked = False
         m.leave_menu()
         
 class CreateOnClick(button.OnClick):
     def unclicked(self, m):
-        self.isClicked = True
+        self.isClicked = False
         m.create_selected()
         
-class SelectVariableOnClick(button.OnClick):
-    def unclicked(self, m):
-        self.isClicked = True
-        m.select_create_type("variable")
+class CreateSelectOnClick(button.OnClick):
+    def __init__(self, type = ""):
+        super(CreateSelectOnClick, self).__init__()
+        self.type = type
         
-class SelectFunctionOnClick(button.OnClick):
     def unclicked(self, m):
-        self.isClicked = True
-        m.select_create_type("function")
-        
-class SelectIfOnClick(button.OnClick):
-    def unclicked(self, m):
-        self.isClicked = True
-        m.select_create_type("if")
-        
-class SelectWhileOnClick(button.OnClick):
-    def unclicked(self, m):
-        self.isClicked = True
-        m.select_create_type("while")
-        
-class SelectForeachOnClick(button.OnClick):
-    def unclicked(self, m):
-        self.isClicked = True
-        m.select_create_type("foreach")
-        
+        self.isClicked = False
+        m.select_create_type(self.type)

@@ -1,6 +1,6 @@
 import pygame
 
-class Variable:
+class Variable(object):
     #types = ["bool", "integer", "string", "unit"]
     def __init__(self, type = "", value = None):
         # The variable's stored value
@@ -13,8 +13,8 @@ class Variable:
             self.name = self.type
         
         
-    def is_type(self, type):
-        return self.type == type
+    def get_type(self):
+        return self.type
         
     def set_value(self, value):
         self.value = value
@@ -24,3 +24,9 @@ class Variable:
 
     def get_name(self):
         return self.name
+        
+    def get_link_names(self):
+        return ["get"]
+        
+    def set_link_value(self, name, value):
+        return False

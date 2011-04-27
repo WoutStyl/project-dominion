@@ -9,6 +9,7 @@ class Menu(object):
         self.mission = ""
         self.nextMenu = self
         self.stealInput = False
+        self.clickedButton = None
             
     # add_button
     # This function adds a button to the menu given x and y coordinates,
@@ -55,9 +56,13 @@ class Menu(object):
                 if self.buttons[self.index].is_mouse_focus():
                     self.buttons[self.index].clickObj.clicked(self)
                     self.buttons[self.index].focus()
+                    self.clickedButton = self.buttons[self.index]
                     return True
         if event.type == pygame.MOUSEBUTTONUP:
             if event.button == 1:
+                if self.clickedButton != None:
+                    self.clickedButton.clickObj.force_unclicked()
+                    self.clickedButton = None
                 if self.buttons[self.index].is_mouse_focus():
                     self.buttons[self.index].clickObj.unclicked(self)
                     self.buttons[self.index].focus()

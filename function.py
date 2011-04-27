@@ -1,9 +1,8 @@
 import variable
 
 class Function(variable.Variable):
-
     def __init__(self, type = "", name = "Function", functionReference = None, types = {}):
-        variable.Variable.__init__(self, type)
+        super(Function, self).__init__(type)
 
         # The next function in the protocol chain
         self.next = None
@@ -14,6 +13,11 @@ class Function(variable.Variable):
         # A dictionary that contains the variables that will be passed to the functionReference when it's called
         self.arguments = dict.fromkeys(self.types.keys())
         self.name = name
+        
+    def get_type(self):
+        if self.type == "":
+            return "function"
+        return self.type
         
     # Because Functions can be used as Variables we want to be able to retrieve the value
     def get_value(self):
@@ -45,6 +49,18 @@ class Function(variable.Variable):
             
         self.functionReference(unit, tempDict)
         return self.get_next()
+        
+    def get_link_names(self):
+        return super(Function,self).get_link_names() + self.types.keys() + ["next"]
+        
+    def set_link_value(self, name, value):
+        if name == "next" and (value == None or "function" in value.get_type()):
+            self.next = value
+            return True
+        if name in self.types.keys() and (value == None or self.types[name] in value.get_type()):
+            self.arguments[name] = value
+            return True
+        return False
             
 class IfStatement(Function):
     def __init__(self, type = "=="):
@@ -56,6 +72,9 @@ class IfStatement(Function):
         # then defines the Function in the protocol chain that needs to happen if the IfStatement is true
         self.then = None
         self.name = "If"
+        
+    def get_type(self):
+        return "function"
         
     # IfStatements cannot be used as variables
     def get_value(self):
@@ -84,6 +103,26 @@ class IfStatement(Function):
     def execute(self, unit):
         return self.get_next()
         
+    def get_link_names(self):
+        return super(IfStatement,self).get_link_names() + ["then"] + self.arguments.keys()
+        
+    def set_link_value(self, name, value):
+        if name == "next" and (value == None or "function" in value.get_type()):
+            self.next = value
+            return True
+        if name == "then" and (value == None or "function" in value.get_type()):
+            self.then = value
+            return True
+        if name in self.arguments.keys():
+            if value == None:
+                self.arguments[name] = value
+                return True
+            for str in value.get_type().split():
+                if str != "function":
+                    self.arguments[name] = value
+                    return True
+        return False
+        
 # Essentially the same as an IfStatement, the difference will show up in how it's handled
 # for the UI, namely that it loops back onto itself
 class WhileLoop(IfStatement):
@@ -97,6 +136,7 @@ class ForeachLoop(Function):
     def __init__(self, type = ""):
         Function.__init__(self, type)
         
+        self.types = {"list": "list"}
         # Only takes a list as its argument
         self.arguments = {"list": None}
         # Where in the list we are
@@ -106,6 +146,9 @@ class ForeachLoop(Function):
         # We store the item we used on the last go around
         self.previousItem = None
         self.name = "Foreach"
+        
+    def get_type(self):
+        return "function"
         
     # ForeachLoops can be used as a Variable, so that iterating over the list actually has meaning
     def get_value(self):
@@ -130,3 +173,28 @@ class ForeachLoop(Function):
         if self.previousItem == None or self.previousItem == tempList[index]:
             self.index += 1
         return self.get_next()
+        
+    def get_link_names(self):
+        return super(IfStatement,self).get_link_names() + ["then"] + self.arguments.keys()
+        
+    def set_link_value(self, name, value):
+        if name == "next" and (value == None or value.get_type() == "function"):
+            self.next = value
+            return True
+        if name == "then" and (value == None or value.get_type() == "function"):
+            self.then = value
+            return True
+        if name == "list":
+            if value == None:
+                self.arguments[name] = value
+                self.type = ""
+                return True
+            if "list" in value.get_type():
+                self.arguments[name] = value
+                type = value.get_type()
+                if "function" in type:
+                    self.type = " ".join(type.split()[2:])
+                    return True
+                self.type = " ".join(type.split()[1:])
+                return True
+        return False
