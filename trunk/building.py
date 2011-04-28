@@ -49,15 +49,11 @@ class Building(unit.Unit):
     def draw(self, screen):
         super(Building, self).draw(screen)
         if self.isSelected:
-            self.buildMenu.draw(screen)
-
-    def drawfocus(self, screen):
-        pygame.draw.rect(self.image,(0, 225,225), self.rect)
-        self.buildMenu.draw(screen)
-        for u in self.unitQueue:
-            u.draw(screen)
-        self.rect.center = self.pos.get()
-        screen.blit(self.image, self.rect)
+            pygame.draw.rect(self.image,(0, 225,225), self.rect)
+            #for u in self.unitQueue:
+                #u.draw(screen)
+            self.rect.center = self.pos.get()
+            screen.blit(self.image, self.rect)
         
         
     def clicked(self):

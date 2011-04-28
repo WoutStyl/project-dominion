@@ -1,4 +1,4 @@
-import re,missionwrapper,unit,pygame,random,soldier,building,objective
+import re,missionwrapper,unit,pygame,random,soldier,building,objective, queueitem
 
 # This class associates a terrain type with its properties
 class MovementTable:
@@ -108,7 +108,13 @@ class Map:
                 if unit.buildMenu != None:
                     return unit.buildMenu
         return None
-                
+    def get_unit_queue(self):
+        if(self.selection != []):
+            for unit in self.selection:
+                if unit.type is "Building":
+                    if unit.unitQueue != None:
+                        return unit.unitQueue
+        return []
     # Returns the tile type for the terrain
     def lookup(self,char):
         return int((self.movementTable.table[char])[0])

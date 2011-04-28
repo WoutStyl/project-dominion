@@ -9,31 +9,36 @@ import pygame, math, sys, string, os, menu, map, queueitem
 #Surface
 
 class Button(object):
-    def __init__(self, x,y, text, clickType,targetImage, focused = False):
-        self.height = 64
-        self.width = 256
+    def __init__(self, x,y, text, clickType,targetImage, focused = False, enabled = True, height = 64, width = 256):
+        self.height = height
+        self.width = width
         self.pos = [x,y]
         self.nowFocused = focused
         self.name = targetImage
         self.clickObj = clickType
+        self.enabledClickObj = clickType
         self.buttonText = text
         self.enabled = True
         
         self.image = self.load_image(targetImage + ".png")
         self.imageFocused = self.load_image(targetImage + "Focused.png")
-        self.rect = self.image.get_rect()
-        if focused:
-            self.focus()
+        self.imageDisabled = self.load_image(targetImage + "Disabled.png")
+        self.focused = focused
+        if not enabled:
+            self.disable()
         else:
-            self.unfocus()
+            if focused:
+                self.focus()
+            else:
+                self.unfocus()
                 
     def update(self):
         pass
         
     def draw(self,screen):
         if not self.enabled:
-            return
-        if self.nowFocused:
+            screen.blit(self.imageDisabled, (self.pos[0], self.pos[1]))
+        elif self.nowFocused:
             screen.blit(self.imageFocused, (self.pos[0], self.pos[1]))
         else:
             screen.blit(self.image, (self.pos[0], self.pos[1]))
@@ -51,7 +56,7 @@ class Button(object):
         try:
             image = pygame.transform.scale(pygame.image.load(fullname), (self.width, self.height))
         except pygame.error, message:
-            print 'Cannot load image:', name
+            print 'Cannot load image:', self.name
             raise SystemExit, message
         return image.convert()
     def is_mouse_focus(self):
@@ -66,6 +71,17 @@ class Button(object):
         
     def is_enabled(self):
         return self.enabled
+    def disable(self):
+        self.enabled = False
+        self.clickObj = OnClick()
+        
+    def enable(self):
+        self.enabled = True
+        if self.focused:
+            self.focus()
+        else:
+            self.unfocus()
+        self.clickObj = self.enabledClickType
         
     def clicked(self, m):
         if not self.enabled:
@@ -81,10 +97,10 @@ class Button(object):
         self.clickObj.force_unclicked()
         
     def set_enabled(self, value):
-        self.enabled = value
-        
-    def is_enabled(self):
-        return self.enabled
+        if value is True:
+            self.enable()
+        else:
+            self.disable()
 
 #Responsibilities
 #Defines logic for click events
@@ -122,13 +138,9 @@ class LoadOnClick(OnClick) :
         tempMap = map.Map.get()
         tempMap.load(self.mission)
         m.bInMenu = False
-        print map
-        print "Mission Loaded"
         
     def setMission(self, mission):
-        print "Mission Set:"
         self.mission = mission
-        print self.mission
 
 class MissionSelectOnClick(OnClick):
     def unclicked(self,m):

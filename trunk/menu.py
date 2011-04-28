@@ -15,13 +15,13 @@ class Menu(object):
     # add_button
     # This function adds a button to the menu given x and y coordinates,
     # text, desired click functionality and image
-    def add_button(self, x,y,text,clicktype, targetImage = "Blank"):
+    def add_button(self, x,y,text,clicktype, targetImage = "Blank", enabled = True):
         # If this is the first button, set it to be focused by default
         if len(self.buttons) == 0:
-            theButton = button.Button(x,y,text,clicktype,targetImage,True)
+            theButton = button.Button(x,y,text,clicktype,targetImage,True, enabled)
                 
         else:
-            theButton = button.Button(x,y,text,clicktype,targetImage,False)
+            theButton = button.Button(x,y,text,clicktype,targetImage,False, enabled)
         self.buttons.append(theButton)
     def draw(self,screen):
         for b in self.buttons:
@@ -30,14 +30,14 @@ class Menu(object):
     # Handles user input in the menu system
     def handle_event(self,event):
         if event.type == pygame.KEYDOWN:
-            if event.key == pygame.K_UP:
+            if event.key == pygame.K_UP and self.stealInput is True:
                 self.buttons[self.index].unfocus()
                 self.index -= 1
                 if self.index < 0:
                     self.index = len(self.buttons)-1
                 self.buttons[self.index].focus()
                 return True
-            if event.key == pygame.K_DOWN:
+            if event.key == pygame.K_DOWN and self.stealInput is True:
                 self.buttons[self.index].unfocus()
                 self.index += 1
                 if self.index >= len(self.buttons):
@@ -113,7 +113,7 @@ class MainMenu(Menu):
         text = font1.render("", 1, (0,0,0))
         self.stealInput = True
         #Buttons for sub menus
-        self.add_button(buttonlocx, (buttonlocy -128), text, button.StartOnClick(), "StartCampaign")
+        self.add_button(buttonlocx, (buttonlocy -128), text, button.StartOnClick(), "StartCampaign",False)
         self.add_button(buttonlocx,buttonlocy,text, button.MissionSelectOnClick(), "StartMission")
         self.add_button(buttonlocx,(buttonlocy+128),text, button.SavedCampaignSelectOnClick(), "LoadCampaign")
         self.add_button(buttonlocx,(buttonlocy+256),text, button.SavedMissionSelectOnClick(), "LoadMission")

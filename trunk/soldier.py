@@ -1,4 +1,4 @@
-import pygame, math, random, operator, unit, bullet, function, variable
+import pygame, math, random, operator, unit, bullet, function, variable, menu, button
 from vector import *
 
 class Soldier(unit.Unit):
@@ -166,6 +166,21 @@ class Soldier(unit.Unit):
             self.velocity[1] = 0
         if self.rect.right >= max_x and self.velocity[0] > 0:
             self.velocity[0] = 0
+
+    def draw(self, screen):
+        super(Soldier, self).draw(screen)
+        if self.buildMenu is None:
+            self.buildMenu = menu.Menu()
+            font = pygame.font.Font(None, 36)
+            text = font.render("Protocol",1,(0,0,0))
+            Click = button.OnClick() #CHANGE to "ChangeProtocolOnClick"
+            self.buildMenu.add_button(536,536,text,Click)
+        self.buildMenu.update()
+        screen.blit(self.image, self.rect)
+        if self.isSelected:
+            #self.buildMenu.draw(screen)
+            self.rect.center = self.pos.get()
+            screen.blit(self.image, self.rect)
             
             
 #Protocol Commands

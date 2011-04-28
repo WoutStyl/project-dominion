@@ -1,4 +1,4 @@
-import pygame, sys, string, random, math, operator, soldier, menu, button, map, protocoleditor
+import pygame, sys, string, random, math, operator, soldier, menu, button, map, protocoleditor, queueitem
 
 #class GlobalGameFlag:
 #    instance = None
@@ -43,11 +43,13 @@ class Game(object):
         
         self.map.update(deltaSeconds)
 
-        buildmenu = self.map.get_unit_menu()
+        if self.map.is_loaded():
+            buildmenu = self.map.get_unit_menu()
+        else:
+            buildmenu = None
 
         if buildmenu is not None:
             self.mainMenu = buildmenu
-            self.mainMenu.bInMenu = False
 
         if self.leftdown and self.upperleft[0] != 0.0:
             self.upperleft[0] = self.upperleft[0] - 1
@@ -151,7 +153,8 @@ class Game(object):
             
     def draw(self):
         self.screen.fill((0,0,0))
-        self.map.draw(self.screen,self.upperleft,self.mouseRect)
+        if self.map.is_loaded():
+           self.map.draw(self.screen,self.upperleft,self.mouseRect)
     def main_loop(self):
         while 1:
             self.clock.tick(50)
@@ -162,15 +165,22 @@ class Game(object):
                 if not self.mainMenu.bInMenu or (not self.mainMenu.handle_event(event) and not self.mainMenu.stealInput):
                     self.handle_event(event)
             self.screen.fill((0,0,0))
-            if self.mainMenu.bInMenu:
-                self.menu_loop()
             if self.mainMenu.stealInput == False or not self.mainMenu.bInMenu:
                 self.game_loop(deltaSeconds)
+            if self.mainMenu.bInMenu:
+                self.menu_loop()
             pygame.display.flip()
     def menu_loop(self):
         self.mainMenu.check_focus()
         self.mainMenu = self.mainMenu.update()
         self.mainMenu.draw(self.screen)
+        if self.map.is_loaded():
+            queue = []
+            queue = self.map.get_unit_queue()
+            for u in queue:
+                u.draw(self.screen)
+        
+        
     def game_loop(self, deltaSeconds):
         self.update(deltaSeconds)
         self.draw()
