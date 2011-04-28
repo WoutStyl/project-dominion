@@ -30,3 +30,6 @@ class Variable(object):
         
     def set_link_value(self, name, value):
         return False
+        
+    def get_num_arguments(self):
+        return 0

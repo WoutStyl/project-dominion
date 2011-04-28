@@ -127,7 +127,9 @@ class ProtocolEditor(menu.Menu):
         self.endIndex = self.index
         self.endName = name
         
-        if self.startName == "":
+        if self.startName == "" or (self.endName == "" and self.startName == "get") or \
+           (self.startName == "get" and self.endName == "get") or \
+           (self.startName != "get" and self.endName != "get"):
             self.reset_link_drag()
             return
         
