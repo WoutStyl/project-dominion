@@ -18,6 +18,7 @@ class Button(object):
         self.clickObj = clickType
         self.enabledClickObj = clickType
         self.buttonText = text
+        self.text_rect = self.buttonText.get_rect()
         self.enabled = True
         
         self.image = self.load_image(targetImage + ".png")

@@ -259,20 +259,20 @@ class Soldier(unit.Unit):
         
 Soldier.commands = {"Move Towards":         ["",
                                              Soldier.move_towards,
-                                             {"target": "unit"}],
+                                             {"target": "Unit"}],
                     "Move Direction":       ["",
                                              Soldier.move_direction,
-                                             {"direction": "string"}],
+                                             {"direction": "String"}],
                     "Stop":                 ["",
                                              Soldier.stop,
                                              {}],
                     "Fire At":              ["",
                                              Soldier.fire_at,
-                                             {"target": "unit"}],
+                                             {"target": "Unit"}],
                     "Wait":                 ["",
                                              Soldier.wait,
-                                             {"seconds": "integer"}],
+                                             {"seconds": "Integer"}],
                     "Is Within Distance":   ["bool",
                                              Soldier.is_within_distance,
-                                             {"target": "unit", "distance": "integer"}]
+                                             {"target": "unit", "distance": "Integer"}]
                     }
