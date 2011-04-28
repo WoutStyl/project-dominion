@@ -24,6 +24,7 @@ class Button(object):
         self.imageFocused = self.load_image(targetImage + "Focused.png")
         self.imageDisabled = self.load_image(targetImage + "Disabled.png")
         self.focused = focused
+        self.visible = True
         if not enabled:
             self.disable()
         else:
@@ -36,6 +37,8 @@ class Button(object):
         pass
         
     def draw(self,screen):
+        if not self.visible:
+            return
         if not self.enabled:
             screen.blit(self.imageDisabled, (self.pos[0], self.pos[1]))
         elif self.nowFocused:
@@ -60,7 +63,7 @@ class Button(object):
             raise SystemExit, message
         return image.convert()
     def is_mouse_focus(self):
-        if not self.enabled:
+        if not self.enabled or not self.visible:
             return False
         mousePos = pygame.mouse.get_pos()
         if mousePos[0] >= self.pos[0] and mousePos[0] <= self.pos[0]+self.width:
@@ -73,7 +76,6 @@ class Button(object):
         return self.enabled
     def disable(self):
         self.enabled = False
-        self.clickObj = OnClick()
         
     def enable(self):
         self.enabled = True
@@ -81,15 +83,14 @@ class Button(object):
             self.focus()
         else:
             self.unfocus()
-        self.clickObj = self.enabledClickType
         
     def clicked(self, m):
-        if not self.enabled:
+        if not self.enabled or not self.visible:
             return
         self.clickObj.clicked(m)
         
     def unclicked(self, m):
-        if not self.enabled:
+        if not self.enabled or not self.visible:
             return
         self.clickObj.unclicked(m)
         
@@ -101,6 +102,8 @@ class Button(object):
             self.enable()
         else:
             self.disable()
+    def set_visible(self, value):
+        self.visible = value
 
 #Responsibilities
 #Defines logic for click events

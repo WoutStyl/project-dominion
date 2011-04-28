@@ -74,7 +74,7 @@ class ProtocolEditor(menu.Menu):
         self.buttons = self.regularButtons + self.createButtons + self.protocolItems
         for key in sorted(self.optionButtons.keys()):
             for aButton in self.optionButtons[key]:
-                aButton.set_enabled(False)
+                aButton.set_visible(False)
             self.buttons += self.optionButtons[key]
         
     def update(self):
@@ -121,14 +121,14 @@ class ProtocolEditor(menu.Menu):
     def select_create_type(self, value, index):
         if self.selectedCreateType in self.optionButtons.keys():
             for aButton in self.optionButtons[self.selectedCreateType]:
-                aButton.set_enabled(False)
+                aButton.set_visible(False)
                 
         self.selectedCreateType = value
         self.createButtons[self.selectedCreateIndex].unfocus()
         self.selectedCreateIndex = index
         if self.selectedCreateType in self.optionButtons.keys():
             for aButton in self.optionButtons[self.selectedCreateType]:
-                aButton.set_enabled(True)
+                aButton.set_visible(True)
         
     def select_option(self, option, index):
         self.selectedOption = option
