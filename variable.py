@@ -2,7 +2,7 @@ import pygame
 
 class Variable(object):
     #types = ["bool", "integer", "string", "unit"]
-    def __init__(self, type = "", value = None):
+    def __init__(self, type = "", value = ""):
         # The variable's stored value
         self.value = value
         # The type of variable it is (e.g., "bool", "integer", "unit", etc.)
