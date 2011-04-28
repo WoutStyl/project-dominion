@@ -61,6 +61,9 @@ class Function(variable.Variable):
             self.arguments[name] = value
             return True
         return False
+        
+    def get_num_arguments(self):
+        return len(self.arguments)
             
 class IfStatement(Function):
     def __init__(self, type = "=="):
@@ -175,7 +178,7 @@ class ForeachLoop(Function):
         return self.get_next()
         
     def get_link_names(self):
-        return super(IfStatement,self).get_link_names() + ["then"] + self.arguments.keys()
+        return super(ForeachLoop,self).get_link_names() + ["then"]
         
     def set_link_value(self, name, value):
         if name == "next" and (value == None or value.get_type() == "function"):

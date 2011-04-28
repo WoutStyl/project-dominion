@@ -44,7 +44,7 @@ class Menu(object):
                 self.buttons[self.index].focus()
                 return True
             if event.key == pygame.K_RETURN:
-                self.buttons[self.index].clickObj.unclicked(self)
+                self.buttons[self.index].unclicked(self)
                 return True
             if event.key == pygame.K_ESCAPE:
                 self.leave_menu()
@@ -54,17 +54,17 @@ class Menu(object):
         if event.type == pygame.MOUSEBUTTONDOWN:
             if event.button == 1:
                 if self.buttons[self.index].is_mouse_focus():
-                    self.buttons[self.index].clickObj.clicked(self)
+                    self.buttons[self.index].clicked(self)
                     self.buttons[self.index].focus()
                     self.clickedButton = self.buttons[self.index]
                     return True
         if event.type == pygame.MOUSEBUTTONUP:
             if event.button == 1:
                 if self.clickedButton != None:
-                    self.clickedButton.clickObj.force_unclicked()
+                    self.clickedButton.force_unclicked()
                     self.clickedButton = None
                 if self.buttons[self.index].is_mouse_focus():
-                    self.buttons[self.index].clickObj.unclicked(self)
+                    self.buttons[self.index].unclicked(self)
                     self.buttons[self.index].focus()
                     return True
         return False
@@ -80,8 +80,8 @@ class Menu(object):
     def leave_menu(self):
         self.bInMenu = False
     def check_focus(self):
-        newIndex = 0
-        for bttn in self.buttons:
+        newIndex = len(self.buttons)-1
+        for bttn in reversed(self.buttons):
             if bttn.is_mouse_focus() is True:
                 self.buttons[newIndex].focus()
                 if self.index is not newIndex:
@@ -89,7 +89,7 @@ class Menu(object):
                 self.index = newIndex
                 return
             else:
-                newIndex += 1
+                newIndex -= 1
 
         
 #These classes initialize the menu differently based on its intended purpose

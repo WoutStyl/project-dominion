@@ -58,6 +58,15 @@ class Button(object):
         
     def is_enabled(self):
         return self.enabled
+        
+    def clicked(self, m):
+        self.clickObj.clicked(m)
+        
+    def unclicked(self, m):
+        self.clickObj.unclicked(m)
+        
+    def force_unclicked(self):
+        self.clickObj.force_unclicked()
 
 #Responsibilities
 #Defines logic for click events
