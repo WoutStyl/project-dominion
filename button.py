@@ -18,6 +18,10 @@ class Button(object):
         self.clickObj = clickType
         self.buttonText = text
         self.enabled = True
+        
+        self.image = self.load_image(targetImage + ".png")
+        self.imageFocused = self.load_image(targetImage + "Focused.png")
+        self.rect = self.image.get_rect()
         if focused:
             self.focus()
         else:
@@ -27,18 +31,21 @@ class Button(object):
         pass
         
     def draw(self,screen):
-        screen.blit(self.image, (self.pos[0], self.pos[1]))
+        if not self.enabled:
+            return
+        if self.nowFocused:
+            screen.blit(self.imageFocused, (self.pos[0], self.pos[1]))
+        else:
+            screen.blit(self.image, (self.pos[0], self.pos[1]))
         textpos = self.buttonText.get_rect(centerx = screen.get_width()/2)
         screen.blit(self.buttonText,(self.pos[0], self.pos[1]))
     def changeImage(self, targetImage):
         #self.image, self.rect = self.load_image(targetImage)
-        self.name = targetImage        
+        self.name = targetImage
     def unfocus(self):
-        dispName = self.name + ".png"
-        self.load_image(dispName)
+        self.nowFocused = False
     def focus(self):
-        dispName = self.name + "Focused.png"
-        self.load_image(dispName)
+        self.nowFocused = True
     def load_image(self, dispName):
         fullname = os.path.join('images', dispName)
         try:
@@ -46,9 +53,10 @@ class Button(object):
         except pygame.error, message:
             print 'Cannot load image:', name
             raise SystemExit, message
-        self.image = image.convert()
-        self.rect = image.get_rect()
+        return image.convert()
     def is_mouse_focus(self):
+        if not self.enabled:
+            return False
         mousePos = pygame.mouse.get_pos()
         if mousePos[0] >= self.pos[0] and mousePos[0] <= self.pos[0]+self.width:
             if mousePos[1] >= self.pos[1] and mousePos[1] <= self.pos[1]+self.height:
@@ -60,13 +68,23 @@ class Button(object):
         return self.enabled
         
     def clicked(self, m):
+        if not self.enabled:
+            return
         self.clickObj.clicked(m)
         
     def unclicked(self, m):
+        if not self.enabled:
+            return
         self.clickObj.unclicked(m)
         
     def force_unclicked(self):
         self.clickObj.force_unclicked()
+        
+    def set_enabled(self, value):
+        self.enabled = value
+        
+    def is_enabled(self):
+        return self.enabled
 
 #Responsibilities
 #Defines logic for click events
