@@ -219,8 +219,11 @@ class Soldier(unit.Unit):
         self.velocity = Vector(0.0,0.0)
         
     def fire_at(self, target):
-        self.fire = True
-        self.fireTarget = target
+        if target is not None:
+            self.fire = True
+            self.fireTarget = target
+        else:
+            self.fire = False
         
 
     def wait(self, arguments):

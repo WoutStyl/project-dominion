@@ -14,16 +14,28 @@ class Bullet:
         self.height = 8
         self.width = 8
         self.pos = Vector(x,y)
-        
+        self.dead = False
         self.image = pygame.Surface((self.width, self.height), pygame.SRCALPHA, 32).convert_alpha()
         self.rect = pygame.Rect(0,0,self.width,self.height)
-        
+        self.timer = 0.0
         pygame.draw.circle(self.image, (255,255,255), (self.width / 2, self.height / 2), self.width /2)
         self.rect.center = self.pos.get()
         
     def update(self, delta_seconds):
-        self.pos += self.direction * self.speed * delta_seconds
-        self.rect.center = self.pos.get()
-    
+
+        if self.dead == False:
+            self.timer += delta_seconds
+            if self.timer >= .5:
+                self.dead = True
+            print("Updating Bullet")
+            self.pos += self.direction * self.speed * delta_seconds
+            self.rect.center = self.pos.get()
+    def die(self):
+        print("DEAD BULLET")
+        self.dead = True
+        del self.image
+        del self.rect
     def draw(self, screen):
-        screen.blit(self.image, self.rect)
+        print(self.dead)
+        if self.dead == False:
+            screen.blit(self.image, self.rect)
