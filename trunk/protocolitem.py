@@ -40,7 +40,10 @@ class ProtocolItem(button.Button):
             self.pos[1] += y
             
     def draw(self, screen):
-        imageCopy = self.image.copy()
+        if self.nowFocused:
+            imageCopy = self.imageFocused.copy()
+        else:
+            imageCopy = self.image.copy()
         for link in self.linkItems.values():
             link.draw(imageCopy)
         screen.blit(imageCopy, (self.pos[0], self.pos[1]))
@@ -59,6 +62,8 @@ class ProtocolItem(button.Button):
         return (x,y)
         
     def clicked(self, m):
+        if not self.enabled:
+            return
         x,y = pygame.mouse.get_pos()
         x -= self.pos[0]
         y -= self.pos[1]
@@ -69,6 +74,8 @@ class ProtocolItem(button.Button):
         self.clickObj.clicked(m)
         
     def unclicked(self, m):
+        if not self.enabled:
+            return
         x,y = pygame.mouse.get_pos()
         x -= self.pos[0]
         y -= self.pos[1]

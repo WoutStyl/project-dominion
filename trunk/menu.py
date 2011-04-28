@@ -10,6 +10,7 @@ class Menu(object):
         self.nextMenu = self
         self.stealInput = False
         self.clickedButton = None
+        self.lastFocused = False
             
     # add_button
     # This function adds a button to the menu given x and y coordinates,
@@ -33,14 +34,14 @@ class Menu(object):
                 self.buttons[self.index].unfocus()
                 self.index -= 1
                 if self.index < 0:
-                        self.index = len(self.buttons)-1
+                    self.index = len(self.buttons)-1
                 self.buttons[self.index].focus()
                 return True
             if event.key == pygame.K_DOWN:
                 self.buttons[self.index].unfocus()
                 self.index += 1
                 if self.index >= len(self.buttons):
-                        self.index = 0
+                    self.index = 0
                 self.buttons[self.index].focus()
                 return True
             if event.key == pygame.K_RETURN:
@@ -87,9 +88,16 @@ class Menu(object):
                 if self.index is not newIndex:
                     self.buttons[self.index].unfocus()
                 self.index = newIndex
+                self.lastFocused = True
                 return
             else:
                 newIndex -= 1
+                
+        if self.lastFocused:
+            self.buttons[self.index].unfocus()
+            self.index = len(self.buttons)-1
+            self.lastMousePos = pygame.mouse.get_pos()
+            self.lastFocused = False
 
         
 #These classes initialize the menu differently based on its intended purpose
