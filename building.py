@@ -19,7 +19,7 @@ class Building(unit.Unit):
         self.height = 75
         self.width = 75
         self.type = "Building"
-        
+        self.health = 40
         self.image = pygame.Surface((self.width, self.height), pygame.SRCALPHA, 32).convert_alpha()
         self.rect = pygame.Rect(0,0,self.width,self.height)
         pygame.draw.rect(self.image,color, self.rect)

@@ -7,7 +7,7 @@ class Unit(object):
         self.type = "Unit"
         self.width = 32
         self.pos = Vector(float(x),float(y))
-        
+        self.health = 5
         self.image = pygame.Surface((self.width, self.height), pygame.SRCALPHA, 32).convert_alpha()
         self.focus = pygame.Surface((self.width, self.height), pygame.SRCALPHA, 32).convert_alpha()
         self.rect = pygame.Rect(0,0,self.width,self.height)
@@ -22,7 +22,17 @@ class Unit(object):
         #print x
         #raw_input('')
         self.buildMenu = None
-        
+    def take_damage(self, damage):
+        self.health -= damage;
+        if self.health <= 0:
+            self.die();
+    def die(self):
+        del self.image
+        del self.rect
+    def isDead(self):
+        if self.health <=0:
+            return True
+        return False
     def update(self, delta_seconds):
         pass
                 

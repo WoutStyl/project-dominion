@@ -70,12 +70,17 @@ class Map:
                         self.projectiles[player] = []
                     self.projectiles[player].append(newBullet)
                 e.keep_on_screen(self.width,self.height)
-                e.fire_at(self.target)
+                #print(self.unitTable[self.playerIdMap[1]][0])
+                if len(self.unitTable[self.playerIdMap[1]])> 0:
+                    e.fire_at(self.unitTable[self.playerIdMap[1]][0])
             
             if(self.projectiles.get(player) == None):
                 self.projectiles[player] = []
             for bullet in self.projectiles[player]:
                 bullet.update(deltaSeconds)
+                if(self.bullet_collision(bullet, player)):
+                    bullet.die();
+                    self.projectiles[player].remove(bullet)
                 
         self.target.update(deltaSeconds)
 
@@ -209,7 +214,20 @@ class Map:
             if(self.unitTable.get(playerObject) == None):
                 self.unitTable[playerObject] = []
             self.unitTable[playerObject].append(unitObject)
-            
+    # Checks for bullet collision against enemies
+    def bullet_collision(self, bullet, player1):
+        for player in self.unitTable:
+            if player is player1:
+                for unitA in self.unitTable[player]:
+                    if(unitA.rect.colliderect(bullet.rect)):
+                        #print("HIT");
+                        unitA.take_damage(5)
+                        if unitA.isDead():
+                            #return True
+                            self.unitTable[player].remove(unitA)
+                        return True
+        return False
+        
     # Checks for unit collision against terrain
     def terrain_collision(self,unit):
         Map.get().collision(self)
