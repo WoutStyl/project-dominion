@@ -1,5 +1,11 @@
 import variable
 
+# Collaborators:
+#   self
+#   Soldier
+# Responsibilities:
+#   used to indirectly call functions in soldier
+
 class Function(variable.Variable):
     def __init__(self, type = "", name = "Function", functionReference = None, types = {}):
         super(Function, self).__init__(type)
@@ -14,6 +20,8 @@ class Function(variable.Variable):
         self.arguments = dict.fromkeys(self.types.keys())
         self.name = name
         
+    # Only functions that are used as variables have a defined
+    # type
     def get_type(self):
         if self.type == "":
             return "function"
@@ -50,10 +58,12 @@ class Function(variable.Variable):
         self.functionReference(unit, tempDict)
         return self.get_next()
         
+    # This adds the next link and any arguments it takes
     def get_link_names(self):
         return super(Function,self).get_link_names() + self.types.keys() + ["next"]
         
     def set_link_value(self, name, value):
+        # Next is a special case and treated differently than just regular arguments
         if name == "next" and (value == None or "function" in value.get_type()):
             self.next = value
             return True
@@ -76,6 +86,8 @@ class IfStatement(Function):
         self.then = None
         self.name = "If"
         
+    # Can only be used for its execution, cannot be used as
+    # a variable
     def get_type(self):
         return "function"
         
@@ -110,6 +122,8 @@ class IfStatement(Function):
         return super(IfStatement,self).get_link_names() + ["then"] + self.arguments.keys()
         
     def set_link_value(self, name, value):
+        # Next and then are specific cases, and different than
+        # regular arguments
         if name == "next" and (value == None or "function" in value.get_type()):
             self.next = value
             return True
@@ -187,6 +201,9 @@ class ForeachLoop(Function):
         if name == "then" and (value == None or value.get_type() == "function"):
             self.then = value
             return True
+        # Because foreach can be used as a variable (returning
+        # the current element in the list) we need to determine
+        # what type we'd be considered
         if name == "list":
             if value == None:
                 self.arguments[name] = value

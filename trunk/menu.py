@@ -1,5 +1,10 @@
 import pygame, math, sys, string, os, missionwrapper, button
 
+# Collaborators:
+#   Button
+# Responsibilities:
+#   Holds buttons and figures out when they're clicked
+
 # This class manages menus and their proeprties
 class Menu(object):
     def __init__(self):
@@ -30,6 +35,7 @@ class Menu(object):
     # Handles user input in the menu system
     def handle_event(self,event):
         if event.type == pygame.KEYDOWN:
+            # Up key moves up the button index
             if event.key == pygame.K_UP and self.stealInput is True:
                 self.buttons[self.index].unfocus()
                 self.index -= 1
@@ -37,6 +43,7 @@ class Menu(object):
                     self.index = len(self.buttons)-1
                 self.buttons[self.index].focus()
                 return True
+            # Down key moves down the button index
             if event.key == pygame.K_DOWN and self.stealInput is True:
                 self.buttons[self.index].unfocus()
                 self.index += 1
@@ -50,8 +57,12 @@ class Menu(object):
             if event.key == pygame.K_ESCAPE:
                 self.leave_menu()
                 return True
+        # Hitting the X button in the corner will close the
+        # game (as it should)
         if event.type == pygame.QUIT:
             sys.exit(0)
+        # If we've pressed the mouse button, check if it hit
+        # any of the buttons, if so tell them they've been clicked
         if event.type == pygame.MOUSEBUTTONDOWN:
             if event.button == 1:
                 if self.buttons[self.index].is_mouse_focus():
@@ -59,6 +70,8 @@ class Menu(object):
                     self.buttons[self.index].focus()
                     self.clickedButton = self.buttons[self.index]
                     return True
+        # If we're hovering over a button when the mouse button is
+        # released, tell it that it's been unclicked
         if event.type == pygame.MOUSEBUTTONUP:
             if event.button == 1:
                 if self.clickedButton != None:
@@ -82,6 +95,8 @@ class Menu(object):
         self.bInMenu = False
     def check_focus(self):
         newIndex = len(self.buttons)-1
+        # Go through the list backwards so that the buttons that
+        # are newest, and drawn last, are selected first
         for bttn in reversed(self.buttons):
             if bttn.is_mouse_focus() is True:
                 self.buttons[newIndex].focus()
@@ -93,6 +108,11 @@ class Menu(object):
             else:
                 newIndex -= 1
                 
+        # If we were focused on a button the last time we checked
+        # This makes it so that you unfocus a button when you stop
+        # hovering over it, but don't cause buttons to be unfocused
+        # if you move the mouse over dead space while using the arrow
+        # keys
         if self.lastFocused:
             self.buttons[self.index].unfocus()
             self.index = len(self.buttons)-1

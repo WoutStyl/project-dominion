@@ -128,15 +128,17 @@ class Soldier(unit.Unit):
         
         
     def update(self, deltaSeconds):
-        #print "update!"
+        # Only fire at the given interval
         if self.lastFire >= self.refireT:
             self.lastFire = 0
         if self.lastFire >0:
             self.lastFire +=deltaSeconds
         
+        # Move the player
         self.pos += self.velocity * self.speed * deltaSeconds
         self.rect.center = self.pos.get()
         
+        # Don't execute protocols while 'waiting'
         if self.waitTime > 0:
             self.waitTime -= deltaSeconds
         else:
@@ -145,6 +147,7 @@ class Soldier(unit.Unit):
             if self.protocol !=None:
                     self.protocol = self.protocol.execute(self)
                 
+        # If it's time to fire
         if self.lastFire == 0 and self.fire == True:
             self.lastFire += deltaSeconds
             tPos = self.fireTarget.pos
@@ -156,7 +159,7 @@ class Soldier(unit.Unit):
             #self.last_fire = 1
             return bullet.Bullet(self.pDir, self.pos[0], self.pos[1])    
 
-        
+    # Constrain the unit to the playable world
     def keep_on_screen(self, max_x, max_y):
         if self.rect.top <= 0 and self.velocity[1] < 0:
             self.velocity[1] = 0
@@ -257,6 +260,8 @@ class Soldier(unit.Unit):
         vec = vec1 - vec2
         return vec.length() <= distance
         
+# A static list which defines the functions and arguments available
+# for use in protocols. Parsed by the protocol editor
 Soldier.commands = {"Move Towards":         ["",
                                              Soldier.move_towards,
                                              {"target": "Unit"}],

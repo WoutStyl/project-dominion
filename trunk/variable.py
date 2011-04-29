@@ -1,7 +1,11 @@
 import pygame
 
+# Collaborators:
+#   none
+# Responsibilities:
+#   holds a value to be used in the protocols
+
 class Variable(object):
-    #types = ["bool", "integer", "string", "unit"]
     def __init__(self, type = "", value = ""):
         # The variable's stored value
         self.value = value
@@ -25,6 +29,9 @@ class Variable(object):
     def get_name(self):
         return self.name
         
+    # Returns a list of the names of all of the links that
+    # variable has. In the case of variable, just get, but
+    # the subclasses like function have more
     def get_link_names(self):
         return ["get"]
         

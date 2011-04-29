@@ -35,6 +35,8 @@ class Building(unit.Unit):
         
         self.seconds = 0
         
+    # Update the time passed on the unitQueue and pop when
+    # necessary
     def update(self, delta_seconds):
         self.seconds += delta_seconds
         i = 0

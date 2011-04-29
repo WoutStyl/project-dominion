@@ -38,23 +38,32 @@ class Button(object):
         pass
         
     def draw(self,screen):
+        # Don't draw if the button's invisible
         if not self.visible:
             return
+        # If the button's disabled then draw the disabled image
         if not self.enabled:
             screen.blit(self.imageDisabled, (self.pos[0], self.pos[1]))
+        # If the button's focused on then draw the focused image
         elif self.nowFocused:
             screen.blit(self.imageFocused, (self.pos[0], self.pos[1]))
+        # Otherwise just draw the regular image
         else:
             screen.blit(self.image, (self.pos[0], self.pos[1]))
+        # Draw the button's text
         textpos = self.buttonText.get_rect(centerx = screen.get_width()/2)
         screen.blit(self.buttonText,(self.pos[0], self.pos[1]))
+        
     def changeImage(self, targetImage):
-        #self.image, self.rect = self.load_image(targetImage)
         self.name = targetImage
+        
     def unfocus(self):
         self.nowFocused = False
+        
     def focus(self):
         self.nowFocused = True
+        
+    # Load in an image file
     def load_image(self, dispName):
         fullname = os.path.join('images', dispName)
         try:
@@ -63,6 +72,8 @@ class Button(object):
             print 'Cannot load image:', self.name
             raise SystemExit, message
         return image.convert()
+        
+    # Check if the mouse is hovering over the button
     def is_mouse_focus(self):
         if not self.enabled or not self.visible:
             return False
@@ -75,6 +86,7 @@ class Button(object):
         
     def is_enabled(self):
         return self.enabled
+        
     def disable(self):
         self.enabled = False
         
@@ -86,15 +98,21 @@ class Button(object):
             self.unfocus()
         
     def clicked(self, m):
+        # Don't do anything if we're not enabled or we're invisible
         if not self.enabled or not self.visible:
             return
+        # Pass down to the click object that we've been clicked
         self.clickObj.clicked(m)
         
     def unclicked(self, m):
+        # Don't do anything if we're not enabled or we're invisible
         if not self.enabled or not self.visible:
             return
+        # Pass down to the click object that we've been clicked
         self.clickObj.unclicked(m)
         
+    # Tell the clickObj that we need to be unclicked, without
+    # actually doing anything
     def force_unclicked(self):
         self.clickObj.force_unclicked()
         
