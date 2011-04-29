@@ -22,19 +22,20 @@ class Bullet:
         self.rect.center = self.pos.get()
         
     def update(self, delta_seconds):
-
+        # Only update if we're not 'dead'
         if self.dead == False:
             self.timer += delta_seconds
+            # Kill the bullet after 0.5 seconds
             if self.timer >= .5:
                 self.dead = True
-            print("Updating Bullet")
             self.pos += self.direction * self.speed * delta_seconds
             self.rect.center = self.pos.get()
+            
     def die(self):
-        print("DEAD BULLET")
         self.dead = True
         del self.image
         del self.rect
+        
     def draw(self, screen):
         print(self.dead)
         if self.dead == False:

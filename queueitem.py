@@ -33,6 +33,7 @@ class QueueItem():
         self.x = 16 + (32 * i)
         self.pos = Vector(self.x,self.y)
         self.rect.center = self.pos.get()
+        # If it's time to pop the unit
         if i is 0:
             if self.startTime is -1:
                 self.startTime = delta_seconds

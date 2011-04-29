@@ -1,5 +1,16 @@
 import re,missionwrapper,unit,pygame,random,soldier,building,objective, queueitem
 
+# Collaborators:
+#   Player
+#   Menu
+#   Unit
+#   MovementTable
+#   MissionWrapper
+#   Function
+# Responsibilities:
+#   contains all of the players and their units. passes down the update
+#   and draw function calls. holds the current in-game menu as well.
+
 # This class associates a terrain type with its properties
 class MovementTable:
     #table = dict()
@@ -266,6 +277,7 @@ class Map:
                 self.selection.append(unitA)
                 unitA.set_selected(True)
                 
+    # Saves the current state of the world to the filename
     def save(self,filename=None):
         if(filename != None):
             self.wrapper.set_name(filename)

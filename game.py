@@ -1,14 +1,11 @@
 import pygame, sys, string, random, math, operator, soldier, menu, button, map, protocoleditor, queueitem
 
-#class GlobalGameFlag:
-#    instance = None
-#    def __init__(self):
-#        self.flag = False
-#    @staticmethod
-#    def get():
-#        if(GlobalGameFlag.instance == None):
-#            GlobalGameFlag.instance = GlobalGameFlag()
-#        return GlobalGameFlag.instance
+# Collaborators:
+#   Map
+#   Menu
+# Responsibilities:
+#   holding the main map, as well as the current menu to display
+#   tells them when to update and draw
 
 class Game(object):
     screen_width=800
@@ -21,7 +18,11 @@ class Game(object):
         self.clock = pygame.time.Clock()
         self.mouseIsDown = False
         self.mouseRect = pygame.Rect(0,0,0,0)
+        # The location of the upperleft hand corner of the 
+        # screen in relation to the entire playable surface
         self.upperleft = [0.0,0.0]
+        # The location of where the mouse is clicked. Passed
+        # down to map to do unit selection
         self.position1 = (0.0,0.0)
         self.arrowdown = False
         self.leftdown = False
@@ -38,6 +39,8 @@ class Game(object):
 
         self.mainMenu = menu.MainMenu()
     def update(self, deltaSeconds):
+        # Make sure we're not considered paused if we're not
+        # in one of the main menus
         if self.mainMenu.bInMenu is False:
             self.paused = False
         
@@ -51,6 +54,7 @@ class Game(object):
         if buildmenu is not None:
             self.mainMenu = buildmenu
 
+        # Move the viewport
         if self.leftdown and self.upperleft[0] != 0.0:
             self.upperleft[0] = self.upperleft[0] - 1
             self.mouseRect.x -= 1
@@ -64,6 +68,8 @@ class Game(object):
             self.upperleft[1] = self.upperleft[1] + 1
             self.mouseRect.y += 1
             
+        # While the mouse is down change the second position
+        # of the selection rectangle
         if self.mouseIsDown:
             self.position2 = pygame.mouse.get_pos()
             self.position2 = (self.position2[0] + self.upperleft[0], self.position2[1] + self.upperleft[1])
@@ -74,7 +80,7 @@ class Game(object):
         if event.type == pygame.QUIT:
             pygame.quit()
         if event.type == pygame.KEYDOWN:
-        ####All key presses to game here
+        # All key presses to game here
             if event.key == pygame.K_LEFT:
                 self.leftdown = True
             if event.key == pygame.K_RIGHT:
@@ -102,7 +108,7 @@ class Game(object):
                 elif self.paused == False:
                     self.paused = True
                     self.mainMenu = protocoleditor.ProtocolEditor()
-        ####End key presses
+        #End key presses
                     
         if event.type == pygame.KEYUP:
             if event.key == pygame.K_LEFT:
@@ -114,6 +120,8 @@ class Game(object):
             if event.key == pygame.K_DOWN:
                 self.downdown = False
 
+        # When the mouse button is pressed, record the first
+        # position to pass down for the selection rectangle
         if event.type == pygame.MOUSEBUTTONDOWN:
             if event.button == 1:
                 self.position1 = event.pos
@@ -121,6 +129,8 @@ class Game(object):
                 self.position2 = self.position1
                 self.mouseIsDown = True
                 self.mouseRect = self.mouse_select(self.position1,self.position2)
+        # When the mouse button is released record it and send it
+        # as the selection rectangle
         if event.type == pygame.MOUSEBUTTONUP:
             if event.button == 1:
                 self.position2 = event.pos
@@ -155,23 +165,33 @@ class Game(object):
         self.screen.fill((0,0,0))
         if self.map.is_loaded():
            self.map.draw(self.screen,self.upperleft,self.mouseRect)
+           
     def main_loop(self):
         while 1:
+            # Update the clock
             self.clock.tick(50)
             deltaSeconds = self.clock.get_time()/1000.0
+            # Constrain deltaSeconds to be within reason
+            # just in case
             if deltaSeconds > 0.08:
                 deltaSeconds = 0.02
+            # Pass down the events to be handled
             for event in pygame.event.get():
                 if not self.mainMenu.bInMenu or (not self.mainMenu.handle_event(event) and not self.mainMenu.stealInput):
                     self.handle_event(event)
+            # Clear the screen first
             self.screen.fill((0,0,0))
             if self.mainMenu.stealInput == False or not self.mainMenu.bInMenu:
                 self.game_loop(deltaSeconds)
             if self.mainMenu.bInMenu:
                 self.menu_loop()
             pygame.display.flip()
+            
     def menu_loop(self):
+        # Checks to see if we're hovering over a button
         self.mainMenu.check_focus()
+        # Change mainMenu to be whatever menu update returns
+        # (most of the time it won't change)
         self.mainMenu = self.mainMenu.update()
         self.mainMenu.draw(self.screen)
         if self.map.is_loaded():

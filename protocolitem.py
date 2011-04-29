@@ -9,11 +9,14 @@ class ProtocolItem(button.Button):
         self.item = item
         self.linkItems = {}
         i = 0
+        # Create a link tap for each of the arguments that the
+        # protocol item takes
         num = self.item.get_num_arguments()
         for name in self.item.get_link_names():
             i += 1
             pos = [i * (self.width/float(num+1)), 0]
             orientation = "top"
+            # Orient the tag differently depending on what kind
             if name == "get":
                 pos = [0, self.height / 2.0]
                 orientation = "left"
@@ -34,11 +37,13 @@ class ProtocolItem(button.Button):
             self.label = ""
         
     def update(self):
+        # Make the protocol item follow the mouse if it was clicked
         if self.clickObj.is_clicked():
             x, y = pygame.mouse.get_rel()
             self.pos[0] += x
             self.pos[1] += y
             
+            # Move the links to coincide with the button movement
             for link in self.linkItems.values():
                 link.update(x, y)
             
@@ -51,6 +56,7 @@ class ProtocolItem(button.Button):
             screen.blit(self.image, (self.pos[0], self.pos[1]))
         textpos = self.buttonText.get_rect(centerx = screen.get_width()/2)
         screen.blit(self.buttonText,(self.pos[0], self.pos[1]))
+        # Draw the value label if it has one
         if self.label != "":
             font1 = pygame.font.Font(None,18)
             text = font1.render(self.label, 1, (0,0,0))
@@ -58,6 +64,7 @@ class ProtocolItem(button.Button):
             rect.center = (self.pos[0] + self.width / 2, self.pos[1] + self.height / 2)
             screen.blit(text,rect)
             
+        # Draw all of the links
         for link in self.linkItems.values():
             link.draw(screen)
         
@@ -73,14 +80,18 @@ class ProtocolItem(button.Button):
         self.label = label
         self.item.set_value(value)
         
+    # Get the value of the variable
     def get_value(self):
         value = self.item.get_value()
+        # If it has none, just give it 0
         if value == "":
             value = 0
         self.label = str(value)
         return value
         
-    def clicked(self, m):
+    # When the button's been clicked, first check the link
+    # tabs, otherwise use its clickObj
+    def clicked(self, m):   
         if not self.enabled:
             return
         pos = pygame.mouse.get_pos()
@@ -90,6 +101,7 @@ class ProtocolItem(button.Button):
                 return
         self.clickObj.clicked(m)
         
+    # Same as clicked
     def unclicked(self, m):
         if not self.enabled:
             return
@@ -100,6 +112,7 @@ class ProtocolItem(button.Button):
                 return
         self.clickObj.unclicked(m)
         
+    # Similar to clicked and unclicked
     def force_unclicked(self):
         for link in self.linkItems.values():
             link.force_unclicked()
@@ -121,6 +134,8 @@ class LinkItem(object):
         
         self.pos = pos
         
+        # Depending on the orientation, the tab should be
+        # displayed differently
         if orientation == "top":
             self.image.blit(text, (self.width+5,0))
             self.image = pygame.transform.rotate(self.image,270)
@@ -148,6 +163,7 @@ class LinkItem(object):
         self.pos[0] = self.collideRect.centerx
         self.pos[1] = self.collideRect.centery
             
+    # Move the tab to follow the button
     def update(self, x, y):
         self.pos[0] += x
         self.pos[1] += y
@@ -174,7 +190,7 @@ class LinkItem(object):
     def force_unclicked(self):
         self.clickObj.force_unclicked()
             
-            
+
 class LinkOnClick(button.OnClick):
     def __init__(self, name):
         super(LinkOnClick, self).__init__()
