@@ -1,4 +1,4 @@
-import pygame, math, random, operator, unit, bullet, function, variable, menu, button
+import pygame, math, random, operator, unit, bullet, function, variable
 from vector import *
 
 class Soldier(unit.Unit):
@@ -157,7 +157,7 @@ class Soldier(unit.Unit):
             self.pDir.normalize()       #direction to the projected position of the target
             self.fire = True
             #self.last_fire = 1
-            return bullet.Bullet(self.pDir, self.pos[0], self.pos[1])    
+            return bullet.Bullet(self.pDir, self.pos[0], self.pos[1])
 
     # Constrain the unit to the playable world
     def keep_on_screen(self, max_x, max_y):
@@ -172,13 +172,6 @@ class Soldier(unit.Unit):
 
     def draw(self, screen):
         super(Soldier, self).draw(screen)
-        if self.buildMenu is None:
-            self.buildMenu = menu.Menu()
-            font = pygame.font.Font(None, 36)
-            text = font.render("Protocol",1,(0,0,0))
-            Click = button.OnClick() #CHANGE to "ChangeProtocolOnClick"
-            self.buildMenu.add_button(536,536,text,Click)
-        self.buildMenu.update()
         screen.blit(self.image, self.rect)
         if self.isSelected:
             #self.buildMenu.draw(screen)

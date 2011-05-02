@@ -18,7 +18,6 @@ class Button(object):
         self.clickObj = clickType
         self.enabledClickObj = clickType
         self.buttonText = text
-        self.text_rect = self.buttonText.get_rect()
         self.enabled = True
         
         self.image = self.load_image(targetImage + ".png")
@@ -38,32 +37,23 @@ class Button(object):
         pass
         
     def draw(self,screen):
-        # Don't draw if the button's invisible
         if not self.visible:
             return
-        # If the button's disabled then draw the disabled image
         if not self.enabled:
             screen.blit(self.imageDisabled, (self.pos[0], self.pos[1]))
-        # If the button's focused on then draw the focused image
         elif self.nowFocused:
             screen.blit(self.imageFocused, (self.pos[0], self.pos[1]))
-        # Otherwise just draw the regular image
         else:
             screen.blit(self.image, (self.pos[0], self.pos[1]))
-        # Draw the button's text
         textpos = self.buttonText.get_rect(centerx = screen.get_width()/2)
         screen.blit(self.buttonText,(self.pos[0], self.pos[1]))
-        
     def changeImage(self, targetImage):
+        #self.image, self.rect = self.load_image(targetImage)
         self.name = targetImage
-        
     def unfocus(self):
         self.nowFocused = False
-        
     def focus(self):
         self.nowFocused = True
-        
-    # Load in an image file
     def load_image(self, dispName):
         fullname = os.path.join('images', dispName)
         try:
@@ -72,8 +62,6 @@ class Button(object):
             print 'Cannot load image:', self.name
             raise SystemExit, message
         return image.convert()
-        
-    # Check if the mouse is hovering over the button
     def is_mouse_focus(self):
         if not self.enabled or not self.visible:
             return False
@@ -86,7 +74,6 @@ class Button(object):
         
     def is_enabled(self):
         return self.enabled
-        
     def disable(self):
         self.enabled = False
         
@@ -98,21 +85,15 @@ class Button(object):
             self.unfocus()
         
     def clicked(self, m):
-        # Don't do anything if we're not enabled or we're invisible
         if not self.enabled or not self.visible:
             return
-        # Pass down to the click object that we've been clicked
         self.clickObj.clicked(m)
         
     def unclicked(self, m):
-        # Don't do anything if we're not enabled or we're invisible
         if not self.enabled or not self.visible:
             return
-        # Pass down to the click object that we've been clicked
         self.clickObj.unclicked(m)
         
-    # Tell the clickObj that we need to be unclicked, without
-    # actually doing anything
     def force_unclicked(self):
         self.clickObj.force_unclicked()
         
@@ -191,6 +172,58 @@ class BackOnClick(OnClick):
     def unclicked(self, m):
         super(BackOnClick, self).unclicked(m)
         m.leave_menu()
+
+class ProtocolDisplayToggleOnClick(OnClick):
+    def __init__(self):
+        super(ProtocolDisplayToggleOnClick, self).__init__()
+        self.menuVisible = False
+    def unclicked(self, m):
+        super(ProtocolDisplayToggleOnClick, self).unclicked(m)
+        if self.menuVisible is False:
+            self.menuVisible = True
+        else:
+            self.menuVisible = False
+        m.set_protocols_visible(self.menuVisible)
+    def get_visible(self):
+        return self.menuVisible
+class SelectProtocolOnClick(OnClick):
+    def __init__(self, i):
+        super(SelectProtocolOnClick, self).__init__()
+        self.buttonIndex = i
+        
+    def unclicked(self, m):
+        super(SelectProtocolOnClick, self).unclicked(m)
+        m.currentProtocol = self.buttonIndex-1
+        print "Protocol Selected"
+class SetProtocolOnClick(OnClick):
+    def __init__(self):
+        super(SetProtocolOnClick,self).__init__()
+    def unclicked(self, m):
+        print "Protocol Set"
+
+class EditProtocolOnClick(OnClick):
+    def __init__(self):
+        super(EditProtocolOnClick,self).__init__()
+    def unclicked(self, m):
+        print "Protocol Edited"
+
+class DeleteProtocolOnClick(OnClick):
+    def __init__(self):
+        super(DeleteProtocolOnClick,self).__init__()
+    def unclicked(self, m):
+        theMap = map.Map.get()
+        targetlist = theMap.protocols
+        if len(targetlist)-1 > m.currentProtocol:
+            targetlist.pop(m.currentProtocol)
+            m.protocolButtons.pop(m.currentProtocol)
+        print "Protocol Deleted"
+
+class NewProtocolOnClick(OnClick):
+    def __init__(self):
+        super(NewProtocolOnClick,self).__init__()
+    def unclicked(self, m):
+        print "Protocol Created"
+        
         
                 
                 
