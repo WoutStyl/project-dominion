@@ -37,6 +37,6 @@ class Bullet:
         del self.rect
         
     def draw(self, screen):
-        print(self.dead)
+        #print(self.dead)
         if self.dead == False:
             screen.blit(self.image, self.rect)
