@@ -521,4 +521,7 @@ class DeleteItemOnClick(button.OnClick):
     def unclicked(self, m):
         self.isClicked = False
         m.delete_item()
+        
+
+        
     
