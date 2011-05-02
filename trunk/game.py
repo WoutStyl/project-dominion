@@ -38,6 +38,11 @@ class Game(object):
         self.paused = False
 
         self.mainMenu = menu.MainMenu()
+        self.spareMenu = menu.Menu()
+        self.spareMenu.leave_menu()
+
+        self.newSelection = True
+        
     def update(self, deltaSeconds):
         # Make sure we're not considered paused if we're not
         # in one of the main menus
@@ -47,9 +52,13 @@ class Game(object):
         self.map.update(deltaSeconds)
 
         if self.map.is_loaded():
-            buildmenu = self.map.get_unit_menu()
+            if self.newSelection is True:
+                buildmenu = self.map.get_unit_menu()
+                self.newSelection = False
+            else:
+                buildmenu = self.mainMenu
         else:
-            buildmenu = None
+            buildmenu = self.spareMenu
 
         if buildmenu is not None:
             self.mainMenu = buildmenu
@@ -139,6 +148,7 @@ class Game(object):
                 self.map.select_group(self.mouseRect)
                 self.mouseRect = pygame.Rect(0,0,0,0)
                 self.mouseIsDown = False
+                self.newSelection = True
             
             
     # Returns a properly formatted rectangle from mouse positions

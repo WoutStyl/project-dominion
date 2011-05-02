@@ -1,4 +1,4 @@
-import pygame, math, random, operator, unit, sys, menu, soldier, queueitem, button
+import pygame, math, random, operator, unit, sys, soldier, queueitem
 from vector import *     
         
         
@@ -27,11 +27,7 @@ class Building(unit.Unit):
         
         self.unitQueue = []
         
-        self.buildMenu = menu.Menu()
-        font = pygame.font.Font(None, 36)
-        text = font.render("Add", 1, (0,0,0))
-        Click = button.AddToQueueOnClick(self)
-        self.buildMenu.add_button(536, 536, text, Click)
+        self.unitMenu = "Build"
         
         self.seconds = 0
         
@@ -44,9 +40,6 @@ class Building(unit.Unit):
             if not u.update(self.seconds, i) :
                 self.unitQueue.pop(0)
             i += 1
-            
-        if self.isSelected:
-            self.buildMenu.update()
                     
     def draw(self, screen):
         super(Building, self).draw(screen)

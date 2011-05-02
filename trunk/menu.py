@@ -1,9 +1,4 @@
-import pygame, math, sys, string, os, missionwrapper, button
-
-# Collaborators:
-#   Button
-# Responsibilities:
-#   Holds buttons and figures out when they're clicked
+import pygame, math, sys, string, os, missionwrapper, button, map
 
 # This class manages menus and their proeprties
 class Menu(object):
@@ -20,13 +15,13 @@ class Menu(object):
     # add_button
     # This function adds a button to the menu given x and y coordinates,
     # text, desired click functionality and image
-    def add_button(self, x,y,text,clicktype, targetImage = "Blank", enabled = True):
+    def add_button(self, x,y,text,clicktype, targetImage = "Blank", enabled = True, height = 64, width = 256):
         # If this is the first button, set it to be focused by default
         if len(self.buttons) == 0:
-            theButton = button.Button(x,y,text,clicktype,targetImage,True, enabled)
+            theButton = button.Button(x,y,text,clicktype,targetImage,True, enabled, height, width)
                 
         else:
-            theButton = button.Button(x,y,text,clicktype,targetImage,False, enabled)
+            theButton = button.Button(x,y,text,clicktype,targetImage,False, enabled, height, width)
         self.buttons.append(theButton)
     def draw(self,screen):
         for b in self.buttons:
@@ -35,7 +30,6 @@ class Menu(object):
     # Handles user input in the menu system
     def handle_event(self,event):
         if event.type == pygame.KEYDOWN:
-            # Up key moves up the button index
             if event.key == pygame.K_UP and self.stealInput is True:
                 self.buttons[self.index].unfocus()
                 self.index -= 1
@@ -43,7 +37,6 @@ class Menu(object):
                     self.index = len(self.buttons)-1
                 self.buttons[self.index].focus()
                 return True
-            # Down key moves down the button index
             if event.key == pygame.K_DOWN and self.stealInput is True:
                 self.buttons[self.index].unfocus()
                 self.index += 1
@@ -57,12 +50,8 @@ class Menu(object):
             if event.key == pygame.K_ESCAPE:
                 self.leave_menu()
                 return True
-        # Hitting the X button in the corner will close the
-        # game (as it should)
         if event.type == pygame.QUIT:
             sys.exit(0)
-        # If we've pressed the mouse button, check if it hit
-        # any of the buttons, if so tell them they've been clicked
         if event.type == pygame.MOUSEBUTTONDOWN:
             if event.button == 1:
                 if self.buttons[self.index].is_mouse_focus():
@@ -70,8 +59,6 @@ class Menu(object):
                     self.buttons[self.index].focus()
                     self.clickedButton = self.buttons[self.index]
                     return True
-        # If we're hovering over a button when the mouse button is
-        # released, tell it that it's been unclicked
         if event.type == pygame.MOUSEBUTTONUP:
             if event.button == 1:
                 if self.clickedButton != None:
@@ -95,8 +82,6 @@ class Menu(object):
         self.bInMenu = False
     def check_focus(self):
         newIndex = len(self.buttons)-1
-        # Go through the list backwards so that the buttons that
-        # are newest, and drawn last, are selected first
         for bttn in reversed(self.buttons):
             if bttn.is_mouse_focus() is True:
                 self.buttons[newIndex].focus()
@@ -108,11 +93,6 @@ class Menu(object):
             else:
                 newIndex -= 1
                 
-        # If we were focused on a button the last time we checked
-        # This makes it so that you unfocus a button when you stop
-        # hovering over it, but don't cause buttons to be unfocused
-        # if you move the mouse over dead space while using the arrow
-        # keys
         if self.lastFocused:
             self.buttons[self.index].unfocus()
             self.index = len(self.buttons)-1
@@ -230,6 +210,88 @@ class SavedCampaignSelectMenu(Menu):
     def draw(self, screen):
         screen.fill((0,0,0))
         super(SavedCampaignSelectMenu,self).draw(screen)
+
+class UnitMenu(Menu):
+    def __init__(self):
+        super(UnitMenu, self).__init__()
+        font = pygame.font.Font(None, 36)
+        text = font.render("Protocol",1,(0,0,0))
+        Click = button.ProtocolDisplayToggleOnClick()
+        self.add_button(572,536,text,Click, "Blank", True, 64, 128)
+        self.protocolButtons = []
+        self.modifierButtons = []
+        self.menuButtons = self.buttons
+        self.showProtocols = False
+        self.currentProtocol = 0
+        print "Init"
+
+    def update(self):
+        if self.showProtocols is True:
+            self.buttons = self.menuButtons + self.protocolButtons + self.modifierButtons
+        else:
+            self.buttons = self.menuButtons
+        font = pygame.font.Font(None, 36)
+        i = 0
+        theMap = map.Map.get()
+        for p in theMap.protocols:
+            i += 1
+        while i >= len(self.protocolButtons):
+            name = str(i)
+            text = font.render(name,1,(0,0,0))
+            Click = button.SelectProtocolOnClick(i)
+            height = i * 70
+            newButton = button.Button(600, height, text, Click, "Blank",False, True, 64, 64)
+            self.protocolButtons.append(newButton)
+            i -= 1
+        modbuttons = []
+        listlength = len(self.protocolButtons)
+        Click = button.NewProtocolOnClick()
+        name = "New"
+        text = font.render(name,1,(0,0,0))
+        height = listlength * 70
+        newButton = button.Button(600,height,text,Click,"Blank",False,True,64,64)
+        modbuttons.append(newButton)
+        listlength +=1
+        Click = button.EditProtocolOnClick()
+        name = "Edit"
+        text = font.render(name,1,(0,0,0))
+        height = listlength * 70
+        newButton = button.Button(600,height,text,Click,"Blank",False,True,64,64)
+        modbuttons.append(newButton)
+        listlength +=1
+        Click = button.SetProtocolOnClick()
+        name = "Set"
+        text = font.render(name,1,(0,0,0))
+        height = listlength * 70
+        newButton = button.Button(600,height,text,Click,"Blank",False,True,64,64)
+        modbuttons.append(newButton)
+        listlength +=1
+        Click = button.DeleteProtocolOnClick()
+        name = "Delete"
+        text = font.render(name,1,(0,0,0))
+        height = listlength * 70
+        newButton = button.Button(600,height,text,Click,"Blank",False,True,64,64)
+        modbuttons.append(newButton)
+        
+        self.modifierButtons = modbuttons
+            
+        for b in self.buttons:
+            b.set_visible(True)
+            b.set_enabled(True)
+        #self.buttons = self.menuButtons
+        return self
+    def set_protocols_visible(self, value):
+        self.showProtocols = value
+
+class BuildMenu(UnitMenu):
+    def __init__(self, building):
+        super(BuildMenu, self).__init__()
+        font = pygame.font.Font(None, 36)
+        text = font.render("Add",1,(0,0,0))
+        Click = button.AddToQueueOnClick(building)
+        self.add_button(500, 536, text, Click, "Blank", True, 64, 64)
+        
+        
         
 
             

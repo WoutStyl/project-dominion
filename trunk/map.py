@@ -1,4 +1,4 @@
-import re,missionwrapper,unit,pygame,random,soldier,building,objective, queueitem
+import re,missionwrapper,unit,pygame,random,soldier,building,objective, queueitem, menu
 
 # Collaborators:
 #   Player
@@ -70,6 +70,10 @@ class Map:
         self.view = pygame.Surface((self.width,self.height))
         self.colorMap = {0:(0,0,255), 1:(255,0,0), 2:(250,10,0)}
         # End Constant Stuff
+        self.protocols = [1,2]
+        self.unitMenu = menu.UnitMenu()
+        self.selection = []
+        self.newSelection = True
 
     # For the most part just calls its units' update functions
     def update(self, deltaSeconds):
@@ -119,11 +123,19 @@ class Map:
         pygame.draw.rect(self.view,(175,175,175),rect,2)
         screen.blit(self.view,(0,0),pygame.Rect(upperleft[0],upperleft[1],32*25,32*25))
     def get_unit_menu(self):
-        if(self.selection != []):
+        if(self.selection != []): #and self.newSelection is True:
             for unit in self.selection:
-                if unit.buildMenu != None:
-                    return unit.buildMenu
-        return None
+                if unit.unitMenu == "Building":
+                    #self.newSelection = False
+                    return menu.UnitMenu()
+                elif unit.unitMenu == "Build":
+                    retmenu = menu.BuildMenu(unit)
+                    #self.newSelection = False
+                    return retmenu
+            #self.newSelection = False
+        retmenu = menu.Menu()
+        retmenu.leave_menu()
+        return retmenu
     def get_unit_queue(self):
         if(self.selection != []):
             for unit in self.selection:
@@ -266,6 +278,7 @@ class Map:
     # Populates the selection, based on what collides with
     # the given rect
     def select_group(self,rect):
+        #self.newSelection = True
         for unit in self.selection:
             unit.set_selected(False);
             
@@ -292,6 +305,14 @@ class Map:
         self.wrapper.set_map(self.terrainGrid)
         self.wrapper.set_player(playerOutput)
         self.wrapper.set_units(unitOutput)
+    def add_new_protocol(self, p):
+        self.protocols.append(p)
+    def set_protocol_by_index(self, p, i):
+        self.protocols.insert(i, p)
+        self.protocols.pop(i+1)
+    def remove_protocol_by_index(self, i):
+        self.protocols.pop(i)
+        
  
 class Player:
     ai = ""

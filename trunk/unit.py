@@ -28,7 +28,7 @@ class Unit(object):
         #print "x is "
         #print x
         #raw_input('')
-        self.buildMenu = None
+        self.unitMenu = "Standard"
     def take_damage(self, damage):
         self.health -= damage;
         if self.health <= 0:
