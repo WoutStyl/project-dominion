@@ -1,4 +1,4 @@
-import pygame, math, random, operator, unit, sys, soldier, queueitem
+import pygame, math, random, operator, unit, sys, menu, soldier, queueitem, button, map
 from vector import *     
         
         
@@ -14,8 +14,9 @@ from vector import *
 #Map
 
 class Building(unit.Unit):
-    def __init__(self, x = 0.0, y = 0.0, color = (225,0,0)):
+    def __init__(self,player, x = 0.0, y = 0.0, color = (225,0,0)):
         super(Building, self).__init__(x,y,color)
+        self.player = player
         self.height = 75
         self.width = 75
         self.type = "Building"
@@ -38,6 +39,7 @@ class Building(unit.Unit):
         i = 0
         for u in self.unitQueue:
             if not u.update(self.seconds, i) :
+                map.Map.get().spawn_unit(self.player, self.pos.get())
                 self.unitQueue.pop(0)
             i += 1
                     
