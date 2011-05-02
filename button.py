@@ -224,7 +224,11 @@ class NewProtocolOnClick(OnClick):
     def __init__(self):
         super(NewProtocolOnClick,self).__init__()
     def unclicked(self, m):
+        m.nextMenu = protocoleditor.ProtocolEditor()
         print "Protocol Created"
+
+
+import protocoleditor
         
         
                 

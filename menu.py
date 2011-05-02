@@ -1,4 +1,4 @@
-import pygame, math, sys, string, os, missionwrapper, button, map
+import pygame, math, sys, string, os, missionwrapper, map
 
 # This class manages menus and their proeprties
 class Menu(object):
@@ -224,6 +224,7 @@ class UnitMenu(Menu):
         self.menuButtons = self.buttons
         self.showProtocols = False
         self.currentProtocol = 0
+        self.nextMenu = self
         print "Init"
 
     def update(self):
@@ -282,7 +283,7 @@ class UnitMenu(Menu):
             b.set_enabled(True)
             b.update()
         #self.buttons = self.menuButtons
-        return self
+        return self.nextMenu
     def draw(self,screen):
         for b in self.buttons:
             b.draw(screen)
@@ -296,6 +297,9 @@ class BuildMenu(UnitMenu):
         text = font.render("Add",1,(0,0,0))
         Click = button.AddToQueueOnClick(building)
         self.add_button(500, 536, text, Click, "Blank", True, 64, 64)
+
+
+import button
         
         
         

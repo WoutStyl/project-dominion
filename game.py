@@ -204,11 +204,13 @@ class Game(object):
         # (most of the time it won't change)
         self.mainMenu = self.mainMenu.update()
         self.mainMenu.draw(self.screen)
-        if self.map.is_loaded():
-            queue = []
-            queue = self.map.get_unit_queue()
-            for u in queue:
-                u.draw(self.screen)
+        if not self.paused:
+            
+            if self.map.is_loaded():
+                queue = []
+                queue = self.map.get_unit_queue()
+                for u in queue:
+                    u.draw(self.screen)
         
         
     def game_loop(self, deltaSeconds):
