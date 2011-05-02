@@ -213,10 +213,12 @@ class DeleteProtocolOnClick(OnClick):
     def unclicked(self, m):
         theMap = map.Map.get()
         targetlist = theMap.protocols
-        if len(targetlist)-1 > m.currentProtocol:
+        if len(targetlist) > m.currentProtocol:
             targetlist.pop(m.currentProtocol)
             m.protocolButtons.pop(m.currentProtocol)
-        print "Protocol Deleted"
+            print "Protocol Deleted"
+        print len(targetlist)
+        print len(m.protocolButtons)
 
 class NewProtocolOnClick(OnClick):
     def __init__(self):

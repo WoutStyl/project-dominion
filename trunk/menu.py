@@ -85,7 +85,7 @@ class Menu(object):
         for bttn in reversed(self.buttons):
             if bttn.is_mouse_focus() is True:
                 self.buttons[newIndex].focus()
-                if self.index is not newIndex:
+                if self.index is not newIndex and self.index < len(self.buttons):
                     self.buttons[self.index].unfocus()
                 self.index = newIndex
                 self.lastFocused = True
@@ -94,10 +94,11 @@ class Menu(object):
                 newIndex -= 1
                 
         if self.lastFocused:
-            self.buttons[self.index].unfocus()
-            self.index = len(self.buttons)-1
-            self.lastMousePos = pygame.mouse.get_pos()
-            self.lastFocused = False
+            if self.index < len(self.buttons):
+                self.buttons[self.index].unfocus()
+                self.index = len(self.buttons)-1
+                self.lastMousePos = pygame.mouse.get_pos()
+                self.lastFocused = False
 
         
 #These classes initialize the menu differently based on its intended purpose
@@ -226,23 +227,19 @@ class UnitMenu(Menu):
         print "Init"
 
     def update(self):
-        if self.showProtocols is True:
-            self.buttons = self.menuButtons + self.protocolButtons + self.modifierButtons
-        else:
-            self.buttons = self.menuButtons
         font = pygame.font.Font(None, 36)
-        i = 0
+        i = 1
         theMap = map.Map.get()
-        for p in theMap.protocols:
-            i += 1
-        while i >= len(self.protocolButtons):
+        probuttons = []
+        while len(theMap.protocols) > len(probuttons):
             name = str(i)
             text = font.render(name,1,(0,0,0))
             Click = button.SelectProtocolOnClick(i)
-            height = i * 70
+            height = (i-1) * 70
             newButton = button.Button(600, height, text, Click, "Blank",False, True, 64, 64)
-            self.protocolButtons.append(newButton)
-            i -= 1
+            probuttons.append(newButton)
+            i+=1
+        self.protocolButtons = probuttons
         modbuttons = []
         listlength = len(self.protocolButtons)
         Click = button.NewProtocolOnClick()
@@ -274,12 +271,21 @@ class UnitMenu(Menu):
         modbuttons.append(newButton)
         
         self.modifierButtons = modbuttons
+
+        if self.showProtocols is True:
+            self.buttons = self.menuButtons + self.protocolButtons + self.modifierButtons
+        else:
+            self.buttons = self.menuButtons
             
         for b in self.buttons:
             b.set_visible(True)
             b.set_enabled(True)
+            b.update()
         #self.buttons = self.menuButtons
         return self
+    def draw(self,screen):
+        for b in self.buttons:
+            b.draw(screen)
     def set_protocols_visible(self, value):
         self.showProtocols = value
 

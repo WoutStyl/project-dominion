@@ -70,7 +70,7 @@ class Map:
         self.view = pygame.Surface((self.width,self.height))
         self.colorMap = {0:(0,0,255), 1:(255,0,0), 2:(250,10,0)}
         # End Constant Stuff
-        self.protocols = [1,2]
+        self.protocols = [1,2,3,4]
         self.unitMenu = menu.UnitMenu()
         self.selection = []
         self.newSelection = True
