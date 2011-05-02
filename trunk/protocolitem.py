@@ -47,8 +47,6 @@ class ProtocolItem(button.Button):
             for link in self.linkItems.values():
                 link.update(x, y)
             
-            self.text_rect.topleft = self.pos
-            
     def draw(self, screen):
         if self.nowFocused:
             screen.blit(self.imageFocused, (self.pos[0], self.pos[1]))
@@ -89,6 +87,9 @@ class ProtocolItem(button.Button):
         self.label = str(value)
         return value
         
+    def get_protocol(self):
+        return self.item
+        
     # When the button's been clicked, first check the link
     # tabs, otherwise use its clickObj
     def clicked(self, m):   
@@ -117,6 +118,12 @@ class ProtocolItem(button.Button):
         for link in self.linkItems.values():
             link.force_unclicked()
         self.clickObj.force_unclicked()
+        
+    def get_type(self):
+        return self.item.get_type()
+        
+    def is_sanitized(self):
+        return self.item.is_sanitized()
         
 class LinkItem(object):
     def __init__(self, name, pos, clickObj, orientation):

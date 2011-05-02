@@ -74,7 +74,26 @@ class Function(variable.Variable):
         
     def get_num_arguments(self):
         return len(self.arguments)
-            
+        
+    def is_sanitized(self):
+        for argument in self.arguments.values():
+            if argument == None:
+                return "Not all arguments are filled"
+            result = argument.is_sanitized()
+            if result != "":
+                return result
+                
+        if self.next != None:
+            result = argument.is_sanitized()
+            if result != "":
+                return result
+                
+            current = self.next
+            while current != None:
+                if current.next == self:
+                    return "Looped link found"
+                current = current.next
+        return ""
 class IfStatement(Function):
     def __init__(self, type = "=="):
         # Type is used differently for here, it defines what type of comparison is being used
@@ -140,12 +159,60 @@ class IfStatement(Function):
                     return True
         return False
         
+    def is_sanitized(self):
+        for argument in self.arguments.values():
+            if argument == None:
+                return "Not all arguments are filled"
+            result = argument.is_sanitized()
+            if result != "":
+                return result
+        return ""
+        
+    def is_sanitized(self):
+        result = super(IfStatement, self).is_sanitized()
+        if result != "":
+            return result
+            
+        if self.then == None:
+            return "Empty If block"
+        result = self.then.is_sanitized()
+        if result != "":
+            return result
+    
+        current = self.then
+        if current == self:
+            return "Looped link found"
+        while current.next != None:
+            if current.next == self:
+                return "Looped link found"
+        current.next = self.next
+            
+        
 # Essentially the same as an IfStatement, the difference will show up in how it's handled
 # for the UI, namely that it loops back onto itself
 class WhileLoop(IfStatement):
     def __init__(self, type = "=="):
         IfStatement.__init__(self, type)
         self.name = "While"
+        
+    def is_sanitized(self):
+        result = super(WhileLoop, self).is_sanitized()
+        if result != "":
+            return result
+            
+        if self.then == None:
+            return "Empty While block"
+        result = self.then.is_sanitized()
+        if result != "":
+            return result
+    
+        current = self.then
+        if current == self:
+            return "Looped link found"
+        while current.next != None:
+            if current.next == self:
+                return "Looped link found"
+        current.next = self
         
 # Much different than the WhileLoop and IfStatement as it isn't comparative, it's meant
 # to iterate over a list
@@ -218,3 +285,22 @@ class ForeachLoop(Function):
                 self.type = " ".join(type.split()[1:])
                 return True
         return False
+        
+    def is_sanitized(self):
+        result = super(ForeachLoop, self).is_sanitized()
+        if result != "":
+            return result
+            
+        if self.then == None:
+            return "Empty Foreach block"
+        result = self.then.is_sanitized()
+        if result != "":
+            return result
+    
+        current = self.then
+        if current == self:
+            return "Looped link found"
+        while current.next != None:
+            if current.next == self:
+                return "Looped link found"
+        current.next = self
