@@ -199,6 +199,8 @@ class SetProtocolOnClick(OnClick):
     def __init__(self):
         super(SetProtocolOnClick,self).__init__()
     def unclicked(self, m):
+        theMap = map.Map.get()
+        theMap.set_protocol_for_selection(m.currentProtocol)
         print "Protocol Set"
 
 class EditProtocolOnClick(OnClick):

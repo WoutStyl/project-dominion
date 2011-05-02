@@ -125,7 +125,7 @@ class Map:
     def get_unit_menu(self):
         if(self.selection != []): #and self.newSelection is True:
             for unit in self.selection:
-                if unit.unitMenu == "Building":
+                if unit.unitMenu == "Standard":
                     #self.newSelection = False
                     return menu.UnitMenu()
                 elif unit.unitMenu == "Build":
@@ -312,6 +312,10 @@ class Map:
         self.protocols.pop(i+1)
     def remove_protocol_by_index(self, i):
         self.protocols.pop(i)
+
+    def set_protocol_for_selection(self, i):
+        for u in self.selection:
+            u.set_protocol(self.protocols[i])
         
  
 class Player:

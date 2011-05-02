@@ -29,6 +29,7 @@ class Unit(object):
         #print x
         #raw_input('')
         self.unitMenu = "Standard"
+        self.protocol = None
     def take_damage(self, damage):
         self.health -= damage;
         if self.health <= 0:
@@ -58,3 +59,5 @@ class Unit(object):
   
     def fire_at(self,target):
         pass
+    def set_protocol(self, p):
+        self.protocol = p

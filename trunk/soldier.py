@@ -23,8 +23,6 @@ class Soldier(unit.Unit):
         self.animLen = 100;
         self.waitTime = 0
         
-        self.protocol = None
-        
         #Temporary hardcoded protocol
         self.protocol = function.WhileLoop()
         self.protocol.arguments["a"] = variable.Variable("integer", 1)
