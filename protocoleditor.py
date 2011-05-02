@@ -1,4 +1,4 @@
-import pygame, menu, button, math, protocolitem, function, variable, soldier, map
+import pygame, button, math, protocolitem, function, variable, soldier, map, menu
 
 # Collaborators:
 #   Button
@@ -468,8 +468,7 @@ class ProtocolEditor(menu.Menu):
                     theMap.add_new_protocol(self.buttons[i+offset].get_protocol())
                     self.leave_menu()
                 return
-                
-        
+
 # Each of the below classes define what happens on button clicks
 # associated with the buttons in the protocol editor
         
@@ -559,7 +558,7 @@ class DeleteItemOnClick(button.OnClick):
     def unclicked(self, m):
         self.isClicked = False
         m.delete_item()
-        
 
-        
+
+
     

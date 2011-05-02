@@ -28,6 +28,8 @@ class QueueItem():
         pygame.draw.rect(self.loadbarImage, (225,225,0), self.loadbarRect)
         self.loadbarRect.topleft = self.loadbarPos.get()
         
+    #Returns false when the object does not need to update anymore because
+    #it has been built
     def update(self, delta_seconds, i):
         self.listIndex = i
         self.x = 16 + (32 * i)

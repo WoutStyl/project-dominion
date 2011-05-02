@@ -228,7 +228,7 @@ class Map:
             unitId = int(unitId)
             playerId = int(playerId)
             if(unitId == 3):
-                unitObject = building.Building(xA*32,yA*32, self.colorMap[playerId])
+                unitObject = building.Building(self.playerIdMap[playerId], xA*32,yA*32, self.colorMap[playerId])
             else:
                 unitObject = soldier.Soldier(xA*32, yA*32, self.colorMap[playerId])
             playerObject = self.playerIdMap[playerId]
@@ -303,6 +303,11 @@ class Map:
         self.wrapper.set_map(self.terrainGrid)
         self.wrapper.set_player(playerOutput)
         self.wrapper.set_units(unitOutput)
+    def spawn_unit(self, player,pos):
+        newunit = soldier.Soldier()
+        self.unitTable[player].append(newunit)
+        
+        
     def add_new_protocol(self, p):
         self.protocols.append(p)
     def set_protocol_by_index(self, p, i):
