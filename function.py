@@ -140,7 +140,7 @@ class IfStatement(Function):
         return self.get_next()
         
     def get_link_names(self):
-        return super(IfStatement,self).get_link_names() + ["then"] + self.arguments.keys()
+        return super(IfStatement,self).get_link_names() + ["next"] + ["then"] + self.arguments.keys()
         
     def set_link_value(self, name, value):
         # Next and then are specific cases, and different than
@@ -252,7 +252,7 @@ class ForeachLoop(Function):
         return self.get_next()
         
     def get_link_names(self):
-        return super(ForeachLoop,self).get_link_names() + ["then"]
+        return super(ForeachLoop,self).get_link_names() + ["next"] + ["then"]
         
     def set_link_value(self, name, value):
         if name == "next" and (value == None or value.get_type() == "function"):
