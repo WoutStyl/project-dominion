@@ -1,4 +1,10 @@
-import pygame, sys, string, random, math, operator, soldier, menu, button, map, protocoleditor, queueitem
+import pygame, sys, string, random, math, operator
+
+pygame.init()
+pygame.display.set_caption("Project Dominion")
+pygame.display.set_mode((1,1))
+
+import soldier, menu, button, map, protocoleditor, queueitem
 
 # Collaborators:
 #   Map
@@ -12,8 +18,6 @@ class Game(object):
     screen_height=800  
     
     def __init__(self):
-        pygame.init()
-        pygame.display.set_caption("Project Dominion")
         self.screen = pygame.display.set_mode((self.screen_width,self.screen_height))
         self.clock = pygame.time.Clock()
         self.mouseIsDown = False

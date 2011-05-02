@@ -86,8 +86,6 @@ class Map:
                     self.projectiles[player].append(newBullet)
                 e.keep_on_screen(self.width,self.height)
                 #print(self.unitTable[self.playerIdMap[1]][0])
-                if len(self.unitTable[self.playerIdMap[1]])> 0:
-                    e.fire_at(self.unitTable[self.playerIdMap[1]][0])
             
             if(self.projectiles.get(player) == None):
                 self.projectiles[player] = []
@@ -316,6 +314,18 @@ class Map:
     def set_protocol_for_selection(self, i):
         for u in self.selection:
             u.set_protocol(self.protocols[i])
+            
+    def get_an_enemy_unit(self, aUnit, args):
+        thePlayer = None
+        for player in self.unitTable.keys():
+            for unit in self.unitTable[player]:
+                if unit == aUnit:
+                    thePlayer = player
+                    break
+                    
+        for player in self.unitTable.keys():
+            if player != thePlayer:
+                return self.unitTable[player][0]
         
  
 class Player:
