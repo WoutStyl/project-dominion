@@ -1,4 +1,4 @@
-import pygame, menu, button, math, protocolitem, function, variable, soldier
+import pygame, menu, button, math, protocolitem, function, variable, soldier, map
 
 # Collaborators:
 #   Button
@@ -13,6 +13,7 @@ class ProtocolEditor(menu.Menu):
         self.stealInput = True
         self.linkPositions = {}
         self.linkItems = {}
+        self.error = ""
         
         self.startIndex = 0
         self.startName = ""
@@ -39,9 +40,9 @@ class ProtocolEditor(menu.Menu):
         # The general use buttons
         self.regularButtons = []
         text = font.render("Save", 1, (0,0,0))
-        self.regularButtons.append(button.Button(screen.get_width()-100, screen.get_height()-300, text, SaveProtocolOnClick(), "Blank", True))
-        text = font.render("Load", 1, (0,0,0))
-        self.regularButtons.append(button.Button(screen.get_width()-100, screen.get_height()-200, text, LoadProtocolOnClick(), "Blank"))
+        self.regularButtons.append(button.Button(screen.get_width()-100, screen.get_height()-200, text, SaveProtocolOnClick(), "Blank", True))
+        #text = font.render("Load", 1, (0,0,0))
+        #self.regularButtons.append(button.Button(screen.get_width()-100, screen.get_height()-200, text, LoadProtocolOnClick(), "Blank"))
         text = font.render("Exit", 1, (0,0,0))
         self.regularButtons.append(button.Button(screen.get_width()-100, screen.get_height()-100, text, ExitProtocolOnClick(), "Blank"))
         text = font.render("Delete", 1, (0,0,0))
@@ -198,8 +199,17 @@ class ProtocolEditor(menu.Menu):
             position2 = pygame.mouse.get_pos()
             pygame.draw.line(screen, (255,255,255), position1, position2)
             
+        font = pygame.font.Font(None, 36)
+        print self.error
+        text = font.render(self.error, 1, (255,0,0))
+        rect = text.get_rect()
+        rect.center = screen.get_rect().center
+        screen.blit(text,rect)
+            
     
     def handle_event(self, event):
+        if event.type != pygame.MOUSEMOTION:
+            self.error = ""
         returnValue = super(ProtocolEditor, self).handle_event(event)
         # If we release the mouse then stop drawing any incompleted links
         if event.type == pygame.MOUSEBUTTONUP:
@@ -308,7 +318,7 @@ class ProtocolEditor(menu.Menu):
         self.select_item("")
         
     def save(self):
-        pass
+        self.sanitize()
         
     def load(self):
         pass
@@ -401,7 +411,7 @@ class ProtocolEditor(menu.Menu):
         if self.set_link(button2, self.endIndex, self.endName, button1, self.startIndex, self.startName):
             return
         
-        # No linke was made
+        # No link was made
         self.reset_link_drag()
         
     def set_link(self, button1, index1, name1, button2, index2, name2):
@@ -432,6 +442,36 @@ class ProtocolEditor(menu.Menu):
         self.endIndex = 0
         self.endName = ""
         
+    def sanitize(self):
+        numlinks = []
+        for item in self.linkItems.keys():
+            for name in self.linkItems[item].keys():
+                pair = self.linkItems[item][name]
+                if pair[1] == "get":
+                    if pair[0] not in numlinks:
+                        numlinks.append(pair[0])
+                    elif "function" in self.buttons[pair[0]].get_type():
+                        self.error = "Multiple links flow towards a single function"
+                        return
+        if len(numlinks) >= len(self.protocolItems):
+            self.error = "No head node to start from"
+            return
+        if len(numlinks) < len(self.protocolItems)-1:
+            self.error = "More than one unlinked node"
+            return
+            
+        offset = len(self.regularButtons) + len(self.createButtons)
+        for i in range(len(self.protocolItems)):
+            print self.buttons[i+offset].__class__.__name__
+            if not i+offset in numlinks:
+                self.error = self.buttons[i+offset].is_sanitized()
+                if self.error == "":
+                    theMap = map.Map.get()
+                    theMap.add_new_protocol(self.buttons[i+offset].get_protocol())
+                    self.leave_menu()
+                return
+                
+        
 # Each of the below classes define what happens on button clicks
 # associated with the buttons in the protocol editor
         
@@ -443,7 +483,7 @@ class SaveProtocolOnClick(button.OnClick):
 class LoadProtocolOnClick(button.OnClick):
     def unclicked(self, m):
         self.isClicked = False
-        m.save()
+        m.load()
         
 class ExitProtocolOnClick(button.OnClick):
     def unclicked(self, m):

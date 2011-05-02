@@ -40,3 +40,6 @@ class Variable(object):
         
     def get_num_arguments(self):
         return 0
+        
+    def is_sanitized(self):
+        return ""
