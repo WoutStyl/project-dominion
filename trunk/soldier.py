@@ -1,4 +1,4 @@
-import pygame, math, random, operator, unit, bullet, function, variable
+import pygame, math, random, operator, unit, bullet, function, variable, map
 from vector import *
 
 class Soldier(unit.Unit):
@@ -23,104 +23,7 @@ class Soldier(unit.Unit):
         self.animLen = 100;
         self.waitTime = 0
         
-        #Temporary hardcoded protocol
-        self.protocol = function.WhileLoop()
-        self.protocol.arguments["a"] = variable.Variable("integer", 1)
-        self.protocol.arguments["b"] = variable.Variable("integer", 1)
-        
-        last = self.protocol
-        cmd = Soldier.commands["Move Direction"]
-        tmp = function.Function(cmd[0],"Move Direction",cmd[1],cmd[2])
-        tmp.arguments["direction"] = variable.Variable("string", "Right")
-        last.then = tmp
-        
-        last = tmp
-        cmd = Soldier.commands["Wait"]
-        tmp = function.Function(cmd[0],"Wait",cmd[1],cmd[2])
-        tmp.arguments["seconds"] = variable.Variable("integer", random.randint(100,200)/100.0)
-        last.next = tmp
-        
-        last = tmp
-        cmd = Soldier.commands["Stop"]
-        tmp = function.Function(cmd[0],"Stop",cmd[1],cmd[2])
-        last.next = tmp
-        
-        last = tmp
-        cmd = Soldier.commands["Wait"]
-        tmp = function.Function(cmd[0],"Wait",cmd[1],cmd[2])
-        tmp.arguments["seconds"] = variable.Variable("integer", random.randint(100,200)/100.0)
-        last.next = tmp
-        
-        last = tmp
-        cmd = Soldier.commands["Move Direction"]
-        tmp = function.Function(cmd[0],"Move Direction",cmd[1],cmd[2])
-        tmp.arguments["direction"] = variable.Variable("string", "Down")
-        last.next = tmp
-        
-        last = tmp
-        cmd = Soldier.commands["Wait"]
-        tmp = function.Function(cmd[0],"Wait",cmd[1],cmd[2])
-        tmp.arguments["seconds"] = variable.Variable("integer", random.randint(100,200)/100.0)
-        last.next = tmp
-        
-        last = tmp
-        cmd = Soldier.commands["Stop"]
-        tmp = function.Function(cmd[0],"Stop",cmd[1],cmd[2])
-        last.next = tmp
-        
-        last = tmp
-        cmd = Soldier.commands["Wait"]
-        tmp = function.Function(cmd[0],"Wait",cmd[1],cmd[2])
-        tmp.arguments["seconds"] = variable.Variable("integer", random.randint(100,200)/100.0)
-        last.next = tmp
-        
-        last = tmp
-        cmd = Soldier.commands["Move Direction"]
-        tmp = function.Function(cmd[0],"Move Direction",cmd[1],cmd[2])
-        tmp.arguments["direction"] = variable.Variable("string", "Left")
-        last.next = tmp
-        
-        last = tmp
-        cmd = Soldier.commands["Wait"]
-        tmp = function.Function(cmd[0],"Wait",cmd[1],cmd[2])
-        tmp.arguments["seconds"] = variable.Variable("integer", random.randint(100,200)/100.0)
-        last.next = tmp
-        
-        last = tmp
-        cmd = Soldier.commands["Stop"]
-        tmp = function.Function(cmd[0],"Stop",cmd[1],cmd[2])
-        last.next = tmp
-        
-        last = tmp
-        cmd = Soldier.commands["Wait"]
-        tmp = function.Function(cmd[0],"Wait",cmd[1],cmd[2])
-        tmp.arguments["seconds"] = variable.Variable("integer", random.randint(100,200)/100.0)
-        last.next = tmp
-        
-        last = tmp
-        cmd = Soldier.commands["Move Direction"]
-        tmp = function.Function(cmd[0],"Move Direction",cmd[1],cmd[2])
-        tmp.arguments["direction"] = variable.Variable("string", "Up")
-        last.next = tmp
-        
-        last = tmp
-        cmd = Soldier.commands["Wait"]
-        tmp = function.Function(cmd[0],"Wait",cmd[1],cmd[2])
-        tmp.arguments["seconds"] = variable.Variable("integer", random.randint(100,200)/100.0)
-        last.next = tmp
-        
-        last = tmp
-        cmd = Soldier.commands["Stop"]
-        tmp = function.Function(cmd[0],"Stop",cmd[1],cmd[2])
-        last.next = tmp
-        
-        last = tmp
-        cmd = Soldier.commands["Wait"]
-        tmp = function.Function(cmd[0],"Wait",cmd[1],cmd[2])
-        tmp.arguments["seconds"] = variable.Variable("integer", random.randint(100,200)/100.0)
-        last.next = tmp
-        
-        tmp.next = self.protocol
+        self.protocol = None
         
         
         
@@ -212,7 +115,8 @@ class Soldier(unit.Unit):
         #print "stopping"
         self.velocity = Vector(0.0,0.0)
         
-    def fire_at(self, target):
+    def fire_at(self, arguments):
+        target = arguments["target"]
         if target is not None:
             self.fire = True
             self.fireTarget = target
@@ -268,7 +172,10 @@ Soldier.commands = {"Move Towards":         ["",
                     "Wait":                 ["",
                                              Soldier.wait,
                                              {"seconds": "Integer"}],
-                    "Is Within Distance":   ["bool",
+                    "Is Within Distance":   ["Bool",
                                              Soldier.is_within_distance,
-                                             {"target": "unit", "distance": "Integer"}]
+                                             {"target": "Unit", "distance": "Integer"}],
+                    "Get An Enemy Unit":    ["Unit",
+                                             map.Map.get().get_an_enemy_unit,
+                                             {}]
                     }

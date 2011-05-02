@@ -200,7 +200,6 @@ class ProtocolEditor(menu.Menu):
             pygame.draw.line(screen, (255,255,255), position1, position2)
             
         font = pygame.font.Font(None, 36)
-        print self.error
         text = font.render(self.error, 1, (255,0,0))
         rect = text.get_rect()
         rect.center = screen.get_rect().center
@@ -447,7 +446,7 @@ class ProtocolEditor(menu.Menu):
         for item in self.linkItems.keys():
             for name in self.linkItems[item].keys():
                 pair = self.linkItems[item][name]
-                if pair[1] == "get":
+                if pair != None and pair[1] == "get":
                     if pair[0] not in numlinks:
                         numlinks.append(pair[0])
                     elif "function" in self.buttons[pair[0]].get_type():
@@ -462,7 +461,6 @@ class ProtocolEditor(menu.Menu):
             
         offset = len(self.regularButtons) + len(self.createButtons)
         for i in range(len(self.protocolItems)):
-            print self.buttons[i+offset].__class__.__name__
             if not i+offset in numlinks:
                 self.error = self.buttons[i+offset].is_sanitized()
                 if self.error == "":

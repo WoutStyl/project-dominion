@@ -38,7 +38,7 @@ class Function(variable.Variable):
         for key in temp.keys():
             temp[key] = temp[key].get_value()
             
-        return self.functionReference(temp)
+        return self.functionReference(self, temp)
         
     # Return the next Function in the protocol chain
     def get_next(self):
@@ -60,7 +60,9 @@ class Function(variable.Variable):
         
     # This adds the next link and any arguments it takes
     def get_link_names(self):
-        return super(Function,self).get_link_names() + self.types.keys() + ["next"]
+        if self.type == "":
+            return super(Function,self).get_link_names() + self.types.keys() + ["next"]
+        return super(Function,self).get_link_names() + self.types.keys()
         
     def set_link_value(self, name, value):
         # Next is a special case and treated differently than just regular arguments
@@ -84,7 +86,7 @@ class Function(variable.Variable):
                 return result
                 
         if self.next != None:
-            result = argument.is_sanitized()
+            result = self.next.is_sanitized()
             if result != "":
                 return result
                 
@@ -158,15 +160,6 @@ class IfStatement(Function):
                     self.arguments[name] = value
                     return True
         return False
-        
-    def is_sanitized(self):
-        for argument in self.arguments.values():
-            if argument == None:
-                return "Not all arguments are filled"
-            result = argument.is_sanitized()
-            if result != "":
-                return result
-        return ""
         
     def is_sanitized(self):
         result = super(IfStatement, self).is_sanitized()
