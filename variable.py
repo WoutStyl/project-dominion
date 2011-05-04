@@ -23,7 +23,7 @@ class Variable(object):
     def set_value(self, value):
         self.value = value
         
-    def get_value(self):
+    def get_value(self, unit):
         return self.value
 
     def get_name(self):

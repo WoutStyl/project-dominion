@@ -268,7 +268,7 @@ pc robot 100 100
 ai robot 50 50
 [PLAYERS]
 [UNITS]
-2 3 0 0
+6 3 0 0
 5 4 1 1
 6 8 2 2
 12 12 3 0

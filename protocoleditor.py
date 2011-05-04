@@ -452,11 +452,15 @@ class ProtocolEditor(menu.Menu):
                     elif "function" in self.buttons[pair[0]].get_type():
                         self.error = "Multiple links flow towards a single function"
                         return
-        if len(numlinks) >= len(self.protocolItems):
+        num = 0
+        for item in self.protocolItems:
+            if item.get_type() == "function":
+                num += 1
+        if num == 0 or len(numlinks) >= len(self.protocolItems):
             self.error = "No head node to start from"
             return
         if len(numlinks) < len(self.protocolItems)-1:
-            self.error = "More than one unlinked node"
+            self.error = "More than one item's 'get' is unlinked"
             return
             
         offset = len(self.regularButtons) + len(self.createButtons)
@@ -467,7 +471,10 @@ class ProtocolEditor(menu.Menu):
                     theMap = map.Map.get()
                     theMap.add_new_protocol(self.buttons[i+offset].get_protocol())
                     self.leave_menu()
+                print "\"" + self.error + "\""
                 return
+                
+        print "what the fuck just happened"
 
 # Each of the below classes define what happens on button clicks
 # associated with the buttons in the protocol editor

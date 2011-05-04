@@ -4,11 +4,12 @@ from vector import *
 class Soldier(unit.Unit):
     commands = {}
     
-    def __init__(self, x = 0, y = 0, color = (255,0,0)):
-        unit.Unit.__init__(self, float(x), float(y), color)
+    def __init__(self, x = 0, y = 0, protocol = None, color = (255,0,0)):
+        unit.Unit.__init__(self, x, y, protocol, color)
         
         self.speed = 45.0
         self.velocity = Vector(0.0,0.0)
+        self.current_velocity = Vector(0.0,0.0)
         self.facing = Vector(0.0,1.0)
         self.health = 40
         self.waitTime = 0
@@ -23,8 +24,6 @@ class Soldier(unit.Unit):
         self.animLen = 100;
         self.waitTime = 0
         
-        self.protocol = None
-        
         
         
         
@@ -36,8 +35,9 @@ class Soldier(unit.Unit):
             self.lastFire +=deltaSeconds
         
         # Move the player
-        self.pos += self.velocity * self.speed * deltaSeconds
-        self.rect.center = self.pos.get()
+        self.pos += self.current_velocity * self.speed * deltaSeconds
+        self.update_position(self.pos.get())
+        self.current_velocity = Vector(self.velocity[0],self.velocity[1])
         
         # Don't execute protocols while 'waiting'
         if self.waitTime > 0:
@@ -50,6 +50,9 @@ class Soldier(unit.Unit):
                 
         # If it's time to fire
         if self.lastFire == 0 and self.fire == True:
+            if self.fireTarget.is_dead():
+                self.fire = False
+                return None
             self.lastFire += deltaSeconds
             tPos = self.fireTarget.pos
             tVel = self.fireTarget.velocity * self.fireTarget.speed
@@ -59,6 +62,12 @@ class Soldier(unit.Unit):
             self.fire = True
             #self.last_fire = 1
             return bullet.Bullet(self.pDir, self.pos[0], self.pos[1])
+        return None
+            
+    def update_position(self, pos):
+        self.pos[0] = pos[0]
+        self.pos[1] = pos[1]
+        self.rect.center = pos
 
     # Constrain the unit to the playable world
     def keep_on_screen(self, max_x, max_y):
@@ -79,10 +88,32 @@ class Soldier(unit.Unit):
             self.rect.center = self.pos.get()
             screen.blit(self.image, self.rect)
             
+    def collide_rect(self, rect):
+        if self.rect.colliderect(rect):
+            if self.velocity[0] >= 0:
+                diffX = self.rect.right - rect.left
+            else:
+                diffX = rect.right - self.rect.left
+                
+            if self.velocity[1] >= 0:
+                diffY = self.rect.bottom - rect.top
+            else:
+                diffY = rect.bottom - self.rect.top
+                
+            if diffY >= diffX:
+                self.current_velocity[0] = 0.0
+            else:
+                self.current_velocity[1] = 0.0
+            return True
+        return False
+            
             
 #Protocol Commands
     def move_towards(self, arguments):
-        self.velocity = arguments["target"].pos - self.pos
+        target = arguments["target"]
+        if target == None:
+            return
+        self.velocity = target.pos - self.pos
         self.velocity.normalize()
         self.facing = Vector(self.velocity[0],self.velocity[1])
         
@@ -122,7 +153,9 @@ class Soldier(unit.Unit):
             self.fireTarget = target
         else:
             self.fire = False
-        
+            
+    def stop_firing(self, arguments):
+        self.fire_at({"target":None})
 
     def wait(self, arguments):
         #print "wait for me"
@@ -130,6 +163,9 @@ class Soldier(unit.Unit):
     def is_within_distance(self, arguments):
         target = arguments["target"]
         distance = arguments["distance"]
+        if target == None:
+            return False
+            
         if self.rect.left > target.rect.right:
             x1 = self.rect.left
             x2 = target.rect.right
@@ -169,6 +205,9 @@ Soldier.commands = {"Move Towards":         ["",
                     "Fire At":              ["",
                                              Soldier.fire_at,
                                              {"target": "Unit"}],
+                    "Stop Firing":          ["",
+                                             Soldier.stop_firing,
+                                             {}],
                     "Wait":                 ["",
                                              Soldier.wait,
                                              {"seconds": "Integer"}],

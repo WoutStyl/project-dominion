@@ -80,7 +80,7 @@ class ProtocolItem(button.Button):
         
     # Get the value of the variable
     def get_value(self):
-        value = self.item.get_value()
+        value = self.item.get_value(None)
         # If it has none, just give it 0
         if value == "":
             value = 0
