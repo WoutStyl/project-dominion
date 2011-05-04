@@ -7,10 +7,15 @@ from vector import *
 #   governs an individual units status
 
 class Unit(object):
-    def __init__(self, x = 0, y = 0, color = (255,0,0)):
-        self.height = 32
-        self.type = "Unit"
-        self.width = 32
+    width = 32
+    height = 32
+    type = "Unit"
+    
+    @staticmethod
+    def get_size():
+        return Unit.width, Unit.height
+    
+    def __init__(self, x = 0, y = 0, protocol = None, color = (255,0,0)):
         self.pos = Vector(float(x),float(y))
         self.health = 5
         self.image = pygame.Surface((self.width, self.height), pygame.SRCALPHA, 32).convert_alpha()
@@ -29,7 +34,7 @@ class Unit(object):
         #print x
         #raw_input('')
         self.unitMenu = "Standard"
-        self.protocol = None
+        self.protocol = protocol
     def take_damage(self, damage):
         self.health -= damage;
         if self.health <= 0:
@@ -37,7 +42,7 @@ class Unit(object):
     def die(self):
         del self.image
         del self.rect
-    def isDead(self):
+    def is_dead(self):
         if self.health <=0:
             return True
         return False
@@ -56,8 +61,31 @@ class Unit(object):
 
     def keep_on_screen(self,width,height):
         pass
+        
+    def get_type(self):
+        return self.type
   
     def fire_at(self,target):
         pass
+        
+    def get_pos(self):
+        return self.pos.get()
+        
     def set_protocol(self, p):
         self.protocol = p
+        
+    def set_color(self, color):
+        pygame.draw.circle(self.image, color, (self.width / 2, self.height / 2), self.width /2)
+        
+    def collide_terrain(self, rect, value):
+        if not value:
+            return self.collide_rect(rect)
+        return False
+    
+    def collide_unit(self, unit):
+        if self == unit:
+            return False
+        return self.collide_rect(unit.rect)
+        
+    def collide_rect(self, rect):
+        return self.rect.colliderect(rect)

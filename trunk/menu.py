@@ -250,13 +250,13 @@ class UnitMenu(Menu):
         newButton = button.Button(600,height,text,Click,"Blank",False,True,64,64)
         modbuttons.append(newButton)
         listlength +=1
-        Click = button.EditProtocolOnClick()
-        name = "Edit"
-        text = font.render(name,1,(0,0,0))
-        height = listlength * 70
-        newButton = button.Button(600,height,text,Click,"Blank",False,True,64,64)
-        modbuttons.append(newButton)
-        listlength +=1
+        # Click = button.EditProtocolOnClick()
+        # name = "Edit"
+        # text = font.render(name,1,(0,0,0))
+        # height = listlength * 70
+        # newButton = button.Button(600,height,text,Click,"Blank",False,True,64,64)
+        # modbuttons.append(newButton)
+        # listlength +=1
         Click = button.SetProtocolOnClick()
         name = "Set"
         text = font.render(name,1,(0,0,0))

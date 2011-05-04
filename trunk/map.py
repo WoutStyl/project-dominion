@@ -54,10 +54,6 @@ class Map:
         # Objective object list
         self.objectiveList = []
         
-        # A hardcoded target for the units to shoot at, until we have units
-        # retrievable in the protocols
-        self.target = soldier.Soldier(float(6.0*32),float(7.0*32))
-        self.target.image.fill((100,0,0))
 
         # Constant Stuff
         self.tileImage = 'images/tileset.PNG'
@@ -77,7 +73,7 @@ class Map:
 
     # For the most part just calls its units' update functions
     def update(self, deltaSeconds):
-        for player in self.unitTable:
+        for player in self.unitTable.keys():
             for e in self.unitTable[player]:
                 newBullet = e.update(deltaSeconds)
                 if newBullet is not None:
@@ -85,6 +81,7 @@ class Map:
                         self.projectiles[player] = []
                     self.projectiles[player].append(newBullet)
                 e.keep_on_screen(self.width,self.height)
+                self.collision(e)
                 #print(self.unitTable[self.playerIdMap[1]][0])
             
             if(self.projectiles.get(player) == None):
@@ -95,7 +92,6 @@ class Map:
                     bullet.die();
                     self.projectiles[player].remove(bullet)
                 
-        self.target.update(deltaSeconds)
 
     # Draws all of the terrain and units to the screen
     def draw(self, screen, upperleft, rect):
@@ -110,16 +106,18 @@ class Map:
             #for j in range(25):
         #screen.blit(x,(0,0),pygame.Rect(upperleft[0],upperleft[1],32*25,32*25))
         #screen.blit(self.view,(0,0),pygame.Rect(upperleft[0],upperleft[1],32*25,32*25))
-        for player in self.unitTable:
+        for player in self.unitTable.keys():
             for unit in self.unitTable[player]:
                 unit.draw(self.view)
             if(len(self.projectiles[player]) > 0):
                 for bullet in self.projectiles[player]:
                     bullet.draw(self.view)
                 
-        self.target.draw(self.view)
         pygame.draw.rect(self.view,(175,175,175),rect,2)
         screen.blit(self.view,(0,0),pygame.Rect(upperleft[0],upperleft[1],32*25,32*25))
+        queue = self.get_unit_queue()
+        for u in queue:
+            u.draw(screen)
     def get_unit_menu(self):
         if(self.selection != []): #and self.newSelection is True:
             for unit in self.selection:
@@ -135,11 +133,8 @@ class Map:
         retmenu.leave_menu()
         return retmenu
     def get_unit_queue(self):
-        if(self.selection != []):
-            for unit in self.selection:
-                if unit.type is "Building":
-                    if unit.unitQueue != None:
-                        return unit.unitQueue
+        if len(self.selection) == 1 and self.selection[0].get_type() == "Building":
+            return self.selection[0].get_unit_queue()
         return []
     # Returns the tile type for the terrain
     def lookup(self,char):
@@ -230,20 +225,20 @@ class Map:
             if(unitId == 3):
                 unitObject = building.Building(self.playerIdMap[playerId], xA*32,yA*32, self.colorMap[playerId])
             else:
-                unitObject = soldier.Soldier(xA*32, yA*32, self.colorMap[playerId])
+                unitObject = soldier.Soldier(xA*32, yA*32, None, self.colorMap[playerId])
             playerObject = self.playerIdMap[playerId]
             if(self.unitTable.get(playerObject) == None):
                 self.unitTable[playerObject] = []
             self.unitTable[playerObject].append(unitObject)
     # Checks for bullet collision against enemies
     def bullet_collision(self, bullet, player1):
-        for player in self.unitTable:
-            if player is player1:
+        for player in self.unitTable.keys():
+            if player != player1:
                 for unitA in self.unitTable[player]:
                     if(unitA.rect.colliderect(bullet.rect)):
                         #print("HIT");
                         unitA.take_damage(5)
-                        if unitA.isDead():
+                        if unitA.is_dead():
                             #return True
                             self.unitTable[player].remove(unitA)
                         return True
@@ -251,17 +246,17 @@ class Map:
         
     # Checks for unit collision against terrain
     def terrain_collision(self,unit):
-        Map.get().collision(self)
-        too = ((self.terrainGrid[unit.rect.x/32])[unit.rect.y/32])
-        if((self.movementTable.table[too])[1]):
-            return True
-        return False
+        pos = unit.get_pos()
+        rect = pygame.Rect(int(pos[0]/32*32),int(pos[0]/32*32),32,32)
+        too = self.terrainGrid[int(pos[0]/32)][int(pos[1]/32)]
+        value = self.movementTable.table[too][1]
+        return unit.collide_terrain(rect, value)
 
     # Checks for unit collision against other units
     def unit_collision(self,unit):
-        for player in self.unitTable:
+        for player in self.unitTable.keys():
             for unitA in self.unitTable[player]:
-                if(unitA.rect.colliderect(unit.rect)):
+                if unit.collide_unit(unitA):
                     return True
         return False
 
@@ -303,16 +298,23 @@ class Map:
         self.wrapper.set_map(self.terrainGrid)
         self.wrapper.set_player(playerOutput)
         self.wrapper.set_units(unitOutput)
-    def spawn_unit(self, player,pos):
-        newunit = soldier.Soldier()
-        self.unitTable[player].append(newunit)
+        
+    def spawn_unit(self, player, unit):
+        for id in self.playerIdMap.keys():
+            if self.playerIdMap[id] == player:
+                color = self.colorMap[id]
+                
+        unit.set_color(color)
+        self.unitTable[player].append(unit)
         
         
     def add_new_protocol(self, p):
         self.protocols.append(p)
+        
     def set_protocol_by_index(self, p, i):
         self.protocols.insert(i, p)
         self.protocols.pop(i+1)
+        
     def remove_protocol_by_index(self, i):
         self.protocols.pop(i)
 
@@ -327,10 +329,10 @@ class Map:
                 if unit == aUnit:
                     thePlayer = player
                     break
-                    
         for player in self.unitTable.keys():
-            if player != thePlayer:
+            if player != thePlayer and len(self.unitTable[player]) != 0:
                 return self.unitTable[player][0]
+        return None
         
  
 class Player:

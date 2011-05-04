@@ -28,7 +28,7 @@ class Function(variable.Variable):
         return self.type
         
     # Because Functions can be used as Variables we want to be able to retrieve the value
-    def get_value(self):
+    def get_value(self, unit):
         # Should not attempt to return a value if the Function is not supposed to
         if self.type == "":
             return None
@@ -36,12 +36,12 @@ class Function(variable.Variable):
         # Retrieve the values before passing them as arguments
         temp = dict(self.arguments)
         for key in temp.keys():
-            temp[key] = temp[key].get_value()
+            temp[key] = temp[key].get_value(unit)
             
-        return self.functionReference(self, temp)
+        return self.functionReference(unit, temp)
         
     # Return the next Function in the protocol chain
-    def get_next(self):
+    def get_next(self, unit):
         return self.next
     
     # Execute the command associated with the Function
@@ -53,10 +53,9 @@ class Function(variable.Variable):
         # Retrieve the values before passing them as arguments
         tempDict = dict(self.arguments)
         for key in tempDict.keys():
-            tempDict[key] = tempDict[key].get_value()
-            
+            tempDict[key] = tempDict[key].get_value(unit)
         self.functionReference(unit, tempDict)
-        return self.get_next()
+        return self.get_next(unit)
         
     # This adds the next link and any arguments it takes
     def get_link_names(self):
@@ -78,6 +77,7 @@ class Function(variable.Variable):
         return len(self.arguments)
         
     def is_sanitized(self):
+        print "sanitize"
         for argument in self.arguments.values():
             if argument == None:
                 return "Not all arguments are filled"
@@ -113,31 +113,31 @@ class IfStatement(Function):
         return "function"
         
     # IfStatements cannot be used as variables
-    def get_value(self):
+    def get_value(self, unit):
         pass
         
     # if the statement is true then return the Function referenced by then, otherwise
     # return next
-    def get_next(self):
+    def get_next(self, unit):
         a = self.arguments["a"]
         b = self.arguments["b"]
-        if self.type == "==" and a.get_value() == b.get_value():
+        if self.type == "==" and a.get_value(unit) == b.get_value(unit):
             return self.then
-        if self.type == "!=" and a.get_value() != b.get_value():
+        if self.type == "!=" and a.get_value(unit) != b.get_value(unit):
             return self.then
-        if self.type == "<=" and a.get_value() <= b.get_value():
+        if self.type == "<=" and a.get_value(unit) <= b.get_value(unit):
             return self.then
-        if self.type == ">=" and a.get_value() >= b.get_value():
+        if self.type == ">=" and a.get_value(unit) >= b.get_value(unit):
             return self.then
-        if self.type == "<" and a.get_value() < b.get_value():
+        if self.type == "<" and a.get_value(unit) < b.get_value(unit):
             return self.then
-        if self.type == ">" and a.get_value() > b.get_value():
+        if self.type == ">" and a.get_value(unit) > b.get_value(unit):
             return self.then
         return self.next
         
     # The execution is just deciding whether to go into the if section or not
     def execute(self, unit):
-        return self.get_next()
+        return self.get_next(unit)
         
     def get_link_names(self):
         return super(IfStatement,self).get_link_names() + ["next"] + ["then"] + self.arguments.keys()
@@ -176,9 +176,12 @@ class IfStatement(Function):
         if current == self:
             return "Looped link found"
         while current.next != None:
+            print "boom!"
             if current.next == self:
                 return "Looped link found"
+            current = current.next
         current.next = self.next
+        return ""
             
         
 # Essentially the same as an IfStatement, the difference will show up in how it's handled
@@ -189,7 +192,7 @@ class WhileLoop(IfStatement):
         self.name = "While"
         
     def is_sanitized(self):
-        result = super(WhileLoop, self).is_sanitized()
+        result = super(IfStatement, self).is_sanitized()
         if result != "":
             return result
             
@@ -203,9 +206,12 @@ class WhileLoop(IfStatement):
         if current == self:
             return "Looped link found"
         while current.next != None:
+            print "bam!"
             if current.next == self:
                 return "Looped link found"
+            current = current.next
         current.next = self
+        return ""
         
 # Much different than the WhileLoop and IfStatement as it isn't comparative, it's meant
 # to iterate over a list
@@ -228,14 +234,14 @@ class ForeachLoop(Function):
         return "function"
         
     # ForeachLoops can be used as a Variable, so that iterating over the list actually has meaning
-    def get_value(self):
-        tempList = self.arguments["list"].get_value()
+    def get_value(self, unit):
+        tempList = self.arguments["list"].get_value(unit)
         return tempList[self.index]
         
     # If we haven't finished iterating over the list then return then
     # otherwise return next
-    def get_next(self):
-        tempList = self.arguments["list"].get_value()
+    def get_next(self, unit):
+        tempList = self.arguments["list"].get_value(unit)
         if self.index < len(tempList):
             return self.then
         self.index = 0
@@ -246,10 +252,10 @@ class ForeachLoop(Function):
     # is executed per frame, so that something like a user-created infinite loop doesn't crash the game). This may
     # need to be expanded to ENSURE that nothing gets skipped though.
     def execute(self, unit):
-        tempList = self.arguments["list"].get_value()
+        tempList = self.arguments["list"].get_value(unit)
         if self.previousItem == None or self.previousItem == tempList[index]:
             self.index += 1
-        return self.get_next()
+        return self.get_next(unit)
         
     def get_link_names(self):
         return super(ForeachLoop,self).get_link_names() + ["next"] + ["then"]

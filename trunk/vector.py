@@ -3,7 +3,7 @@ class Vector:
         self.vec = [x,y]
         
     def get(self):
-        return self.vec
+        return self.vec[:]
         
     def __getitem__(self, key):
         return self.vec[key]
