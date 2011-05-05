@@ -205,6 +205,8 @@ class LinkOnClick(button.OnClick):
         
     def clicked(self, m):
         super(LinkOnClick, self).clicked(m)
+        m.select_create_type("",0)
+        m.select_item("")
         m.set_start(self.name)
         
     def unclicked(self, m):

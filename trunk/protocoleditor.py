@@ -8,8 +8,8 @@ import pygame, button, math, protocolitem, function, variable, soldier, map, men
 #   defines interaction between some of the buttons
 
 class ProtocolEditor(menu.Menu):
-    def __init__(self):
-        super(ProtocolEditor, self).__init__()
+    def __init__(self, prev = None):
+        super(ProtocolEditor, self).__init__(prev)
         self.stealInput = True
         self.linkPositions = {}
         self.linkItems = {}
@@ -312,6 +312,26 @@ class ProtocolEditor(menu.Menu):
             for key in self.linkPositions[self.selectedItemIndex].keys():
                 self.linkPositions[self.selectedItemIndex][key] = None
                 self.linkItems[self.selectedItemIndex][key] = None
+                
+        # Run through all of the buttons indexed after the one being deleted
+        # and shift their stored indexes down one
+        for index in self.linkItems.keys():
+            if index <= self.selectedItemIndex:
+                continue
+            for name in self.linkItems[index].keys():
+                if self.linkItems[index][name] == None:
+                    continue
+                index2 = self.linkItems[index][name][0]
+                name2 = self.linkItems[index][name][1]
+                self.linkItems[index2][name2][0] -= 1
+            self.linkItems[index-1] = self.linkItems[index]
+            self.linkPositions[index-1] = self.linkPositions[index]
+            
+        # Now empty the last one
+        for index in reversed(sorted(self.linkItems.keys())):
+            self.linkItems[index] = {}
+            self.linkPositions[index] = {}
+            break
             
         self.select_value("", "")
         self.select_item("")
@@ -366,8 +386,8 @@ class ProtocolEditor(menu.Menu):
             self.valueButtons[self.selectedOption][0].unclicked(self)
             self.valueButtons[self.selectedOption][0].set_visible(False)
             
-        self.select_option("", 0)
         self.select_create_type("", 0)
+        self.select_item("")
         
     # Set the starting point of a link, clearing any old one that existed
     def set_start(self, name):
@@ -471,11 +491,8 @@ class ProtocolEditor(menu.Menu):
                     theMap = map.Map.get()
                     theMap.add_new_protocol(self.buttons[i+offset].get_protocol())
                     self.leave_menu()
-                print "\"" + self.error + "\""
                 return
                 
-        print "what the fuck just happened"
-
 # Each of the below classes define what happens on button clicks
 # associated with the buttons in the protocol editor
         
@@ -523,11 +540,17 @@ class ItemSelectOnClick(button.OnClick):
     def __init__(self, type = ""):
         super(ItemSelectOnClick, self).__init__()
         self.type = type
+        self.clickPos = [0,0]
         
     def clicked(self, m):
         super(ItemSelectOnClick, self).clicked(m)
-        self.isClicked = True
-        m.select_item(self.type)
+        self.clickPos = pygame.mouse.get_pos()
+        m.select_item("")
+        
+    def unclicked(self, m):
+        super(ItemSelectOnClick, self).unclicked(m)
+        if self.clickPos == pygame.mouse.get_pos():
+            m.select_item(self.type)
         
 class ValueSelectOnClick(button.OnClick):
     def __init__(self, value = "", label = ""):

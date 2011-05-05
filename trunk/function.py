@@ -77,7 +77,6 @@ class Function(variable.Variable):
         return len(self.arguments)
         
     def is_sanitized(self):
-        print "sanitize"
         for argument in self.arguments.values():
             if argument == None:
                 return "Not all arguments are filled"
@@ -176,7 +175,6 @@ class IfStatement(Function):
         if current == self:
             return "Looped link found"
         while current.next != None:
-            print "boom!"
             if current.next == self:
                 return "Looped link found"
             current = current.next
@@ -206,7 +204,6 @@ class WhileLoop(IfStatement):
         if current == self:
             return "Looped link found"
         while current.next != None:
-            print "bam!"
             if current.next == self:
                 return "Looped link found"
             current = current.next

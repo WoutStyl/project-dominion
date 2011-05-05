@@ -68,24 +68,18 @@ class Building(unit.Unit):
         total = 8
         while theMap.collision(newUnit):
             if i == 0:
-                print "first one"
                 pos[0] += width
                 pos[1] -= height
             if int(i * 4 / total) == 0:
-                print "go down"
                 pos[1] += height
             elif int(i * 4 / total) == 1:
-                print "go left"
                 pos[0] -= width
             elif int(i * 4 / total) == 2:
-                print "go up"
                 pos[1] -= height
             elif int(i * 4 / total) == 3:
-                print "go right"
                 pos[0] += width
             rect.center = pos
             if screen.get_rect().contains(rect):
-                print "update"
                 newUnit.update_position(pos)
             if i == total:
                 i = 0

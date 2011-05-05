@@ -40,8 +40,6 @@ class Game(object):
         self.mainMenu = menu.MainMenu()
         self.spareMenu = menu.Menu()
         self.spareMenu.leave_menu()
-
-        self.newSelection = True
         
     def update(self, deltaSeconds):
         # Make sure we're not considered paused if we're not
@@ -52,11 +50,7 @@ class Game(object):
         self.map.update(deltaSeconds)
 
         if self.map.is_loaded():
-            if self.newSelection is True:
-                buildmenu = self.map.get_unit_menu()
-                self.newSelection = False
-            else:
-                buildmenu = self.mainMenu
+            buildmenu = self.map.get_unit_menu()
         else:
             buildmenu = self.spareMenu
 
@@ -106,7 +100,7 @@ class Game(object):
                     self.mainMenu.bInMenu = False
                 else:
                     self.paused = True
-                    self.mainMenu = menu.MainMenu()
+                    self.mainMenu = menu.PauseMenu()
 
             # P brings up the protocol editor (may want to bring up
             # protocol editor through pause menu
@@ -148,7 +142,6 @@ class Game(object):
                 self.map.select_group(self.mouseRect)
                 self.mouseRect = pygame.Rect(0,0,0,0)
                 self.mouseIsDown = False
-                self.newSelection = True
             
             
     # Returns a properly formatted rectangle from mouse positions
@@ -199,9 +192,9 @@ class Game(object):
             
     def menu_loop(self):
         # Checks to see if we're hovering over a button
-        self.mainMenu.check_focus()
         # Change mainMenu to be whatever menu update returns
         # (most of the time it won't change)
+        self.mainMenu.check_focus()
         self.mainMenu = self.mainMenu.update()
         self.mainMenu.draw(self.screen)
         

@@ -1,4 +1,4 @@
-import re,missionwrapper,unit,pygame,random,soldier,building,objective, queueitem, menu
+import re,os,missionwrapper,unit,pygame,random,soldier,building,objective, queueitem, menu
 
 # Collaborators:
 #   Player
@@ -67,7 +67,8 @@ class Map:
         self.colorMap = {0:(0,0,255), 1:(255,0,0), 2:(250,10,0)}
         # End Constant Stuff
         self.protocols = []
-        self.unitMenu = menu.UnitMenu()
+        self.unitMenu = menu.Menu()
+        self.unitMenu.leave_menu()
         self.selection = []
         self.newSelection = True
 
@@ -119,19 +120,7 @@ class Map:
         for u in queue:
             u.draw(screen)
     def get_unit_menu(self):
-        if(self.selection != []): #and self.newSelection is True:
-            for unit in self.selection:
-                if unit.unitMenu == "Standard":
-                    #self.newSelection = False
-                    return menu.UnitMenu()
-                elif unit.unitMenu == "Build":
-                    retmenu = menu.BuildMenu(unit)
-                    #self.newSelection = False
-                    return retmenu
-            #self.newSelection = False
-        retmenu = menu.Menu()
-        retmenu.leave_menu()
-        return retmenu
+        return self.unitMenu
     def get_unit_queue(self):
         if len(self.selection) == 1 and self.selection[0].get_type() == "Building":
             return self.selection[0].get_unit_queue()
@@ -283,21 +272,42 @@ class Map:
                 self.selection.append(unitA)
                 unitA.set_selected(True)
                 
+        if(self.selection != []): #and self.newSelection is True:
+            if len(self.selection) == 1 and self.selection[0].unitMenu == "Build":
+                self.unitMenu = menu.BuildMenu(self.selection[0])
+                return
+            for unit in self.selection:
+                if unit.unitMenu == "Standard":
+                    #self.newSelection = False
+                    self.unitMenu = menu.UnitMenu()
+                    return
+            #self.newSelection = False
+        self.unitMenu = menu.Menu()
+        self.unitMenu.leave_menu()
+        return
+                
     # Saves the current state of the world to the filename
-    def save(self,filename=None):
-        if(filename != None):
-            self.wrapper.set_name(filename)
+    def save(self,path=None):
+        if path != None:
+            filename = os.path.split(self.wrapper.GetName())[1]
+            filename = os.path.join(path, filename)
+            self.wrapper.SetName(filename)
+        
         unitOutput = []
         playerOutput = []
         for i in range(len(self.unitTable)):
             playerObj = self.playerIdMap[i]
             for unit in self.unitTable[playerObj]:
-                unitOutput.append(self.wrapper.format_unit(unit,i))
+                id = 0
+                if unit.get_type() == "Building":
+                    id = 3
+                unitOutput.append(self.wrapper.FormatUnit(unit,i,id))
             line = playerObj.ai + ' ' + playerObj.type + ' ' + playerObj.resource[0] + ' ' + playerObj.resource[1]
-            playerOutput.append(playerObj)
-        self.wrapper.set_map(self.terrainGrid)
-        self.wrapper.set_player(playerOutput)
-        self.wrapper.set_units(unitOutput)
+            playerOutput.append(line)
+        self.wrapper.SetMap(self.terrainGrid)
+        self.wrapper.SetPlayer(playerOutput)
+        self.wrapper.SetUnits(unitOutput)
+        self.wrapper.save()
         
     def spawn_unit(self, player, unit):
         for id in self.playerIdMap.keys():
