@@ -92,14 +92,14 @@ each unit is in stored format
         """
         return self.Units
 
-    def FormatUnit(unit,player=None):
+    def FormatUnit(self,unit,player=None, i = 0):
         """
 Give a single Unit
 return in a single string
 all necessary info in that string so that it can be saved
         """
 
-        line = unit.pos[0] + ' ' + unit.pos[1] + ' ' + '0' + ' ' + player
+        line = str(int(unit.pos[0]/32)) + ' ' + str(int(unit.pos[1]/32)) + ' ' + str(i) + ' ' + str(player)
 
         return line
 
@@ -131,7 +131,8 @@ Dumps the current state of the mission into a file
         filestream.write('\n')
         if(self.Map != []):
             for line in self.Map:
-                filestream.write(line)
+                for char in line:
+                    filestream.write(str(char))
                 filestream.write('\n')
         filestream.write('[MAP]')
         filestream.write('\n')

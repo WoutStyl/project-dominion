@@ -3,7 +3,7 @@ from vector import *
 
 class Soldier(unit.Unit):
     commands = {}
-    
+    type = "Soldier"
     def __init__(self, x = 0, y = 0, protocol = None, color = (255,0,0)):
         unit.Unit.__init__(self, x, y, protocol, color)
         

@@ -144,21 +144,35 @@ class LoadOnClick(OnClick) :
         
     def setMission(self, mission):
         self.mission = mission
+        
+class ExitToMainOnClick(OnClick):
+    def unclicked(self,m):
+        super(ExitToMainOnClick, self).unclicked(m)
+        m.nextMenu = menu.MainMenu()
+        
+class ExitOnClick(OnClick):
+    def unclicked(self,m):
+        pygame.quit()
 
 class MissionSelectOnClick(OnClick):
     def unclicked(self,m):
         super(MissionSelectOnClick, self).unclicked(m)
-        m.nextMenu = menu.MissionSelectMenu()
+        m.nextMenu = menu.MissionSelectMenu(m)
 
 class SavedMissionSelectOnClick(OnClick):
     def unclicked(self,m):
         super(SavedMissionSelectOnClick, self).unclicked(m)
-        m.nextMenu = menu.SavedMissionSelectMenu()
+        m.nextMenu = menu.SavedMissionSelectMenu(m)
                 
 class SavedCampaignSelectOnClick(OnClick):
     def unclicked(self,m):
         super(SavedCampaignSelectOnClick, self).unclicked(m)
-        m.nextMenu = menu.SavedCampaignSelectMenu()
+        m.nextMenu = menu.SavedCampaignSelectMenu(m)
+        
+class SaveMissionOnClick(OnClick):
+    def unclicked(self,m):
+        super(SaveMissionOnClick, self).unclicked(m)
+        map.Map.get().save("savedMissions")
 
 class AddToQueueOnClick(OnClick):
     def __init__(self, building = None):
@@ -193,41 +207,33 @@ class SelectProtocolOnClick(OnClick):
         
     def unclicked(self, m):
         super(SelectProtocolOnClick, self).unclicked(m)
-        m.currentProtocol = self.buttonIndex-1
-        print "Protocol Selected"
+        m.select_protocol(self.buttonIndex-1)
 class SetProtocolOnClick(OnClick):
     def __init__(self):
         super(SetProtocolOnClick,self).__init__()
     def unclicked(self, m):
-        theMap = map.Map.get()
-        theMap.set_protocol_for_selection(m.currentProtocol)
-        print "Protocol Set"
+        super(SetProtocolOnClick, self).unclicked(m)
+        m.set_protocol_for_selection()
 
 class EditProtocolOnClick(OnClick):
     def __init__(self):
         super(EditProtocolOnClick,self).__init__()
     def unclicked(self, m):
-        print "Protocol Edited"
+        super(EditProtocolOnClick, self).unclicked(m)
 
 class DeleteProtocolOnClick(OnClick):
     def __init__(self):
         super(DeleteProtocolOnClick,self).__init__()
     def unclicked(self, m):
-        theMap = map.Map.get()
-        targetlist = theMap.protocols
-        if len(targetlist) > m.currentProtocol:
-            targetlist.pop(m.currentProtocol)
-            m.protocolButtons.pop(m.currentProtocol)
-            print "Protocol Deleted"
-        print len(targetlist)
-        print len(m.protocolButtons)
+        super(DeleteProtocolOnClick, self).unclicked(m)
+        m.delete_protocol()
 
 class NewProtocolOnClick(OnClick):
     def __init__(self):
         super(NewProtocolOnClick,self).__init__()
     def unclicked(self, m):
-        m.nextMenu = protocoleditor.ProtocolEditor()
-        print "Protocol Created"
+        super(NewProtocolOnClick, self).unclicked(m)
+        m.new_protocol(protocoleditor.ProtocolEditor(m))
 
 
 import protocoleditor

@@ -2,12 +2,13 @@ import pygame, math, sys, string, os, missionwrapper, map
 
 # This class manages menus and their proeprties
 class Menu(object):
-    def __init__(self):
+    def __init__(self, prev = None):
         self.buttons = []
         self.index = 0
         self.bInMenu = True
         self.mission = ""
         self.nextMenu = self
+        self.previousMenu = prev
         self.stealInput = False
         self.clickedButton = None
         self.lastFocused = False
@@ -75,10 +76,16 @@ class Menu(object):
         #if(self.bInMenu):
             #for event in pygame.event.get():
                 #self.handle_event(event)
-        return self.nextMenu
+        result = self.nextMenu
+        self.nextMenu = self
+        return result
     # leave_menu
     # Causes the game loop to exit the main menu when the escape key is hit
     def leave_menu(self):
+        if self.previousMenu != None:
+            self.nextMenu = self.previousMenu
+            self.nextMenu.bInMenu = True
+            return
         self.bInMenu = False
     def check_focus(self):
         newIndex = len(self.buttons)-1
@@ -104,8 +111,8 @@ class Menu(object):
 #These classes initialize the menu differently based on its intended purpose
 
 class MainMenu(Menu):
-    def __init__(self):
-        super(MainMenu, self).__init__()
+    def __init__(self, prev = None):
+        super(MainMenu, self).__init__(prev)
         buttonlocx = 300
         buttonlocx -= 128
         buttonlocy = 300
@@ -114,13 +121,32 @@ class MainMenu(Menu):
         text = font1.render("", 1, (0,0,0))
         self.stealInput = True
         #Buttons for sub menus
-        self.add_button(buttonlocx, (buttonlocy -128), text, button.StartOnClick(), "StartCampaign",False)
+        self.add_button(buttonlocx, (buttonlocy -128), text, button.StartOnClick(), "StartCampaign", False)
         self.add_button(buttonlocx,buttonlocy,text, button.MissionSelectOnClick(), "StartMission")
-        self.add_button(buttonlocx,(buttonlocy+128),text, button.SavedCampaignSelectOnClick(), "LoadCampaign")
+        self.add_button(buttonlocx,(buttonlocy+128),text, button.SavedCampaignSelectOnClick(), "LoadCampaign", False)
         self.add_button(buttonlocx,(buttonlocy+256),text, button.SavedMissionSelectOnClick(), "LoadMission")
-    def draw(self, screen):
-        screen.fill((0,0,0))
-        super(MainMenu,self).draw(screen)
+        text = font1.render("Exit", 1, (0,0,0))
+        self.add_button(buttonlocx,(buttonlocy+384),text, button.ExitOnClick(), "Blank")
+        
+    def leave_menu(self):
+        pygame.quit()
+        
+class PauseMenu(Menu):
+    def __init__(self, prev = None):
+        super(PauseMenu, self).__init__(prev)
+        buttonlocx = 300
+        buttonlocx -= 128
+        buttonlocy = 300
+        buttonlocy -= 96
+        font1 = pygame.font.Font(None, 36)
+        self.stealInput = True
+        
+        text = font1.render("Save Mission", 1, (0,0,0))
+        self.add_button(buttonlocx, (buttonlocy - 128), text, button.SaveMissionOnClick(), "Blank")
+        text = font1.render("Load Mission", 1, (0,0,0))
+        self.add_button(buttonlocx, buttonlocy, text, button.SavedMissionSelectOnClick(), "Blank")
+        text = font1.render("Exit", 1, (0,0,0))
+        self.add_button(buttonlocx, (buttonlocy + 256), text, button.ExitToMainOnClick(), "Blank")
         
         
 # Sub-Menus
@@ -128,9 +154,9 @@ class MainMenu(Menu):
 # return the user to the Main Menu when the escape key is pressed
         
 class MissionSelectMenu(Menu):
-    def __init__(self):
+    def __init__(self, prev = None):
         i = 0
-        super(MissionSelectMenu, self).__init__()
+        super(MissionSelectMenu, self).__init__(prev)
         filename = "mission%d.txt" % (i,)
         initx = 300 - 128
         inity = 300-128
@@ -149,44 +175,40 @@ class MissionSelectMenu(Menu):
             pathstring = os.path.join("missions", filename)
         text = font.render("Back", 1, (10,10,10))
         self.add_button(525, (525), text, button.BackOnClick(), "Blank")
-    def leave_menu(self):
-        self.nextMenu = MainMenu() # The next menu loaded will be the Main Menu
+        
     def draw(self, screen):
         screen.fill((0,0,0))
         super(MissionSelectMenu,self).draw(screen)
 
 class SavedMissionSelectMenu(Menu):
-    def __init__(self):
+    def __init__(self, prev = None):
         i = 0
-        super(SavedMissionSelectMenu, self).__init__()
-        filename = "savedMission%d.txt" % (i,)
+        super(SavedMissionSelectMenu, self).__init__(prev)
+        font = pygame.font.Font(None, 36)
         initx = 300 - 128
         inity = 300-128
-        pathstring = os.path.join("savedMissions", filename)
         self.stealInput = True
+        for filename in os.listdir("savedMissions\\"):
+            if not os.path.isfile("savedMissions\\" + filename):
+                continue
         # Look in the "savedMissions" folder for files of the form "savedMission#.txt"
         # and add a new button to the menu for each savedMission file.
-        while(os.path.isfile(pathstring)):
             LC = button.LoadOnClick()
-            LC.setMission(pathstring)
-            font = pygame.font.Font(None, 36)
+            LC.setMission("savedMissions\\" + filename)
             text = font.render(filename, 1, (10,10,10))
             self.add_button(initx, inity +(64*i), text, LC, "Blank")
             i += 1
-            filename = "savedMission%d.txt" % (i,)
-            pathstring = os.path.join("savedMissions", filename)
         text = font.render("Back", 1, (10,10,10))
         self.add_button(525, (525), text, button.BackOnClick(), "Blank")
-    def leave_menu(self):
-        self.nextMenu = MainMenu() # The next menu loaded will be the Main Menu
+        
     def draw(self, screen):
         screen.fill((0,0,0))
         super(SavedMissionSelectMenu,self).draw(screen)
 
 class SavedCampaignSelectMenu(Menu):
-    def __init__(self):
+    def __init__(self, prev = None):
         i = 0
-        super(SavedCampaignSelectMenu, self).__init__()
+        super(SavedCampaignSelectMenu, self).__init__(prev)
         filename = "savedCampaign%d.txt" % (i,)
         initx = 300 - 128
         inity = 300-128
@@ -206,28 +228,31 @@ class SavedCampaignSelectMenu(Menu):
         text = font.render("Back", 1, (10,10,10))
         self.add_button(525, (525), text, button.BackOnClick(), "Blank")
 
-    def leave_menu(self):
-        self.nextMenu = MainMenu() # The next menu loaded will be the Main Menu
     def draw(self, screen):
         screen.fill((0,0,0))
         super(SavedCampaignSelectMenu,self).draw(screen)
 
 class UnitMenu(Menu):
-    def __init__(self):
-        super(UnitMenu, self).__init__()
+    def __init__(self, prev = None):
+        super(UnitMenu, self).__init__(prev)
         font = pygame.font.Font(None, 36)
         text = font.render("Protocol",1,(0,0,0))
         Click = button.ProtocolDisplayToggleOnClick()
-        self.add_button(572,536,text,Click, "Blank", True, 64, 128)
+        newButton = button.Button(572,536,text,Click, "Blank", False, True, 64, 128)
         self.protocolButtons = []
         self.modifierButtons = []
-        self.menuButtons = self.buttons
+        self.menuButtons = [newButton]
         self.showProtocols = False
-        self.currentProtocol = 0
+        self.currentProtocol = -1
         self.nextMenu = self
-        print "Init"
-
+        
     def update(self):
+        self.create_buttons()
+        result = self.nextMenu
+        self.nextMenu = self
+        return result
+
+    def create_buttons(self):
         font = pygame.font.Font(None, 36)
         i = 1
         theMap = map.Map.get()
@@ -275,28 +300,49 @@ class UnitMenu(Menu):
 
         if self.showProtocols is True:
             self.buttons = self.menuButtons + self.protocolButtons + self.modifierButtons
+            self.check_focus()
+            if self.currentProtocol != -1:
+                self.protocolButtons[self.currentProtocol].focus()
+            self.menuButtons[0].focus()
         else:
             self.buttons = self.menuButtons
+            self.check_focus()
             
-        for b in self.buttons:
-            b.set_visible(True)
-            b.set_enabled(True)
-            b.update()
         #self.buttons = self.menuButtons
-        return self.nextMenu
     def draw(self,screen):
         for b in self.buttons:
             b.draw(screen)
     def set_protocols_visible(self, value):
         self.showProtocols = value
+        
+    def select_protocol(self, index):
+        self.currentProtocol = index
+        
+    def set_protocol_for_selection(self):
+        if self.currentProtocol != -1:
+            theMap = map.Map.get()
+            theMap.set_protocol_for_selection(self.currentProtocol)
+            self.currentProtocol = -1
+            
+    def delete_protocol(self):
+        theMap = map.Map.get()
+        protocols = theMap.protocols
+        if self.currentProtocol != -1 and len(protocols) > self.currentProtocol:
+            protocols.pop(self.currentProtocol)
+            self.protocolButtons.pop(self.currentProtocol)
+            self.currentProtocol = -1
+            
+    def new_protocol(self, newMenu):
+        self.nextMenu = newMenu
+        self.currentProtocol = -1
 
 class BuildMenu(UnitMenu):
-    def __init__(self, building):
-        super(BuildMenu, self).__init__()
+    def __init__(self, building, prev = None):
+        super(BuildMenu, self).__init__(prev)
         font = pygame.font.Font(None, 36)
         text = font.render("Add",1,(0,0,0))
         Click = button.AddToQueueOnClick(building)
-        self.add_button(500, 536, text, Click, "Blank", True, 64, 64)
+        self.menuButtons.append(button.Button(500, 536, text, Click, "Blank", False, True, 64, 64))
 
 
 import button
