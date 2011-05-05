@@ -60,8 +60,6 @@ class ProtocolEditor(menu.Menu):
         self.createButtons.append(button.Button(0, 150, text, CreateSelectOnClick("If", 2), "Blank"))
         text = font.render("While", 1, (0,0,0))
         self.createButtons.append(button.Button(0, 225, text, CreateSelectOnClick("While", 3), "Blank"))
-        text = font.render("Foreach", 1, (0,0,0))
-        self.createButtons.append(button.Button(0, 300, text, CreateSelectOnClick("Foreach", 4), "Blank"))
         text = font.render("Create", 1, (0,0,0))
         self.createButtons.append(button.Button(0, screen.get_height() - 100, text, CreateOnClick(), "Blank"))
         
