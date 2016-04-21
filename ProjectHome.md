@@ -1,0 +1,1 @@
+Project Dominion is a development team for Software Design and Documentation at RPI.  Our goal is to write a fully-functional (and fun!) real time strategy game to teach computer science concepts and terms to students.
